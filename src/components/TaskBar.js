@@ -17,7 +17,9 @@ export const TaskBar = ({ windows, onClickWindowItem }) => (
       Start
     </button>
     {windows.map((w) => (
-      <button onClick={() => onClickWindowItem(w)}>{w.title}</button>
+      <button key={`task-bar-${w.index}`} onClick={() => onClickWindowItem(w)}>
+        {w.title}
+      </button>
     ))}
   </div>
 )

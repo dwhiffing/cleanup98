@@ -27,6 +27,7 @@ function App() {
     <div>
       {windows.map((window) => (
         <Window
+          key={`window-${window.index}`}
           onMaximize={() =>
             updateWindow(window.index, { maximized: !window.maximized })
           }
