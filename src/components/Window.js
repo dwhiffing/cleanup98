@@ -70,7 +70,7 @@ export const Window = ({
                 flex: 1,
                 display: 'flex',
                 flexWrap: 'wrap',
-                overflow: 'scroll',
+                overflow: 'auto',
                 alignContent: 'flex-start',
                 alignItems: 'flex-start',
                 justifyContent: 'flex-start',

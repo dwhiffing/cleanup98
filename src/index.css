@@ -47,3 +47,10 @@ button.active {
     inset -2px -2px #dfdfdf, inset 2px 2px grey;
   padding: 2px 11px 0 13px;
 }
+
+::-webkit-scrollbar-button:vertical:start:increment,
+::-webkit-scrollbar-button:vertical:end:decrement,
+::-webkit-scrollbar-button:horizontal:end:increment,
+::-webkit-scrollbar-button:horizontal:end:decrement {
+  display: none;
+}
