@@ -9,7 +9,7 @@ export const Window = ({
   zIndex = 0,
   minimized,
   onClose,
-  onActive,
+  onClick,
   onMinimize,
   onMaximize,
   children,
@@ -26,7 +26,7 @@ export const Window = ({
     >
       <div
         ref={nodeRef}
-        onClick={onActive}
+        onClick={onClick}
         style={{
           display: minimized ? 'none' : 'block',
           zIndex: 10 + zIndex,

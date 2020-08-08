@@ -25,6 +25,7 @@ body {
   width: 80px;
   align-items: center;
   flex-direction: column;
+  user-select: none;
 }
 
 .icon-button p {
