@@ -30,7 +30,11 @@ export const PathWindow = ({
       duration: 10,
       path: `${window.path}/${file}`,
       title: 'Deleting...',
-      onComplete: () => setDirectories(getDirectories({ path: window.path })),
+      onComplete: () => {
+        setTimeout(() => {
+          setDirectories(getDirectories({ path: window.path }))
+        }, 0)
+      },
     })
   }
 

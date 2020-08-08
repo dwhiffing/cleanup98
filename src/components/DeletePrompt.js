@@ -21,7 +21,7 @@ export const DeletePrompt = ({
       }
     }, 200)
     return () => clearTimeout(timeout)
-  }, [progress, index, onDelete, path, removeWindow])
+  }, [progress, onComplete, index, onDelete, path, removeWindow])
   return (
     <Prompt
       title={title}
