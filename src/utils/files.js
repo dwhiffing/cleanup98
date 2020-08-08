@@ -177,6 +177,10 @@ export function mkdir(filepath, result) {
 }
 
 export function rmdir(filepath, result) {
+  const isFolder = fs.statSync(filepath).isDirectory()
+  if (!isFolder) {
+    return promiseFs.unlinkAsync(filepath)
+  }
   return promiseFs.readdirAsync(filepath).then(function (filepaths) {
     let promises = []
     filepaths.forEach(function (fp) {
@@ -186,7 +190,7 @@ export function rmdir(filepath, result) {
           return rmdir(absPath, result)
         } else {
           return promiseFs.unlinkAsync(absPath).then(function () {
-            result.deleted.push('[FILE] ' + absPath)
+            result && result.deleted.push('[FILE] ' + absPath)
           })
         }
       })
@@ -196,10 +200,11 @@ export function rmdir(filepath, result) {
       return promiseFs
         .rmdirAsync(filepath)
         .then(function () {
-          result.deleted.push('[DIR]  ' + filepath)
+          result && result.deleted.push('[DIR]  ' + filepath)
         })
         .catch(function (e) {
-          result.errors.push('[DIR]  Could not delete directory: ' + filepath)
+          result &&
+            result.errors.push('[DIR]  Could not delete directory: ' + filepath)
         })
     })
   })
@@ -219,20 +224,20 @@ function randomName(wordCount) {
 
 randomFs({ path: './C:', depth: 5, number: 25 })
 
-export const getFiles = () => {
-  function getDirectories(_file) {
-    return fs.readdirSync(_file.path).map((file) => {
-      const isFolder = fs.statSync(path.join(_file.path, file)).isDirectory()
-      return {
-        type: isFolder ? 'folder' : 'file',
-        name: file,
-        isFolder,
-        image: isFolder ? folderPng : filePng,
-        path: path.join(_file.path, file),
-      }
-    })
-  }
+export function getDirectories(_file) {
+  return fs.readdirSync(_file.path).map((file) => {
+    const isFolder = fs.statSync(path.join(_file.path, file)).isDirectory()
+    return {
+      type: isFolder ? 'folder' : 'file',
+      name: file,
+      isFolder,
+      image: isFolder ? folderPng : filePng,
+      path: path.join(_file.path, file),
+    }
+  })
+}
 
+export const getFiles = () => {
   function getDirectoriesRecursive(file) {
     return {
       ...file,

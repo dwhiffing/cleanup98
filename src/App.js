@@ -3,7 +3,9 @@ import React, { useState, useEffect } from 'react'
 import { TaskBar } from './components/TaskBar'
 import { Window } from './components/Window'
 import { Icon } from './components/Icon'
-import { getFiles } from './utils/files.js'
+import { fs, path, getDirectories, getFiles, rmdir } from './utils/files.js'
+import filePng from './assets/txt.png'
+import folderPng from './assets/folder.png'
 import './index.css'
 import '98.css'
 
@@ -33,19 +35,48 @@ function App() {
   const onMaximize = (window) =>
     updateWindow(window.index, { maximized: !window.maximized })
 
+  const deleteFile = (path) => {
+    rmdir(path).then(() => setTree(getFiles()))
+  }
+
   return (
     <div>
-      {windows.map((window) => (
-        <Window
-          key={`window-${window.index}`}
-          onMaximize={() => onMaximize(window)}
-          onMinimize={() => onMinimize(window)}
-          onClose={() => onClose(window)}
-          {...window}
-        >
-          {window.children}
-        </Window>
-      ))}
+      {windows.map((window) => {
+        let children, isFolder
+        try {
+          isFolder = fs.statSync(window.path).isDirectory()
+          if (isFolder) {
+            children = getDirectories({ path: window.path }).map((item) => (
+              <Item
+                key={`item-${item.name}`}
+                item={item}
+                addWindow={addWindow}
+              />
+            ))
+          } else {
+            children = (
+              <p key={`content-${window.path}`}>
+                {fs.readFileSync(window.path).toString()}
+              </p>
+            )
+          }
+        } catch (e) {
+          onClose(window)
+        }
+
+        return (
+          <Window
+            key={`window-${window.index}`}
+            onMaximize={() => onMaximize(window)}
+            onMinimize={() => onMinimize(window)}
+            onClose={() => onClose(window)}
+            {...window}
+          >
+            {children}
+            <button onClick={() => deleteFile(window.path)}>delete</button>
+          </Window>
+        )
+      })}
 
       <div style={{ position: 'absolute' }}>
         {tree.map((item) => (
@@ -75,17 +106,7 @@ const Item = ({ addWindow, item, textColor }) => {
       onClick={() =>
         addWindow({
           title: item.name,
-          children: [
-            item.children &&
-              item.children.map((item) => (
-                <Item
-                  key={`item-${item.name}`}
-                  item={item}
-                  addWindow={addWindow}
-                />
-              )),
-            item.content && item.content,
-          ],
+          path: item.path,
         })
       }
     />
