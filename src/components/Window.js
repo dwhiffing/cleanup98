@@ -37,11 +37,11 @@ export const Window = ({
               ? { width: window.innerWidth - 5, height: window.innerHeight - 5 }
               : null
           }
-          minWidth={320}
-          minHeight={200}
+          minWidth={640}
+          minHeight={400}
           defaultSize={{
-            width: 320,
-            height: 200,
+            width: 640,
+            height: 400,
           }}
         >
           <div
@@ -61,7 +61,18 @@ export const Window = ({
                 <button onClick={onClose} aria-label="Close"></button>
               </div>
             </div>
-            <div className="window-body-white" style={{ flex: 1 }}>
+            <div
+              className="window-body-white"
+              style={{
+                flex: 1,
+                display: 'flex',
+                flexWrap: 'wrap',
+                overflow: 'scroll',
+                alignContent: 'flex-start',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+              }}
+            >
               {children}
             </div>
           </div>
