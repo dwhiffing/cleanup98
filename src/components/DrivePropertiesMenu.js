@@ -1,13 +1,20 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Draggable from 'react-draggable'
+import { getDirectories } from '../utils/files'
 
 export const DrivePropertiesMenu = ({ onClose, onClick }) => {
+  const [directories, setDirectories] = useState([])
+
+  useEffect(() => {
+    setDirectories(getDirectories({ path: '/' }))
+  }, [])
+  const c = directories.find((d) => d.name === 'C:')
+  const usedSpace = c ? c.size : 0
+
   const nodeRef = React.useRef(null)
   const width = 400
   const height = 200
-  //TODO
-  const usedSpace = '99MB'
-  const freeSpace = '1MB'
+  const freeSpace = 4 - usedSpace
   return (
     <Draggable
       nodeRef={nodeRef}
@@ -57,8 +64,8 @@ export const DrivePropertiesMenu = ({ onClose, onClick }) => {
                 }}
               >
                 <p>Used Space:</p>
-                <p>12,123,123,123 bytes</p>
-                <p>{usedSpace}</p>
+                <p>{usedSpace * 1024} bytes</p>
+                <p>{`${usedSpace.toFixed(3)}KB`}</p>
               </div>
 
               <div
@@ -70,8 +77,8 @@ export const DrivePropertiesMenu = ({ onClose, onClick }) => {
                 }}
               >
                 <p>Free Space:</p>
-                <p>12,123 bytes</p>
-                <p>{freeSpace}</p>
+                <p>{freeSpace * 1024} bytes</p>
+                <p>{`${freeSpace.toFixed(3)}KB`}</p>
               </div>
               <hr style={{ width: '100%' }} />
 
@@ -84,8 +91,8 @@ export const DrivePropertiesMenu = ({ onClose, onClick }) => {
                 }}
               >
                 <p>Capacity:</p>
-                <p>13,123,123,123 bytes</p>
-                <p>100MB</p>
+                <p>{4 * 1024} bytes</p>
+                <p>{`${(4).toFixed(3)}KB`}</p>
               </div>
             </div>
 

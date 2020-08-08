@@ -15,20 +15,21 @@ let windowId = 0
 
 function App() {
   const [windows, setWindows] = useState([])
-  const [, setTree] = useState([])
+  const [tree, setTree] = useState([])
   const [contextMenu, setContextMenu] = useState(false)
-  const [desktop] = useState([
-    {
-      type: 'folder',
-      name: 'My Computer',
-      image: computerPng,
-      isFolder: true,
-      path: '/',
-    },
-  ])
+  // const [desktop] = useState([
+  //   {
+  //     type: 'folder',
+  //     name: 'My Computer',
+  //     image: computerPng,
+  //     isFolder: true,
+  //     path: '/',
+  //   },
+  // ])
 
   useEffect(() => {
     setTree(getFiles())
+
     document.addEventListener(
       'contextmenu',
       function (e) {
@@ -155,7 +156,7 @@ function App() {
       })}
 
       <div style={{ position: 'absolute' }}>
-        {desktop.map((item) => (
+        {tree.map((item) => (
           <Item
             key={`item-${item.name}`}
             addWindow={addWindow}

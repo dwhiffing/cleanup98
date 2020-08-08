@@ -5,7 +5,7 @@ export const Item = ({ addWindow, item, textColor, selected, onClick }) => {
   return (
     <Icon
       type="folder"
-      label={item.name}
+      label={`${item.name}\n${item.size ? `${item.size.toFixed(4)}KB` : ''}`}
       image={item.image}
       className={item.name === 'C:' ? 'drive' : ''}
       textColor={textColor}

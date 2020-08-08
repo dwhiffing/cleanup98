@@ -6,6 +6,7 @@ export const DeletePrompt = ({
   index,
   path,
   title = '',
+  onComplete,
   onDelete,
   removeWindow,
 }) => {
@@ -15,6 +16,7 @@ export const DeletePrompt = ({
       setProgress((p) => p + 1)
       if (progress >= 10) {
         onDelete(path)
+        onComplete()
         removeWindow(index)
       }
     }, 200)

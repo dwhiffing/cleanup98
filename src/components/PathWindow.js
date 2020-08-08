@@ -17,6 +17,12 @@ export const PathWindow = ({
   index,
 }) => {
   let children, isFolder
+  const [directories, setDirectories] = useState([])
+
+  useEffect(() => {
+    setDirectories(getDirectories({ path: window.path }))
+  }, [window.path])
+
   const [selected, setSelected] = useState([])
   const showDeleteProgress = (file) => {
     addWindow({
@@ -24,6 +30,7 @@ export const PathWindow = ({
       duration: 10,
       path: `${window.path}/${file}`,
       title: 'Deleting...',
+      onComplete: () => setDirectories(getDirectories({ path: window.path })),
     })
   }
 
@@ -73,7 +80,7 @@ export const PathWindow = ({
   try {
     isFolder = fs.statSync(window.path).isDirectory()
     if (isFolder) {
-      children = getDirectories({ path: window.path }).map((item) => (
+      children = directories.map((item) => (
         <Item
           key={`item-${item.name}`}
           item={item}
@@ -98,7 +105,7 @@ export const PathWindow = ({
       key={`window-${window.index}`}
       onMaximize={() => onMaximize(window)}
       onClick={(e) => {
-        if (e.target.className !== 'icon-button') setSelected([])
+        if (!e.target.classList.contains('icon-button')) setSelected([])
         onActive(window)
       }}
       onMinimize={() => onMinimize(window)}

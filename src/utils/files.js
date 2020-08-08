@@ -22,7 +22,7 @@ BrowserFS.configure(
       throw e
     }
     fs.mkdirSync('/C:')
-  }
+  },
 )
 
 let rfsSchema = schemata({
@@ -72,7 +72,7 @@ export const randomFs = function (configuration) {
     .catch(function (e) {
       if (e.code === 'ENOENT' && e.errno === -2) return
       result.errors.push(
-        '[DIR]  Could not wipe directory: ' + config.path + '\n' + e.stack
+        '[DIR]  Could not wipe directory: ' + config.path + '\n' + e.stack,
       )
     })
     .then(function () {
@@ -146,7 +146,7 @@ export function addFile(filepath, content, result) {
     })
     .catch(function (e) {
       result.errors.push(
-        '[FILE] Could not add file: ' + filepath + '\n' + e.stack
+        '[FILE] Could not add file: ' + filepath + '\n' + e.stack,
       )
     })
 }
@@ -224,6 +224,27 @@ function randomName(wordCount) {
 
 randomFs({ path: './C:', depth: 5, number: 25 })
 
+export function getFileSize(file) {
+  const stats = fs.statSync(file)
+  const fileSizeInBytes = stats['size']
+  const fileSize = fileSizeInBytes / 1024.0
+  return fileSize
+}
+
+function getFileSizeRecursive(file) {
+  const stats = fs.statSync(file.path)
+  const isFolder = stats.isDirectory()
+  if (isFolder) {
+    return getDirectories(file)
+      .map(getFileSizeRecursive)
+      .flat()
+      .reduce((sum, curr) => sum + curr, 0)
+  }
+  const fileSizeInBytes = stats['size']
+  const fileSize = fileSizeInBytes / 1024.0
+  return fileSize
+}
+
 export function getDirectories(_file) {
   return fs.readdirSync(_file.path).map((file) => {
     const isFolder = fs.statSync(path.join(_file.path, file)).isDirectory()
@@ -231,6 +252,7 @@ export function getDirectories(_file) {
       type: isFolder ? 'folder' : 'file',
       name: file,
       isFolder,
+      size: getFileSizeRecursive({ path: path.join(_file.path, file) }),
       image: isFolder ? folderPng : filePng,
       path: path.join(_file.path, file),
     }
@@ -244,6 +266,7 @@ export const getFiles = () => {
       children: file.isFolder
         ? getDirectories(file).map(getDirectoriesRecursive)
         : [],
+      size: getFileSizeRecursive(file),
       content: file.isFolder ? null : (
         <p key={`content-${file.path}`}>
           {fs.readFileSync(file.path).toString()}
