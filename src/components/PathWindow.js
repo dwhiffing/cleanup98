@@ -3,6 +3,7 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import { Window } from './Window'
 import { fs, getDirectories } from '../utils/files.js'
 import { Item } from './Item'
+import deleteFilePng from '../assets/delete-file.png'
 
 export const PathWindow = ({
   window,
@@ -18,13 +19,52 @@ export const PathWindow = ({
   let children, isFolder
   const [selected, setSelected] = useState([])
 
+  const showDeleteProgress = (file) => {
+    const id = addWindow({
+      type: 'prompt',
+      title: 'Deleting...',
+      image: deleteFilePng,
+      allowClose: false,
+      buttons: [],
+      label: `From ${file}`,
+    })
+    setTimeout(() => {
+      onDelete(`${window.path}/${file}`)
+      removeWindow(id)
+    }, 1000)
+  }
+
+  const showConfirmDeletePrompt = (file) => {
+    addWindow({
+      type: 'prompt',
+      title: 'Confirm File Delete',
+      image: deleteFilePng,
+      buttons: [
+        {
+          text: 'Yes',
+          onClick: () => {
+            showDeleteProgress(file)
+            return true
+          },
+        },
+        {
+          text: 'No',
+          onClick: () => {
+            return true
+          },
+        },
+      ],
+      label: 'Are you sure you want to send this to the Recycle Bin?',
+    })
+  }
+
   useHotkeys(
     'backspace,delete',
     () => {
       if (!isActive) return
       selected.forEach((file) => {
         setSelected((selected) => selected.filter((f) => f !== file))
-        onDelete(`${window.path}/${file}`)
+        showConfirmDeletePrompt(file)
       })
     },
     {},
@@ -74,7 +114,9 @@ export const PathWindow = ({
       {...window}
     >
       {children}
-      <button onClick={() => onDelete(window.path)}>delete</button>
+      {/* <div className="meter">
+        <span style={{ width: '80%' }}></span>
+      </div> */}
     </Window>
   )
 }

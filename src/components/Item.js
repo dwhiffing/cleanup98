@@ -12,6 +12,7 @@ export const Item = ({ addWindow, item, textColor, selected, onClick }) => {
       onClick={onClick}
       onDoubleClick={() =>
         addWindow({
+          type: 'path',
           title: item.name,
           path: item.path,
         })

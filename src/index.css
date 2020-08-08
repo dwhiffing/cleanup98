@@ -55,3 +55,49 @@ button.active {
 ::-webkit-scrollbar-button:horizontal:end:decrement {
   display: none;
 }
+
+:root {
+  --button-highlight: #ffffff;
+  --button-face: #dfdfdf;
+  --button-shadow: #808080;
+  --window-frame: #0a0a0a;
+  --dialog-blue: #000080;
+
+  --border-field: inset -1px -1px var(--button-highlight),
+    inset 1px 1px var(--button-shadow), inset -2px -2px var(--button-face),
+    inset 2px 2px var(--window-frame);
+}
+
+.meter {
+  min-width: 155px;
+  height: 23px;
+  position: relative;
+  box-shadow: var(--border-field);
+  padding: 4px 4px 3px 4px;
+  border: none;
+  background-color: var(--button-highlight);
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  border-radius: 0;
+}
+
+.meter > span {
+  display: block;
+  height: 100%;
+  background-color: var(--dialog-blue);
+  position: relative;
+  overflow: hidden;
+  background-image: linear-gradient(
+    90deg,
+    #000080 40%,
+    #ffffff 40%,
+    #ffffff 50%,
+    #000080 50%,
+    #000080 90%,
+    #ffffff 90%,
+    #ffffff 100%
+  );
+  background-size: 30px 30px;
+}

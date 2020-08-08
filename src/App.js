@@ -1,23 +1,41 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { TaskBar } from './components/TaskBar'
 import { getFiles, rmdir } from './utils/files.js'
 import './index.css'
 import '98.css'
 import { PathWindow } from './components/PathWindow'
 import { Item } from './components/Item'
+import computerPng from './assets/computer.png'
+import timePng from './assets/time.png'
+import { Prompt } from './components/Prompt'
 
 let windowId = 0
 
 function App() {
   const [windows, setWindows] = useState([])
-  const [tree, setTree] = useState([])
+  const [, setTree] = useState([])
+  const [desktop] = useState([
+    {
+      type: 'folder',
+      name: 'My Computer',
+      image: computerPng,
+      isFolder: true,
+      path: '/',
+    },
+  ])
 
   useEffect(() => {
     setTree(getFiles())
   }, [])
 
-  const addWindow = (window) =>
-    setWindows((windows) => [...windows, { ...window, index: windowId++ }])
+  const addWindow = (window) => {
+    let index = windowId
+    setWindows((windows) => [...windows, { ...window, index }])
+    windowId++
+    return index
+  }
+
+  useClockSettingsPrompt(addWindow)
 
   const removeWindow = (index) =>
     setWindows((windows) => windows.filter((w) => w.index !== index))
@@ -55,20 +73,35 @@ function App() {
     onMaximize,
     onDelete,
   }
+
   return (
     <div>
-      {windows.map((window, index) => (
-        <PathWindow
-          key={`window-${window.index}`}
-          window={window}
-          isActive={window.index === windows[windows.length - 1].index}
-          index={index}
-          {...actions}
-        />
-      ))}
+      {windows.map((window, index) => {
+        if (window.type === 'path')
+          return (
+            <PathWindow
+              key={`window-${window.index}`}
+              window={window}
+              isActive={window.index === windows[windows.length - 1].index}
+              index={index}
+              {...actions}
+            />
+          )
+
+        if (window.type === 'prompt')
+          return (
+            <Prompt
+              key={`window-${window.index}`}
+              onClose={() => removeWindow(window.index)}
+              {...window}
+            />
+          )
+
+        return null
+      })}
 
       <div style={{ position: 'absolute' }}>
-        {tree.map((item) => (
+        {desktop.map((item) => (
           <Item
             key={`item-${item.name}`}
             addWindow={addWindow}
@@ -92,3 +125,31 @@ function App() {
 }
 
 export default App
+
+const useClockSettingsPrompt = ({ addWindow }) => {
+  const clockSettingsRef = useRef()
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (clockSettingsRef.current) return
+      clockSettingsRef.current = true
+      addWindow({
+        type: 'prompt',
+        key: 'clock-settings',
+        title: 'New Clock settings',
+        image: timePng,
+        buttons: [
+          {
+            text: 'OK',
+            onClick: () => {
+              clockSettingsRef.current = false
+              return true
+            },
+          },
+        ],
+        label:
+          'Windows has updated your clock settings as a result of Daylight Savings Time. Please verify that your new clock settings are correct.',
+      })
+      return () => clearInterval(interval)
+    }, 60000)
+  })
+}
