@@ -3,9 +3,7 @@ import React, { useState, useEffect } from 'react'
 import { TaskBar } from './components/TaskBar'
 import { Window } from './components/Window'
 import { Icon } from './components/Icon'
-import { fs, path, getDirectories, getFiles, rmdir } from './utils/files.js'
-import filePng from './assets/txt.png'
-import folderPng from './assets/folder.png'
+import { fs, getDirectories, getFiles, rmdir } from './utils/files.js'
 import './index.css'
 import '98.css'
 
@@ -29,6 +27,19 @@ function App() {
     setWindows((windows) =>
       windows.map((w) => (w.index !== index ? w : { ...w, ...update }))
     )
+  const onActive = (window) => {
+    setWindows((windows) =>
+      windows.concat().sort((a, b) => {
+        if (a.index === window.index) {
+          return 1
+        }
+        if (b.index === window.index) {
+          return -1
+        }
+        return 0
+      })
+    )
+  }
   const onClose = (window) => removeWindow(window.index)
   const onMinimize = (window) =>
     updateWindow(window.index, { minimized: !window.minimized })
@@ -38,10 +49,9 @@ function App() {
   const deleteFile = (path) => {
     rmdir(path).then(() => setTree(getFiles()))
   }
-
   return (
     <div>
-      {windows.map((window) => {
+      {windows.map((window, index) => {
         let children, isFolder
         try {
           isFolder = fs.statSync(window.path).isDirectory()
@@ -68,8 +78,10 @@ function App() {
           <Window
             key={`window-${window.index}`}
             onMaximize={() => onMaximize(window)}
+            onActive={() => onActive(window)}
             onMinimize={() => onMinimize(window)}
             onClose={() => onClose(window)}
+            zIndex={index}
             {...window}
           >
             {children}
