@@ -52,6 +52,7 @@ function App() {
   return (
     <div>
       {windows.map((window, index) => {
+        // TODO: move this to component
         let children, isFolder
         try {
           isFolder = fs.statSync(window.path).isDirectory()
@@ -109,13 +110,17 @@ function App() {
 export default App
 
 const Item = ({ addWindow, item, textColor }) => {
+  // TODO: need to move this state to window so we can handle deselect.etc
+  const [selected, setSelected] = useState(false)
   return (
     <Icon
       type="folder"
       label={item.name}
       image={item.image}
       textColor={textColor}
-      onClick={() =>
+      selected={selected}
+      onClick={() => setSelected(!selected)}
+      onDoubleClick={() =>
         addWindow({
           title: item.name,
           path: item.path,
