@@ -5,6 +5,7 @@ import { Resizable } from 're-resizable'
 export const Window = ({
   title = '',
   maximized,
+  index = 0,
   minimized,
   onClose,
   onMinimize,
@@ -18,6 +19,7 @@ export const Window = ({
       disabled={maximized}
       position={maximized ? { x: 0, y: 0 } : null}
       bounds={{ left: 0, top: 0 }}
+      defaultPosition={{ x: index * 20, y: index * 20 }}
       handle=".title-bar"
     >
       <div
