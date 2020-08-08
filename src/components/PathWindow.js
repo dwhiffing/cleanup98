@@ -18,20 +18,13 @@ export const PathWindow = ({
 }) => {
   let children, isFolder
   const [selected, setSelected] = useState([])
-
   const showDeleteProgress = (file) => {
-    const id = addWindow({
-      type: 'prompt',
+    addWindow({
+      type: 'delete-prompt',
+      duration: 10,
+      path: `${window.path}/${file}`,
       title: 'Deleting...',
-      image: deleteFilePng,
-      allowClose: false,
-      buttons: [],
-      label: `From ${file}`,
     })
-    setTimeout(() => {
-      onDelete(`${window.path}/${file}`)
-      removeWindow(id)
-    }, 1000)
   }
 
   const showConfirmDeletePrompt = (file) => {

@@ -8,7 +8,7 @@ export const Prompt = ({
   image,
   onClose,
   onClick,
-  buttons,
+  buttons = [],
 }) => {
   const nodeRef = React.useRef(null)
   const width = 400

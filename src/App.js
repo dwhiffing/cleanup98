@@ -8,6 +8,7 @@ import { Item } from './components/Item'
 import computerPng from './assets/computer.png'
 import timePng from './assets/time.png'
 import { Prompt } from './components/Prompt'
+import { DeletePrompt } from './components/DeletePrompt'
 
 let windowId = 0
 
@@ -93,6 +94,16 @@ function App() {
             <Prompt
               key={`window-${window.index}`}
               onClose={() => removeWindow(window.index)}
+              {...window}
+            />
+          )
+
+        if (window.type === 'delete-prompt')
+          return (
+            <DeletePrompt
+              key={`window-${window.index}`}
+              onDelete={onDelete}
+              removeWindow={removeWindow}
               {...window}
             />
           )
