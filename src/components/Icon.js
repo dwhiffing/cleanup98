@@ -7,6 +7,7 @@ export const Icon = ({
   onDoubleClick,
   onClick,
   selected,
+  className = '',
   textColor = 'black',
 }) => {
   const nodeRef = React.useRef(null)
@@ -23,7 +24,7 @@ export const Icon = ({
         <div
           onClick={onClick}
           onDoubleClick={onDoubleClick}
-          className="icon-button"
+          className={`icon-button ${className} `}
         >
           <img alt="icon" src={image} />
           <p style={{ color: selected ? 'white' : textColor }}>{label}</p>

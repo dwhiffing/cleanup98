@@ -7,6 +7,7 @@ export const Item = ({ addWindow, item, textColor, selected, onClick }) => {
       type="folder"
       label={item.name}
       image={item.image}
+      className={item.name === 'C:' ? 'drive' : ''}
       textColor={textColor}
       selected={selected}
       onClick={onClick}

@@ -9,12 +9,14 @@ import computerPng from './assets/computer.png'
 import timePng from './assets/time.png'
 import { Prompt } from './components/Prompt'
 import { DeletePrompt } from './components/DeletePrompt'
+import { DrivePropertiesMenu } from './components/DrivePropertiesMenu'
 
 let windowId = 0
 
 function App() {
   const [windows, setWindows] = useState([])
   const [, setTree] = useState([])
+  const [contextMenu, setContextMenu] = useState(false)
   const [desktop] = useState([
     {
       type: 'folder',
@@ -27,6 +29,32 @@ function App() {
 
   useEffect(() => {
     setTree(getFiles())
+    document.addEventListener(
+      'contextmenu',
+      function (e) {
+        const listener = document.addEventListener('click', () => {
+          setTimeout(() => {
+            setContextMenu({ visible: false })
+          }, 100)
+          document.removeEventListener('click', listener)
+        })
+        if (e.target.classList.contains('drive')) {
+          setContextMenu({
+            visible: true,
+            x: e.screenX,
+            y: e.screenY - 130,
+            buttons: [
+              {
+                text: 'Properties',
+                onClick: () => openProperties(),
+              },
+            ],
+          })
+        }
+        e.preventDefault()
+      },
+      false,
+    )
   }, [])
 
   const addWindow = (window) => {
@@ -36,7 +64,13 @@ function App() {
     return index
   }
 
-  useClockSettingsPrompt(addWindow)
+  const openProperties = () => {
+    addWindow({
+      type: 'drive-properties',
+    })
+  }
+
+  useClockSettingsPrompt({ addWindow })
 
   const removeWindow = (index) =>
     setWindows((windows) => windows.filter((w) => w.index !== index))
@@ -108,6 +142,15 @@ function App() {
             />
           )
 
+        if (window.type === 'drive-properties')
+          return (
+            <DrivePropertiesMenu
+              key={`window-${window.index}`}
+              onClose={() => removeWindow(window.index)}
+              {...window}
+            />
+          )
+
         return null
       })}
 
@@ -121,6 +164,25 @@ function App() {
           />
         ))}
       </div>
+
+      {contextMenu.visible && (
+        <div
+          style={{
+            position: 'absolute',
+            left: contextMenu.x,
+            top: contextMenu.y,
+            zIndex: 99,
+          }}
+        >
+          <div className="window" style={{ width: 80, height: 200 }}>
+            {contextMenu.buttons.map((b) => (
+              <button key={`button-${b.text}`} onClick={b.onClick}>
+                {b.text}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <TaskBar
         windows={windows}
@@ -141,7 +203,7 @@ const useClockSettingsPrompt = ({ addWindow }) => {
   const clockSettingsRef = useRef()
   useEffect(() => {
     const interval = setInterval(() => {
-      if (clockSettingsRef.current) return
+      if (clockSettingsRef.current || !addWindow) return
       clockSettingsRef.current = true
       addWindow({
         type: 'prompt',
@@ -162,5 +224,5 @@ const useClockSettingsPrompt = ({ addWindow }) => {
       })
       return () => clearInterval(interval)
     }, 60000)
-  })
+  }, [])
 }
