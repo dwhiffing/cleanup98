@@ -9,7 +9,9 @@ export const deletePaths = (paths, onComplete, validate = () => true) => {
     Promise.all(paths.map((path) => rmdir(path))).then(() => {
       onComplete && onComplete()
     })
-  } catch (e) {}
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 export const getUpgrade = (key) => {

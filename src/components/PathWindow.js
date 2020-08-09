@@ -1,11 +1,13 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
+import Draggable from 'react-draggable'
+import { Resizable } from 're-resizable'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { Window } from './Window'
 import { fs, getDirectories } from '../utils/files.js'
-import { getUpgrade } from '../utils'
-import { Item } from './Item'
+import { Icon } from './Icon'
 import deleteFilePng from '../assets/delete-file.png'
 import Selection from '@simonwep/selection-js'
+import { deletePaths, getUpgrade } from '../utils'
+import errorPng from '../assets/error.png'
 
 export const PathWindow = ({
   window,
@@ -29,12 +31,23 @@ export const PathWindow = ({
   const [selected, setSelected] = useState([])
   const [directories, setDirectories] = useState([])
   const [content, setContent] = useState([])
-  const forceUpdate = useCallback(() => setValue(Date.now()), [])
+  const [speed, setSpeed] = useState(0)
+
+  useEffect(() => {
+    const file = getUpgrade('delete-speed-1')
+    const file2 = getUpgrade('delete-speed-2')
+    const file3 = getUpgrade('delete-speed-3')
+    let newSpeed = 200
+    if (file) newSpeed = 150
+    if (file2) newSpeed = 100
+    if (file3) newSpeed = 50
+    setSpeed(newSpeed)
+  }, [])
 
   try {
     if (isFolder.current) {
       children = directories.map((item) => (
-        <Item
+        <Icon
           key={`item-${item.name}`}
           item={item}
           addWindow={addWindow}
@@ -84,13 +97,37 @@ export const PathWindow = ({
     }
   }, [window.path, value, isActive])
 
-  const showDeleteProgress = (files) => {
+  const showDeleteProgress = (_files) => {
+    const files = _files.map((file) => `${window.path}/${file}`)
+    console.log(speed)
     addWindow({
-      type: 'delete-prompt',
-      duration: 10,
-      paths: files.map((file) => `${window.path}/${file}`),
+      type: 'progress-prompt',
+      image: deleteFilePng,
+      speed,
       title: 'Deleting...',
-      onComplete: forceUpdate,
+      onComplete: () => {
+        deletePaths(
+          files,
+          () => {
+            setValue(Date.now())
+          },
+          () => {
+            const stats = files.map((path) => fs.statSync(path))
+            const canDeleteFolder = getUpgrade('delete-folders')
+            if (stats.some((stat) => stat.isDirectory()) && !canDeleteFolder) {
+              addWindow({
+                type: 'prompt',
+                image: errorPng,
+                title: 'Administrator',
+                label: "You don't have permission to delete this folder.",
+              })
+              return false
+            }
+            return true
+          },
+        )
+        setValue(Date.now())
+      },
     })
   }
 
@@ -155,4 +192,98 @@ export const PathWindow = ({
       {children}
     </Window>
   )
+}
+
+const Window = ({
+  title = '',
+  path,
+  maximized,
+  zIndex = 0,
+  minimized,
+  onClose,
+  onClick,
+  onMinimize,
+  onMaximize,
+  children,
+}) => {
+  const nodeRef = React.useRef(null)
+  return (
+    <Draggable
+      nodeRef={nodeRef}
+      disabled={maximized}
+      position={maximized ? { x: 0, y: 0 } : null}
+      bounds={{ left: 0, top: 0 }}
+      defaultPosition={{ x: zIndex * 20, y: zIndex * 20 }}
+      handle=".title-bar"
+    >
+      <div
+        ref={nodeRef}
+        onClick={onClick}
+        style={{
+          display: minimized ? 'none' : 'block',
+          zIndex: 10 + zIndex,
+          position: 'absolute',
+        }}
+      >
+        <Resizable
+          enable={RESIZEABLE_SIDES}
+          size={
+            maximized
+              ? { width: window.innerWidth - 5, height: window.innerHeight - 5 }
+              : null
+          }
+          minWidth={640}
+          minHeight={400}
+          defaultSize={{
+            width: 640,
+            height: 400,
+          }}
+        >
+          <div
+            className="window"
+            style={{
+              width: '100%',
+              height: '100%',
+              display: 'flex',
+              flexDirection: 'column',
+            }}
+          >
+            <div className="title-bar">
+              <div className="title-bar-text">{title || path}</div>
+              <div className="title-bar-controls">
+                <button onClick={onMinimize} aria-label="Minimize"></button>
+                <button onClick={onMaximize} aria-label="Maximize"></button>
+                <button onClick={onClose} aria-label="Close"></button>
+              </div>
+            </div>
+            <div
+              className="window-body-white"
+              style={{
+                flex: 1,
+                display: 'flex',
+                flexWrap: 'wrap',
+                overflow: 'auto',
+                alignContent: 'flex-start',
+                alignItems: 'flex-start',
+                justifyContent: 'flex-start',
+              }}
+            >
+              {children}
+            </div>
+          </div>
+        </Resizable>
+      </div>
+    </Draggable>
+  )
+}
+
+const RESIZEABLE_SIDES = {
+  top: false,
+  right: true,
+  bottom: true,
+  left: false,
+  topRight: false,
+  bottomRight: true,
+  bottomLeft: false,
+  topLeft: false,
 }

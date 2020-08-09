@@ -24,13 +24,12 @@ export const useIntro = ({ addWindow, onComplete, skip }) => {
               title: 'Running Disk Cleanup...',
               image: trashFullPng,
               allowClose: false,
-              callback: () => {
+              onComplete: () => {
                 addWindow({
                   type: 'prompt',
                   image: errorPng,
                   title: 'Windows has encountered an error',
                   label:
-                    // 'Disk Cleanup Utility not found.  Please remove files manually by clicking on them and pressing delete.',
                     'Disk Cleanup Utility not found.  Please remove all files from this computer manually by clicking on them and pressing delete.',
                   buttons: [
                     {

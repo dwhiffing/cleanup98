@@ -6,7 +6,6 @@ import { useStorageDetails } from '../utils/useStorageDetails'
 
 export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
   const { freeSpace, updateFiles } = useStorageDetails()
-
   const [selected, setSelected] = useState(null)
   const [purchased, setPurchased] = useState(null)
   const nodeRef = React.useRef(null)

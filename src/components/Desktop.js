@@ -1,5 +1,5 @@
 import React from 'react'
-import { Item } from './Item'
+import { Icon } from './Icon'
 export const Desktop = (props) => (
   <div
     style={{
@@ -7,7 +7,7 @@ export const Desktop = (props) => (
     }}
   >
     {props.tree.map((item) => (
-      <Item
+      <Icon
         key={`item-${item.name}`}
         item={item}
         textColor="white"

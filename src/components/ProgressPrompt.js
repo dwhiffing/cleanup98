@@ -5,24 +5,23 @@ import { Prompt } from './Prompt'
 export const ProgressPrompt = ({
   title = '',
   image = deleteFilePng,
-  callback,
+  onComplete,
   height,
   onClose,
   speed = 200,
 }) => {
   const [progress, setProgress] = useState(0)
-
   useEffect(() => {
     let timeout = setTimeout(() => {
       if (progress >= 10) {
-        setTimeout(callback, 2000)
+        setTimeout(onComplete, 2000)
         onClose()
       } else {
         setProgress((p) => p + 1)
       }
     }, speed)
     return () => clearTimeout(timeout)
-  }, [progress, speed, callback, onClose])
+  }, [progress, speed, onComplete, onClose])
   return (
     <Prompt
       title={title}
