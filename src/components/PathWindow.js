@@ -2,19 +2,19 @@ import React, { useState, useEffect, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Window } from './Window'
 import { fs, getDirectories } from '../utils/files.js'
+import { getUpgrade } from '../utils'
 import { Item } from './Item'
 import deleteFilePng from '../assets/delete-file.png'
 import Selection from '@simonwep/selection-js'
 
 export const PathWindow = ({
-  window,
+  path,
   addWindow,
   removeWindow,
   onMinimize,
   onMaximize,
   onActive,
   isActive,
-  getUpgrade,
   index,
 }) => {
   let isFolder = useRef()
@@ -46,19 +46,19 @@ export const PathWindow = ({
         />
       ))
     } else {
-      children = <p key={`content-${window.path}`}>{content}</p>
+      children = <p key={`content-${path}`}>{content}</p>
     }
   } catch (e) {
     console.log(e)
-    removeWindow(window.index)
+    removeWindow(index)
   }
 
   useEffect(() => {
     try {
-      isFolder.current = fs.statSync(window.path).isDirectory()
+      isFolder.current = fs.statSync(path).isDirectory()
       isFolder.current
-        ? setDirectories(getDirectories({ path: window.path }))
-        : setContent(fs.readFileSync(window.path).toString())
+        ? setDirectories(getDirectories({ path: path }))
+        : setContent(fs.readFileSync(path).toString())
     } catch (e) {}
     if (isActive && canSelectBox.current) {
       // TODO: make select box visible
@@ -81,13 +81,13 @@ export const PathWindow = ({
     } else {
       selectionRef.current && selectionRef.current.destroy()
     }
-  }, [window.path, value, isActive])
+  }, [path, value, isActive])
 
   const showDeleteProgress = (files) => {
     addWindow({
       type: 'delete-prompt',
       duration: 10,
-      paths: files.map((file) => `${window.path}/${file}`),
+      paths: files.map((file) => `${path}/${file}`),
       title: 'Deleting...',
       onComplete: () => {
         setValue(Date.now())
@@ -138,7 +138,7 @@ export const PathWindow = ({
 
   return (
     <Window
-      key={`window-${window.index}`}
+      key={`window-${index}`}
       onMaximize={() => onMaximize(window)}
       onClick={(e) => {
         if (
@@ -149,7 +149,7 @@ export const PathWindow = ({
         onActive(window)
       }}
       onMinimize={() => onMinimize(window)}
-      onClose={() => removeWindow(window.index)}
+      onClose={() => removeWindow(index)}
       zIndex={index}
       {...window}
     >

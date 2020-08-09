@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Draggable from 'react-draggable'
 import { fs } from '../utils/files'
 import errorPng from '../assets/error.png'
+import { useStorageDetails } from '../useStorageDetails'
 
 const upgrades = [
   {
@@ -42,13 +43,9 @@ const upgrades = [
   },
 ]
 
-export const AddProgramsMenu = ({
-  onClose,
-  onClick,
-  addWindow,
-  freeSpace,
-  updateFiles,
-}) => {
+export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
+  const { freeSpace, updateFiles } = useStorageDetails()
+
   const [selected, setSelected] = useState(null)
   const [purchased, setPurchased] = useState(null)
   const nodeRef = React.useRef(null)

@@ -1,13 +1,10 @@
 import React from 'react'
 import Draggable from 'react-draggable'
+import { useStorageDetails } from '../useStorageDetails'
 
-export const DrivePropertiesMenu = ({
-  onClose,
-  onClick,
-  capacity,
-  usedSpace,
-  freeSpace,
-}) => {
+export const DrivePropertiesMenu = ({ onClose, onClick }) => {
+  const { capacity, freeSpace, usedSpace } = useStorageDetails()
+
   const nodeRef = React.useRef(null)
   const width = 400
   const height = 200
