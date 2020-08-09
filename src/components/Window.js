@@ -4,8 +4,8 @@ import { Resizable } from 're-resizable'
 
 export const Window = ({
   title = '',
+  path,
   maximized,
-  index = 0,
   zIndex = 0,
   minimized,
   onClose,
@@ -57,7 +57,7 @@ export const Window = ({
             }}
           >
             <div className="title-bar">
-              <div className="title-bar-text">{title}</div>
+              <div className="title-bar-text">{title || path}</div>
               <div className="title-bar-controls">
                 <button onClick={onMinimize} aria-label="Minimize"></button>
                 <button onClick={onMaximize} aria-label="Maximize"></button>

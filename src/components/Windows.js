@@ -10,10 +10,13 @@ export const Windows = ({ windows, actions }) => {
   return windows.map((window, index) => {
     const isActive = window.index === windows[windows.length - 1].index
     const props = {
+      // TODO: fix this duplication
       ...window,
+      ...actions,
+      window,
+      zIndex: index,
       isActive,
       onClose: () => actions.removeWindow(window.index),
-      ...actions,
     }
     if (window.type === 'path')
       return <PathWindow key={`window-${window.index}`} {...props} />

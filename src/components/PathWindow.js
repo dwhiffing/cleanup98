@@ -8,14 +8,14 @@ import deleteFilePng from '../assets/delete-file.png'
 import Selection from '@simonwep/selection-js'
 
 export const PathWindow = ({
-  path,
+  window,
+  zIndex,
   addWindow,
   removeWindow,
   onMinimize,
   onMaximize,
   onActive,
   isActive,
-  index,
 }) => {
   let isFolder = useRef()
   let canSelectBox = useRef(getUpgrade('select-box'))
@@ -47,19 +47,19 @@ export const PathWindow = ({
         />
       ))
     } else {
-      children = <p key={`content-${path}`}>{content}</p>
+      children = <p key={`content-${window.path}`}>{content}</p>
     }
   } catch (e) {
     console.log(e)
-    removeWindow(index)
+    removeWindow(window.index)
   }
 
   useEffect(() => {
     try {
-      isFolder.current = fs.statSync(path).isDirectory()
+      isFolder.current = fs.statSync(window.path).isDirectory()
       isFolder.current
-        ? setDirectories(getDirectories({ path: path }))
-        : setContent(fs.readFileSync(path).toString())
+        ? setDirectories(getDirectories({ path: window.path }))
+        : setContent(fs.readFileSync(window.path).toString())
     } catch (e) {}
     if (isActive && canSelectBox.current) {
       // TODO: make select box visible
@@ -82,13 +82,13 @@ export const PathWindow = ({
     } else {
       selectionRef.current && selectionRef.current.destroy()
     }
-  }, [path, value, isActive])
+  }, [window.path, value, isActive])
 
   const showDeleteProgress = (files) => {
     addWindow({
       type: 'delete-prompt',
       duration: 10,
-      paths: files.map((file) => `${path}/${file}`),
+      paths: files.map((file) => `${window.path}/${file}`),
       title: 'Deleting...',
       onComplete: forceUpdate,
     })
@@ -137,7 +137,7 @@ export const PathWindow = ({
 
   return (
     <Window
-      key={`window-${index}`}
+      key={`window-${window.index}`}
       onMaximize={() => onMaximize(window)}
       onClick={(e) => {
         if (
@@ -148,8 +148,8 @@ export const PathWindow = ({
         onActive(window)
       }}
       onMinimize={() => onMinimize(window)}
-      onClose={() => removeWindow(index)}
-      zIndex={index}
+      onClose={() => removeWindow(window.index)}
+      zIndex={zIndex}
       {...window}
     >
       {children}

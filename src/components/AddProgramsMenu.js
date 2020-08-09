@@ -4,45 +4,6 @@ import { fs } from '../utils/files'
 import errorPng from '../assets/error.png'
 import { useStorageDetails } from '../utils/useStorageDetails'
 
-const upgrades = [
-  {
-    key: 'delete-speed-1',
-    name: 'Delete speed',
-    cost: 10,
-    description: 'Reduce the time it takes to delete a file',
-  },
-  {
-    key: 'delete-speed-2',
-    name: 'Delete speed 2',
-    cost: 100,
-    description: 'Reduce the time it takes to delete a file further',
-  },
-  {
-    key: 'delete-speed-3',
-    name: 'Delete speed 3',
-    cost: 1000,
-    description: 'Reduce the time it takes to delete a file even further',
-  },
-  {
-    key: 'select-multiple',
-    name: 'Select multiple',
-    cost: 100,
-    description: 'Allow selection of multiple files',
-  },
-  {
-    key: 'select-box',
-    name: 'Select box',
-    cost: 100,
-    description: 'Allow selection of multiple files via box',
-  },
-  {
-    key: 'delete-folders',
-    name: 'Delete folders',
-    cost: 100,
-    description: 'Allow deletion of folders',
-  },
-]
-
 export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
   const { freeSpace, updateFiles } = useStorageDetails()
 
@@ -51,15 +12,6 @@ export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
   const nodeRef = React.useRef(null)
   const width = 400
   const height = 400
-
-  // TODO: display cost
-  // TODO: add more upgrades
-  // TODO: various delete speed upgrades
-  // TODO: various directory deletion depth upgrades
-  // TODO: various selection of multiple files at once upgrades
-  // TODO: remove nag prompt
-  // TODO: drag to select multiple files
-  // TODO: remove confirm delete prompt
 
   useEffect(() => {
     try {
@@ -182,3 +134,42 @@ export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
     </Draggable>
   )
 }
+
+const upgrades = [
+  {
+    key: 'delete-speed-1',
+    name: 'Delete speed',
+    cost: 10,
+    description: 'Reduce the time it takes to delete a file',
+  },
+  {
+    key: 'delete-speed-2',
+    name: 'Delete speed 2',
+    cost: 100,
+    description: 'Reduce the time it takes to delete a file further',
+  },
+  {
+    key: 'delete-speed-3',
+    name: 'Delete speed 3',
+    cost: 1000,
+    description: 'Reduce the time it takes to delete a file even further',
+  },
+  {
+    key: 'select-multiple',
+    name: 'Select multiple',
+    cost: 100,
+    description: 'Allow selection of multiple files',
+  },
+  {
+    key: 'select-box',
+    name: 'Select box',
+    cost: 100,
+    description: 'Allow selection of multiple files via box',
+  },
+  {
+    key: 'delete-folders',
+    name: 'Delete folders',
+    cost: 100,
+    description: 'Allow deletion of folders',
+  },
+]
