@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getFiles } from './utils/files.js'
+import { getFiles } from './files.js'
 
 export const useStorageDetails = () => {
   const [capacity, setCapacity] = useState(0)

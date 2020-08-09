@@ -15,7 +15,9 @@ export const DeletePrompt = ({
   removeWindow,
 }) => {
   const [speed, setSpeed] = useState(0)
-  const onDelete = useCallback((paths, onComplete) => {
+  const [progress, setProgress] = useState(0)
+
+  const onDelete = useCallback(() => {
     deletePaths(paths, onComplete, () => {
       const stats = paths.map((path) => fs.statSync(path))
       const canDeleteFolder = getUpgrade('delete-folders')
@@ -28,10 +30,11 @@ export const DeletePrompt = ({
         })
         return false
       }
+      removeWindow(index)
+
       return true
     })
-  }, [])
-  const [progress, setProgress] = useState(0)
+  }, [addWindow, removeWindow, index, paths, onComplete])
 
   useEffect(() => {
     const file = getUpgrade('delete-speed-1')
@@ -45,39 +48,14 @@ export const DeletePrompt = ({
   }, [])
 
   useEffect(() => {
-    let timeout = setTimeout(() => {
-      if (progress >= 10) {
-        removeWindow(index)
-        onDelete(paths, onComplete)
-      } else {
-        setProgress((p) => p + 1)
-      }
+    let interval = setInterval(() => {
+      setProgress((p) => {
+        if (p >= 10) return onDelete()
+        return p + 1
+      })
     }, speed)
-    return () => clearTimeout(timeout)
-  }, [progress, speed, index, paths])
-
-  useEffect(() => {
-    let file, file2, file3
-    try {
-      // TODO: this breaks if you buy only the future ones
-      file = fs.readFileSync(`/C:/Program Files/delete-speed-1.txt`)
-      file2 = fs.readFileSync(`/C:/Program Files/delete-speed-2.txt`)
-      file3 = fs.readFileSync(`/C:/Program Files/delete-speed-3.txt`)
-    } catch (e) {}
-    let speed = 200
-    if (file) speed = 150
-    if (file2) speed = 100
-    if (file3) speed = 50
-    let timeout = setTimeout(() => {
-      if (progress === 10) {
-        removeWindow(index)
-        onDelete(paths, onComplete)
-      } else {
-        setProgress((p) => p + 1)
-      }
-    }, speed)
-    return () => clearTimeout(timeout)
-  }, [progress])
+    return () => clearInterval(interval)
+  }, [speed, onDelete])
 
   return (
     <Prompt

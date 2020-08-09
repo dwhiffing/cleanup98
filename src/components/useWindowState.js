@@ -1,17 +1,20 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 
 let windowId = 0
 
 export const useWindowState = () => {
   const [windows, setWindows] = useState([])
 
-  const addWindow = (window, index = windowId++) => {
+  const addWindow = useCallback((window, index = windowId++) => {
     setWindows((windows) => [...windows, { ...window, index }])
     return index
-  }
+  }, [])
 
-  const removeWindow = (index) =>
-    setWindows((windows) => windows.filter((w) => w.index !== index))
+  const removeWindow = useCallback(
+    (index) =>
+      setWindows((windows) => windows.filter((w) => w.index !== index)),
+    [],
+  )
 
   const updateWindow = (index, update) =>
     setWindows((windows) =>

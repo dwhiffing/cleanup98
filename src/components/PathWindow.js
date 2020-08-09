@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Window } from './Window'
 import { fs, getDirectories } from '../utils/files.js'
@@ -29,6 +29,7 @@ export const PathWindow = ({
   const [selected, setSelected] = useState([])
   const [directories, setDirectories] = useState([])
   const [content, setContent] = useState([])
+  const forceUpdate = useCallback(() => setValue(Date.now()), [])
 
   try {
     if (isFolder.current) {
@@ -89,9 +90,7 @@ export const PathWindow = ({
       duration: 10,
       paths: files.map((file) => `${path}/${file}`),
       title: 'Deleting...',
-      onComplete: () => {
-        setValue(Date.now())
-      },
+      onComplete: forceUpdate,
     })
   }
 

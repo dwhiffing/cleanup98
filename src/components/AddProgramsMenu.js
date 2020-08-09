@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import Draggable from 'react-draggable'
 import { fs } from '../utils/files'
 import errorPng from '../assets/error.png'
-import { useStorageDetails } from '../useStorageDetails'
+import { useStorageDetails } from '../utils/useStorageDetails'
 
 const upgrades = [
   {

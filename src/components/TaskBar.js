@@ -1,12 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import windowsPng from '../assets/windows-4.png'
 
-export const TaskBar = ({
-  windows,
-  onClickWindowItem,
-  addWindow,
-  updateFiles,
-}) => {
+export const TaskBar = ({ windows, addWindow, updateFiles, onMinimize }) => {
   const [startMenu, setStartMenu] = useState({})
 
   useEffect(() => {
@@ -86,7 +81,12 @@ export const TaskBar = ({
               className={
                 w.index === windows[windows.length - 1].index ? 'active' : ''
               }
-              onClick={() => onClickWindowItem(w)}
+              onClick={() => {
+                // TODO: if window is active, should minimize
+                // if window is minimized, should maximize
+                // if window is inactive, should make active
+                onMinimize(w)
+              }}
             >
               {w.title}
             </button>
