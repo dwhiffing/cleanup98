@@ -52,7 +52,23 @@ function App() {
   }, [])
 
   useEffect(() => {
-    if (tree.length > 0 && !capacity) setCapacity(tree[0].size)
+    if (tree.length > 0 && !capacity) {
+      let _capacity = +localStorage.getItem('capacity')
+      if (!_capacity) {
+        localStorage.setItem('capacity', tree[0].size)
+        _capacity = tree[0].size
+      }
+      setCapacity(_capacity)
+    }
+
+    if (tree.length > 0 && tree[0].size < 0.01) {
+      addWindow({
+        type: 'prompt',
+        image: trashFullPng,
+        title: 'Success',
+        label: 'You win!',
+      })
+    }
   }, [tree, capacity])
 
   const addWindow = (window) => {
@@ -67,6 +83,7 @@ function App() {
   const updateFiles = () => {
     setTree(getFiles())
   }
+
   const openProperties = () => {
     updateFiles()
     addWindow({
@@ -110,20 +127,23 @@ function App() {
   }
 
   const onDelete = (paths, onComplete) => {
-    const stats = paths.map((path) => fs.statSync(path))
-    let canDeleteFolder = getUpgrade('delete-folders')
-    if (stats.some((stat) => stat.isDirectory()) && !canDeleteFolder) {
-      addWindow({
-        type: 'prompt',
-        image: errorPng,
-        title: 'Administrator',
-        label: "You don't have permission to delete this folder.",
-      })
-    } else {
-      Promise.all(paths.map((path) => rmdir(path))).then(() => {
-        onComplete && onComplete()
-      })
-    }
+    try {
+      const stats = paths.map((path) => fs.statSync(path))
+
+      let canDeleteFolder = getUpgrade('delete-folders')
+      if (stats.some((stat) => stat.isDirectory()) && !canDeleteFolder) {
+        addWindow({
+          type: 'prompt',
+          image: errorPng,
+          title: 'Administrator',
+          label: "You don't have permission to delete this folder.",
+        })
+      } else {
+        Promise.all(paths.map((path) => rmdir(path))).then(() => {
+          onComplete && onComplete()
+        })
+      }
+    } catch (e) {}
   }
 
   const actions = {
@@ -133,6 +153,7 @@ function App() {
     onMinimize,
     onMaximize,
     onDelete,
+    getUpgrade,
   }
 
   const usedSpace = tree.length > 0 ? tree[0].children[0].size : 0
@@ -199,6 +220,7 @@ function App() {
             <AddProgramsMenu
               key={`window-${window.index}`}
               freeSpace={freeSpace}
+              addWindow={addWindow}
               updateFiles={updateFiles}
               onClose={() => removeWindow(window.index)}
               {...window}

@@ -2,6 +2,7 @@
   "name": "cleanup98",
   "version": "0.1.0",
   "private": true,
+  "homepage": "https://dwhiffing.github.io/cleanup98",
   "dependencies": {
     "98.css": "^0.1.16",
     "@simonwep/selection-js": "^1.7.0",

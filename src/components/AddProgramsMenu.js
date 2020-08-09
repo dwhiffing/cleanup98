@@ -1,19 +1,51 @@
 import React, { useState, useEffect } from 'react'
 import Draggable from 'react-draggable'
 import { fs } from '../utils/files'
+import errorPng from '../assets/error.png'
 
 const upgrades = [
   {
-    key: 'delete-speed',
+    key: 'delete-speed-1',
     name: 'Delete speed',
-    cost: 100,
+    cost: 10,
     description: 'Reduce the time it takes to delete a file',
+  },
+  {
+    key: 'delete-speed-2',
+    name: 'Delete speed 2',
+    cost: 100,
+    description: 'Reduce the time it takes to delete a file further',
+  },
+  {
+    key: 'delete-speed-3',
+    name: 'Delete speed 3',
+    cost: 1000,
+    description: 'Reduce the time it takes to delete a file even further',
+  },
+  {
+    key: 'select-multiple',
+    name: 'Select multiple',
+    cost: 100,
+    description: 'Allow selection of multiple files',
+  },
+  {
+    key: 'select-box',
+    name: 'Select box',
+    cost: 100,
+    description: 'Allow selection of multiple files via box',
+  },
+  {
+    key: 'delete-folders',
+    name: 'Delete folders',
+    cost: 100,
+    description: 'Allow deletion of folders',
   },
 ]
 
 export const AddProgramsMenu = ({
   onClose,
   onClick,
+  addWindow,
   freeSpace,
   updateFiles,
 }) => {
@@ -33,9 +65,11 @@ export const AddProgramsMenu = ({
   // TODO: remove confirm delete prompt
 
   useEffect(() => {
-    fs.readdir('/C:/Program Files', (e, rv) => {
-      setPurchased(rv)
-    })
+    try {
+      fs.readdir('/C:/Program Files', (e, rv) => {
+        setPurchased(rv)
+      })
+    } catch (e) {}
   }, [])
 
   return (
@@ -71,7 +105,7 @@ export const AddProgramsMenu = ({
               alignItems: 'center',
             }}
           >
-            <p>Free space: {freeSpace}KB</p>
+            <p>Free space: {freeSpace.toFixed(2)}KB</p>
             <ul className="tree-view" style={{ width: '90%', height: 120 }}>
               {upgrades.map((upgrade) => (
                 <li
@@ -90,7 +124,8 @@ export const AddProgramsMenu = ({
                     cursor: 'pointer',
                   }}
                 >
-                  {upgrade.name}
+                  {upgrade.name}...............
+                  {(upgrade.cost / 1024).toFixed(2)}KB
                 </li>
               ))}
             </ul>
@@ -98,23 +133,38 @@ export const AddProgramsMenu = ({
             {selected && (
               <div>
                 <p>{selected.name}</p>
+                <p>cost: {(selected.cost / 1024).toFixed(2)}KB</p>
+                <p>{selected.description}</p>
                 <button
                   style={{ marginTop: 20 }}
                   onClick={() => {
-                    if (
-                      freeSpace * 1024 >= selected.cost &&
-                      !purchased.includes(`${selected.key}.txt`)
-                    ) {
+                    if (purchased.includes(`${selected.key}.txt`)) {
+                      addWindow({
+                        type: 'prompt',
+                        image: errorPng,
+                        title: 'Error',
+                        label: 'Already have this upgrade',
+                      })
+                      return
+                    }
+                    if (freeSpace * 1024 < selected.cost) {
+                      addWindow({
+                        type: 'prompt',
+                        image: errorPng,
+                        title: 'Error',
+                        label: "You don't have enough free space",
+                      })
+                      return
+                    }
+
+                    try {
                       fs.writeFileSync(
                         `/C:/Program Files/${selected.key}.txt`,
-                        // TODO: generate file size based on cost
-                        'asdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdasdd',
+                        new Array(selected.cost + 1).join('a'),
                       )
                       setPurchased([...purchased, `${selected.key}.txt`])
                       updateFiles()
-                    } else {
-                      console.log('error')
-                    }
+                    } catch (e) {}
                   }}
                 >
                   Add

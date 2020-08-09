@@ -14,9 +14,14 @@ export const PathWindow = ({
   onMaximize,
   onActive,
   isActive,
+  getUpgrade,
   index,
 }) => {
   let isFolder = useRef()
+  let canSelectBox = useRef(getUpgrade('select-box'))
+  let canSelectMultiple = useRef(
+    canSelectBox.current || getUpgrade('select-multiple'),
+  )
   let selectionRef = useRef()
   let isSelectingRef = useRef()
   let children
@@ -32,7 +37,11 @@ export const PathWindow = ({
           key={`item-${item.name}`}
           item={item}
           addWindow={addWindow}
-          onClick={() => setSelected((selected) => [...selected, item.name])}
+          onClick={() => {
+            if (selected.length > 0 && !canSelectMultiple.current) return
+
+            setSelected((selected) => [...selected, item.name])
+          }}
           selected={selected.includes(item.name)}
         />
       ))
@@ -45,11 +54,13 @@ export const PathWindow = ({
   }
 
   useEffect(() => {
-    isFolder.current = fs.statSync(window.path).isDirectory()
-    isFolder.current
-      ? setDirectories(getDirectories({ path: window.path }))
-      : setContent(fs.readFileSync(window.path).toString())
-    if (isActive) {
+    try {
+      isFolder.current = fs.statSync(window.path).isDirectory()
+      isFolder.current
+        ? setDirectories(getDirectories({ path: window.path }))
+        : setContent(fs.readFileSync(window.path).toString())
+    } catch (e) {}
+    if (isActive && canSelectBox.current) {
       // TODO: make select box visible
       selectionRef.current = new Selection({
         class: 'selection',
@@ -130,7 +141,11 @@ export const PathWindow = ({
       key={`window-${window.index}`}
       onMaximize={() => onMaximize(window)}
       onClick={(e) => {
-        if (!isSelectingRef.current) setSelected([])
+        if (
+          !isSelectingRef.current &&
+          (!e.target.classList.contains('icon-button') || selected.length > 0)
+        )
+          setSelected([])
         onActive(window)
       }}
       onMinimize={() => onMinimize(window)}

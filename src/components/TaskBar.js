@@ -29,7 +29,7 @@ export const TaskBar = ({
             zIndex: 99,
           }}
         >
-          <div className="window" style={{ width: 80, height: 200 }}>
+          <div className="window" style={{ width: 120, height: 120 }}>
             {startMenu.buttons.map((b) => (
               <button key={`button-${b.text}`} onClick={b.onClick}>
                 {b.text}
@@ -52,14 +52,21 @@ export const TaskBar = ({
           onClick={() =>
             setStartMenu({
               visible: true,
-              x: 20,
-              y: window.innerHeight - 100,
+              x: 3,
+              y: window.innerHeight - 155,
               buttons: [
                 {
                   text: 'Add programs',
                   onClick: () => {
                     updateFiles()
                     addWindow({ type: 'add-programs' })
+                  },
+                },
+                {
+                  text: 'Disk Properties',
+                  onClick: () => {
+                    updateFiles()
+                    addWindow({ type: 'drive-properties' })
                   },
                 },
               ],

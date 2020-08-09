@@ -163,37 +163,41 @@ export function mkdir(filepath, result) {
 }
 
 export function rmdir(filepath, result) {
-  const isFolder = fs.statSync(filepath).isDirectory()
-  if (!isFolder) {
-    return promiseFs.unlinkAsync(filepath)
-  }
-  return promiseFs.readdirAsync(filepath).then(function (filepaths) {
-    let promises = []
-    filepaths.forEach(function (fp) {
-      let absPath = path.resolve(filepath, fp)
-      let promise = promiseFs.statAsync(absPath).then(function (stat) {
-        if (stat.isDirectory()) {
-          return rmdir(absPath, result)
-        } else {
-          return promiseFs.unlinkAsync(absPath).then(function () {
-            result && result.deleted.push('[FILE] ' + absPath)
-          })
-        }
+  try {
+    const isFolder = fs.statSync(filepath).isDirectory()
+    if (!isFolder) {
+      return promiseFs.unlinkAsync(filepath)
+    }
+    return promiseFs.readdirAsync(filepath).then(function (filepaths) {
+      let promises = []
+      filepaths.forEach(function (fp) {
+        let absPath = path.resolve(filepath, fp)
+        let promise = promiseFs.statAsync(absPath).then(function (stat) {
+          if (stat.isDirectory()) {
+            return rmdir(absPath, result)
+          } else {
+            return promiseFs.unlinkAsync(absPath).then(function () {
+              result && result.deleted.push('[FILE] ' + absPath)
+            })
+          }
+        })
+        promises.push(promise)
       })
-      promises.push(promise)
+      return Promise.all(promises).then(function () {
+        return promiseFs
+          .rmdirAsync(filepath)
+          .then(function () {
+            result && result.deleted.push('[DIR]  ' + filepath)
+          })
+          .catch(function (e) {
+            result &&
+              result.errors.push(
+                '[DIR]  Could not delete directory: ' + filepath,
+              )
+          })
+      })
     })
-    return Promise.all(promises).then(function () {
-      return promiseFs
-        .rmdirAsync(filepath)
-        .then(function () {
-          result && result.deleted.push('[DIR]  ' + filepath)
-        })
-        .catch(function (e) {
-          result &&
-            result.errors.push('[DIR]  Could not delete directory: ' + filepath)
-        })
-    })
-  })
+  } catch (e) {}
 }
 
 function sortResultSet(a, b) {
@@ -209,65 +213,73 @@ function randomName(wordCount) {
 }
 
 export function getFileSize(file) {
-  const stats = fs.statSync(file)
-  const fileSizeInBytes = stats['size']
-  const fileSize = fileSizeInBytes / 1024.0
-  return fileSize
+  try {
+    const stats = fs.statSync(file)
+    const fileSizeInBytes = stats['size']
+    const fileSize = fileSizeInBytes / 1024.0
+    return fileSize
+  } catch (e) {}
 }
 
 function getFileSizeRecursive(file) {
-  const stats = fs.statSync(file.path)
-  const isFolder = stats.isDirectory()
-  if (isFolder) {
-    return getDirectories(file)
-      .map(getFileSizeRecursive)
-      .flat()
-      .reduce((sum, curr) => sum + curr, 0)
-  }
-  const fileSizeInBytes = stats['size']
-  const fileSize = fileSizeInBytes / 1024.0
-  return fileSize
+  try {
+    const stats = fs.statSync(file.path)
+    const isFolder = stats.isDirectory()
+    if (isFolder) {
+      return getDirectories(file)
+        .map(getFileSizeRecursive)
+        .flat()
+        .reduce((sum, curr) => sum + curr, 0)
+    }
+    const fileSizeInBytes = stats['size']
+    const fileSize = fileSizeInBytes / 1024.0
+    return fileSize
+  } catch (e) {}
 }
 
 export function getDirectories(_file) {
-  return fs.readdirSync(_file.path).map((file) => {
-    const isFolder = fs.statSync(path.join(_file.path, file)).isDirectory()
-    return {
-      type: isFolder ? 'folder' : 'file',
-      name: file,
-      isFolder,
-      size: getFileSizeRecursive({ path: path.join(_file.path, file) }),
-      image: isFolder ? folderPng : filePng,
-      path: path.join(_file.path, file),
-    }
-  })
+  try {
+    return fs.readdirSync(_file.path).map((file) => {
+      const isFolder = fs.statSync(path.join(_file.path, file)).isDirectory()
+      return {
+        type: isFolder ? 'folder' : 'file',
+        name: file,
+        isFolder,
+        size: getFileSizeRecursive({ path: path.join(_file.path, file) }),
+        image: isFolder ? folderPng : filePng,
+        path: path.join(_file.path, file),
+      }
+    })
+  } catch (e) {}
 }
 
 export const getFiles = () => {
-  function getDirectoriesRecursive(file) {
-    return {
-      ...file,
-      children: file.isFolder
-        ? getDirectories(file).map(getDirectoriesRecursive)
-        : [],
-      size: getFileSizeRecursive(file),
-      content: file.isFolder ? null : (
-        <p key={`content-${file.path}`}>
-          {fs.readFileSync(file.path).toString()}
-        </p>
-      ),
+  try {
+    function getDirectoriesRecursive(file) {
+      return {
+        ...file,
+        children: file.isFolder
+          ? getDirectories(file).map(getDirectoriesRecursive)
+          : [],
+        size: getFileSizeRecursive(file),
+        content: file.isFolder ? null : (
+          <p key={`content-${file.path}`}>
+            {fs.readFileSync(file.path).toString()}
+          </p>
+        ),
+      }
     }
-  }
 
-  return [
-    getDirectoriesRecursive({
-      type: 'folder',
-      name: 'My Computer',
-      image: computerPng,
-      isFolder: true,
-      path: '/',
-    }),
-  ]
+    return [
+      getDirectoriesRecursive({
+        type: 'folder',
+        name: 'My Computer',
+        image: computerPng,
+        isFolder: true,
+        path: '/',
+      }),
+    ]
+  } catch (e) {}
 }
 
 BrowserFS.install(window)
