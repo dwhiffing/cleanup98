@@ -4,6 +4,7 @@ import { Window } from './Window'
 import { fs, getDirectories } from '../utils/files.js'
 import { Item } from './Item'
 import deleteFilePng from '../assets/delete-file.png'
+import Selection from '@simonwep/selection-js'
 
 export const PathWindow = ({
   window,

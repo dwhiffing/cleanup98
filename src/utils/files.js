@@ -11,23 +11,6 @@ export const fs = BrowserFS.BFSRequire('fs')
 export const promiseFs = Promise.promisifyAll(fs)
 export const path = BrowserFS.BFSRequire('path')
 
-localStorage.clear()
-BrowserFS.install(window)
-BrowserFS.configure(
-  {
-    fs: 'LocalStorage',
-  },
-  function (e) {
-    if (e) {
-      throw e
-    }
-    fs.mkdirSync('/C:')
-    fs.mkdirSync('/C:/My Documents')
-    fs.mkdirSync('/C:/Program Files')
-    fs.mkdirSync('/C:/Windows')
-  },
-)
-
 let rfsSchema = schemata({
   depth: {
     description: 'The deepest number of sub-directories to create.',
@@ -225,10 +208,6 @@ function randomName(wordCount) {
   return result.join('-')
 }
 
-randomFs({ path: './C:', depth: 0, number: 10 })
-randomFs({ path: './C:/Windows', depth: 4, number: 30 })
-randomFs({ path: './C:/My Documents', depth: 0, number: 25 })
-
 export function getFileSize(file) {
   const stats = fs.statSync(file)
   const fileSizeInBytes = stats['size']
@@ -290,3 +269,26 @@ export const getFiles = () => {
     }),
   ]
 }
+
+BrowserFS.install(window)
+BrowserFS.configure(
+  {
+    fs: 'LocalStorage',
+  },
+  function (e) {
+    if (e) {
+      throw e
+    }
+    const hasFs = localStorage.getItem('has-fs')
+    if (hasFs) return
+
+    localStorage.setItem('has-fs', 'true')
+    fs.mkdirSync('/C:')
+    fs.mkdirSync('/C:/My Documents')
+    fs.mkdirSync('/C:/Program Files')
+    fs.mkdirSync('/C:/Windows')
+    randomFs({ path: './C:', depth: 0, number: 10 })
+    randomFs({ path: './C:/Windows', depth: 4, number: 30 })
+    randomFs({ path: './C:/My Documents', depth: 0, number: 25 })
+  },
+)
