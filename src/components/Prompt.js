@@ -8,11 +8,11 @@ export const Prompt = ({
   image,
   onClose,
   onClick,
-  buttons = [],
+  width = 400,
+  height = 122,
+  buttons = [{ text: 'OK', onClick: () => true }],
 }) => {
   const nodeRef = React.useRef(null)
-  const width = 400
-  const height = 122
   return (
     <Draggable
       nodeRef={nodeRef}
@@ -51,7 +51,7 @@ export const Prompt = ({
             <div
               style={{
                 display: 'flex',
-                padding: '10px 0 20px',
+                padding: '10px 0 10px',
                 textAlign: 'center',
                 lineHeight: 1.4,
               }}

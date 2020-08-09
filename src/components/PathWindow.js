@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import { Window } from './Window'
 import { fs, getDirectories } from '../utils/files.js'
@@ -13,32 +13,77 @@ export const PathWindow = ({
   onMaximize,
   onActive,
   isActive,
-  onDelete,
   index,
 }) => {
-  let children, isFolder
+  let isFolder = useRef()
+  let selectionRef = useRef()
+  let isSelectingRef = useRef()
+  let children
+  const [value, setValue] = useState(0)
+  const [selected, setSelected] = useState([])
   const [directories, setDirectories] = useState([])
+  const [content, setContent] = useState([])
+
+  try {
+    if (isFolder.current) {
+      children = directories.map((item) => (
+        <Item
+          key={`item-${item.name}`}
+          item={item}
+          addWindow={addWindow}
+          onClick={() => setSelected((selected) => [...selected, item.name])}
+          selected={selected.includes(item.name)}
+        />
+      ))
+    } else {
+      children = <p key={`content-${window.path}`}>{content}</p>
+    }
+  } catch (e) {
+    console.log(e)
+    removeWindow(window.index)
+  }
 
   useEffect(() => {
-    setDirectories(getDirectories({ path: window.path }))
-  }, [window.path])
+    isFolder.current = fs.statSync(window.path).isDirectory()
+    isFolder.current
+      ? setDirectories(getDirectories({ path: window.path }))
+      : setContent(fs.readFileSync(window.path).toString())
+    if (isActive) {
+      // TODO: make select box visible
+      selectionRef.current = new Selection({
+        class: 'selection',
+        selectables: ['.window .icon-item'],
+        boundaries: ['.window'],
+      })
+      selectionRef.current.on('start', (evt) => {
+        isSelectingRef.current = true
+      })
+      selectionRef.current.on('move', (evt) => {
+        setSelected(evt.selected.map((c) => c.textContent.split('\n')[0]))
+      })
+      selectionRef.current.on('stop', (evt) => {
+        setTimeout(() => {
+          isSelectingRef.current = false
+        }, 100)
+      })
+    } else {
+      selectionRef.current && selectionRef.current.destroy()
+    }
+  }, [window.path, value, isActive])
 
-  const [selected, setSelected] = useState([])
-  const showDeleteProgress = (file) => {
+  const showDeleteProgress = (files) => {
     addWindow({
       type: 'delete-prompt',
       duration: 10,
-      path: `${window.path}/${file}`,
+      paths: files.map((file) => `${window.path}/${file}`),
       title: 'Deleting...',
       onComplete: () => {
-        setTimeout(() => {
-          setDirectories(getDirectories({ path: window.path }))
-        }, 0)
+        setValue(Date.now())
       },
     })
   }
 
-  const showConfirmDeletePrompt = (file) => {
+  const showConfirmDeletePrompt = (files) => {
     addWindow({
       type: 'prompt',
       title: 'Confirm File Delete',
@@ -47,7 +92,7 @@ export const PathWindow = ({
         {
           text: 'Yes',
           onClick: () => {
-            showDeleteProgress(file)
+            showDeleteProgress(files)
             return true
           },
         },
@@ -66,10 +111,8 @@ export const PathWindow = ({
     'backspace,delete',
     () => {
       if (!isActive) return
-      selected.forEach((file) => {
-        setSelected((selected) => selected.filter((f) => f !== file))
-        showConfirmDeletePrompt(file)
-      })
+      showConfirmDeletePrompt(selected)
+      setSelected([])
     },
     {},
     [selected, isActive],
@@ -81,35 +124,12 @@ export const PathWindow = ({
     }
   }, [isActive])
 
-  try {
-    isFolder = fs.statSync(window.path).isDirectory()
-    if (isFolder) {
-      children = directories.map((item) => (
-        <Item
-          key={`item-${item.name}`}
-          item={item}
-          addWindow={addWindow}
-          onClick={() => setSelected((selected) => [...selected, item.name])}
-          selected={selected.includes(item.name)}
-        />
-      ))
-    } else {
-      children = (
-        <p key={`content-${window.path}`}>
-          {fs.readFileSync(window.path).toString()}
-        </p>
-      )
-    }
-  } catch (e) {
-    removeWindow(window.index)
-  }
-
   return (
     <Window
       key={`window-${window.index}`}
       onMaximize={() => onMaximize(window)}
       onClick={(e) => {
-        if (!e.target.classList.contains('icon-button')) setSelected([])
+        if (!isSelectingRef.current) setSelected([])
         onActive(window)
       }}
       onMinimize={() => onMinimize(window)}
@@ -118,9 +138,6 @@ export const PathWindow = ({
       {...window}
     >
       {children}
-      {/* <div className="meter">
-        <span style={{ width: '80%' }}></span>
-      </div> */}
     </Window>
   )
 }

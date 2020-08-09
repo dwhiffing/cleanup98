@@ -11,9 +11,13 @@ export const Icon = ({
   textColor = 'black',
 }) => {
   const nodeRef = React.useRef(null)
+  // TODO: add more file images based on extenion
+  // txt, bat, exe
+
   return (
     <Draggable nodeRef={nodeRef}>
       <div
+        className="icon-item"
         ref={nodeRef}
         style={{
           background: selected ? 'blue' : 'transparent',

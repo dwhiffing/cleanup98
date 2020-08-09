@@ -101,3 +101,8 @@ button.active {
   );
   background-size: 30px 30px;
 }
+
+.selection {
+  background-color: blue;
+  z-index: 100;
+}

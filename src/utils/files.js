@@ -22,6 +22,9 @@ BrowserFS.configure(
       throw e
     }
     fs.mkdirSync('/C:')
+    fs.mkdirSync('/C:/My Documents')
+    fs.mkdirSync('/C:/Program Files')
+    fs.mkdirSync('/C:/Windows')
   },
 )
 
@@ -222,7 +225,9 @@ function randomName(wordCount) {
   return result.join('-')
 }
 
-randomFs({ path: './C:', depth: 5, number: 25 })
+randomFs({ path: './C:', depth: 0, number: 10 })
+randomFs({ path: './C:/Windows', depth: 4, number: 30 })
+randomFs({ path: './C:/My Documents', depth: 0, number: 25 })
 
 export function getFileSize(file) {
   const stats = fs.statSync(file)

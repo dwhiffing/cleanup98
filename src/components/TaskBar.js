@@ -1,36 +1,90 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import windowsPng from '../assets/windows-4.png'
 
-export const TaskBar = ({ windows, onClickWindowItem }) => {
+export const TaskBar = ({
+  windows,
+  onClickWindowItem,
+  addWindow,
+  updateFiles,
+}) => {
+  const [startMenu, setStartMenu] = useState({})
+
+  useEffect(() => {
+    const listener = document.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('start-button')) {
+        setStartMenu({ visible: false })
+      }
+      return () => document.removeEventListener('click', listener)
+    })
+  }, [])
+
   return (
-    <div
-      className="window"
-      style={{
-        position: 'absolute',
-        bottom: 0,
-        left: 0,
-        right: 0,
-        display: 'flex',
-      }}
-    >
-      <button className="start-button">
-        <img alt="Start" src={windowsPng} />
-        Start
-      </button>
-      {windows
-        .concat()
-        .sort((a, b) => a.index - b.index)
-        .map((w) => (
-          <button
-            key={`task-bar-${w.index}`}
-            className={
-              w.index === windows[windows.length - 1].index ? 'active' : ''
-            }
-            onClick={() => onClickWindowItem(w)}
-          >
-            {w.title}
-          </button>
-        ))}
+    <div>
+      {startMenu.visible && (
+        <div
+          style={{
+            position: 'absolute',
+            left: startMenu.x,
+            top: startMenu.y,
+            zIndex: 99,
+          }}
+        >
+          <div className="window" style={{ width: 80, height: 200 }}>
+            {startMenu.buttons.map((b) => (
+              <button key={`button-${b.text}`} onClick={b.onClick}>
+                {b.text}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      <div
+        className="window"
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          display: 'flex',
+        }}
+      >
+        <button
+          onClick={() =>
+            setStartMenu({
+              visible: true,
+              x: 20,
+              y: window.innerHeight - 100,
+              buttons: [
+                {
+                  text: 'Add programs',
+                  onClick: () => {
+                    updateFiles()
+                    addWindow({ type: 'add-programs' })
+                  },
+                },
+              ],
+            })
+          }
+          className="start-button"
+        >
+          <img alt="Start" src={windowsPng} />
+          Start
+        </button>
+        {windows
+          .concat()
+          .sort((a, b) => a.index - b.index)
+          .map((w) => (
+            <button
+              key={`task-bar-${w.index}`}
+              className={
+                w.index === windows[windows.length - 1].index ? 'active' : ''
+              }
+              onClick={() => onClickWindowItem(w)}
+            >
+              {w.title}
+            </button>
+          ))}
+      </div>
     </div>
   )
 }

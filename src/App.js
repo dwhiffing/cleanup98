@@ -1,35 +1,28 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { TaskBar } from './components/TaskBar'
-import { getFiles, rmdir } from './utils/files.js'
+import { getFiles, rmdir, path, fs } from './utils/files.js'
 import './index.css'
 import '98.css'
 import { PathWindow } from './components/PathWindow'
 import { Item } from './components/Item'
-import computerPng from './assets/computer.png'
 import timePng from './assets/time.png'
+import errorPng from './assets/error.png'
+import trashFullPng from './assets/trash-full.png'
 import { Prompt } from './components/Prompt'
 import { DeletePrompt } from './components/DeletePrompt'
 import { DrivePropertiesMenu } from './components/DrivePropertiesMenu'
+import { AddProgramsMenu } from './components/AddProgramsMenu'
+import { ProgressPrompt } from './components/ProgressPrompt'
 
 let windowId = 0
 
 function App() {
   const [windows, setWindows] = useState([])
+  const [capacity, setCapacity] = useState(0)
   const [tree, setTree] = useState([])
   const [contextMenu, setContextMenu] = useState(false)
-  // const [desktop] = useState([
-  //   {
-  //     type: 'folder',
-  //     name: 'My Computer',
-  //     image: computerPng,
-  //     isFolder: true,
-  //     path: '/',
-  //   },
-  // ])
 
   useEffect(() => {
-    setTree(getFiles())
-
     document.addEventListener(
       'contextmenu',
       function (e) {
@@ -58,6 +51,10 @@ function App() {
     )
   }, [])
 
+  useEffect(() => {
+    if (tree.length > 0 && !capacity) setCapacity(tree[0].size)
+  }, [tree, capacity])
+
   const addWindow = (window) => {
     let index = windowId
     setWindows((windows) => [...windows, { ...window, index }])
@@ -65,7 +62,13 @@ function App() {
     return index
   }
 
+  useIntro({ skip: true, addWindow, onComplete: () => setTree(getFiles()) })
+
+  const updateFiles = () => {
+    setTree(getFiles())
+  }
   const openProperties = () => {
+    updateFiles()
     addWindow({
       type: 'drive-properties',
     })
@@ -98,9 +101,31 @@ function App() {
   const onMaximize = (window) =>
     updateWindow(window.index, { maximized: !window.maximized })
 
-  const onDelete = (path) => {
-    rmdir(path).then(() => setTree(getFiles()))
+  const getUpgrade = (key) => {
+    let result
+    try {
+      result = fs.readFileSync(`/C:/Program Files/${key}.txt`)
+    } catch (e) {}
+    return result
   }
+
+  const onDelete = (paths, onComplete) => {
+    const stats = paths.map((path) => fs.statSync(path))
+    let canDeleteFolder = getUpgrade('delete-folders')
+    if (stats.some((stat) => stat.isDirectory()) && !canDeleteFolder) {
+      addWindow({
+        type: 'prompt',
+        image: errorPng,
+        title: 'Administrator',
+        label: "You don't have permission to delete this folder.",
+      })
+    } else {
+      Promise.all(paths.map((path) => rmdir(path))).then(() => {
+        onComplete && onComplete()
+      })
+    }
+  }
+
   const actions = {
     addWindow,
     removeWindow,
@@ -109,6 +134,9 @@ function App() {
     onMaximize,
     onDelete,
   }
+
+  const usedSpace = tree.length > 0 ? tree[0].children[0].size : 0
+  const freeSpace = capacity - usedSpace
 
   return (
     <div>
@@ -133,20 +161,45 @@ function App() {
             />
           )
 
+        if (window.type === 'progress-prompt')
+          return (
+            <ProgressPrompt
+              key={`window-${window.index}`}
+              onClose={() => removeWindow(window.index)}
+              {...window}
+            />
+          )
+
         if (window.type === 'delete-prompt')
           return (
             <DeletePrompt
               key={`window-${window.index}`}
               onDelete={onDelete}
+              addWindow={addWindow}
               removeWindow={removeWindow}
               {...window}
             />
           )
 
-        if (window.type === 'drive-properties')
+        if (window.type === 'drive-properties') {
           return (
             <DrivePropertiesMenu
               key={`window-${window.index}`}
+              capacity={capacity}
+              freeSpace={freeSpace}
+              usedSpace={usedSpace}
+              onClose={() => removeWindow(window.index)}
+              {...window}
+            />
+          )
+        }
+
+        if (window.type === 'add-programs')
+          return (
+            <AddProgramsMenu
+              key={`window-${window.index}`}
+              freeSpace={freeSpace}
+              updateFiles={updateFiles}
               onClose={() => removeWindow(window.index)}
               {...window}
             />
@@ -187,11 +240,13 @@ function App() {
 
       <TaskBar
         windows={windows}
-        onClickWindowItem={() => {
+        updateFiles={updateFiles}
+        addWindow={addWindow}
+        onClickWindowItem={(window) => {
           // if window is active, should minimize
           // if window is minimized, should maximize
           // if window is inactive, should make active
-          onMinimize()
+          onMinimize(window)
         }}
       />
     </div>
@@ -225,5 +280,57 @@ const useClockSettingsPrompt = ({ addWindow }) => {
       })
       return () => clearInterval(interval)
     }, 60000)
+  }, [])
+}
+
+const useIntro = ({ addWindow, onComplete, skip }) => {
+  useEffect(() => {
+    if (skip) {
+      onComplete()
+      return
+    }
+    addWindow({
+      type: 'prompt',
+      image: trashFullPng,
+      allowClose: false,
+      height: 130,
+      title: 'Hard Disk is Full',
+      label:
+        'You have run out of space on drive C.\n\nTo free space on this drive by deleting old or unnecessary files, click Disk Cleanup.',
+      buttons: [
+        {
+          text: 'Disk Cleanup',
+          onClick: () => {
+            addWindow({
+              type: 'progress-prompt',
+              title: 'Running Disk Cleanup...',
+              image: trashFullPng,
+              allowClose: false,
+              callback: () => {
+                addWindow({
+                  type: 'prompt',
+                  image: errorPng,
+                  title: 'Windows has encountered an error',
+                  label:
+                    // 'Disk Cleanup Utility not found.  Please remove files manually by clicking on them and pressing delete.',
+                    'Disk Cleanup Utility not found.  Please remove all files from this computer manually by clicking on them and pressing delete.',
+                  buttons: [
+                    {
+                      text: 'OK',
+                      onClick: () => {
+                        onComplete()
+                        return true
+                      },
+                    },
+                  ],
+                })
+                return true
+              },
+            })
+            return true
+          },
+        },
+      ],
+    })
   }, [])
 }
