@@ -1,38 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import windowsPng from '../assets/windows-4.png'
 
-export const TaskBar = ({ windows, addWindow, updateFiles, onMinimize }) => {
-  const [startMenu, setStartMenu] = useState({})
-
-  useEffect(() => {
-    const listener = document.addEventListener('click', (e) => {
-      if (!e.target.classList.contains('start-button')) {
-        setStartMenu({ visible: false })
-      }
-      return () => document.removeEventListener('click', listener)
-    })
-  }, [])
-
+export const TaskBar = ({ windows, addWindow, onMinimize }) => {
   return (
     <div>
-      {startMenu.visible && (
-        <div
-          style={{
-            position: 'absolute',
-            left: startMenu.x,
-            top: startMenu.y,
-            zIndex: 99,
-          }}
-        >
-          <div className="window" style={{ width: 120, height: 120 }}>
-            {startMenu.buttons.map((b) => (
-              <button key={`button-${b.text}`} onClick={b.onClick}>
-                {b.text}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
       <div
         className="window"
         style={{
@@ -43,35 +14,8 @@ export const TaskBar = ({ windows, addWindow, updateFiles, onMinimize }) => {
           display: 'flex',
         }}
       >
-        <button
-          onClick={() =>
-            setStartMenu({
-              visible: true,
-              x: 3,
-              y: window.innerHeight - 155,
-              buttons: [
-                {
-                  text: 'Add programs',
-                  onClick: () => {
-                    updateFiles()
-                    addWindow({ type: 'add-programs' })
-                  },
-                },
-                {
-                  text: 'Disk Properties',
-                  onClick: () => {
-                    updateFiles()
-                    addWindow({ type: 'drive-properties' })
-                  },
-                },
-              ],
-            })
-          }
-          className="start-button"
-        >
-          <img alt="Start" src={windowsPng} />
-          Start
-        </button>
+        <StartButton addWindow={addWindow} />
+
         {windows
           .concat()
           .sort((a, b) => a.index - b.index)
@@ -93,5 +37,62 @@ export const TaskBar = ({ windows, addWindow, updateFiles, onMinimize }) => {
           ))}
       </div>
     </div>
+  )
+}
+
+export const StartButton = ({ addWindow }) => {
+  const [startMenu, setStartMenu] = useState({})
+
+  useEffect(() => {
+    const listener = document.addEventListener('click', (e) => {
+      if (!e.target.classList.contains('start-button')) {
+        setStartMenu({ visible: false })
+      }
+    })
+    return () => document.removeEventListener('click', listener)
+  }, [])
+
+  return (
+    <>
+      {startMenu.visible && (
+        <div
+          style={{
+            position: 'absolute',
+            left: 3,
+            top: -125,
+            zIndex: 99,
+          }}
+        >
+          <div className="window" style={{ width: 120, height: 120 }}>
+            {startMenu.buttons.map((b) => (
+              <button key={`button-${b.text}`} onClick={b.onClick}>
+                {b.text}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+      <button
+        className="start-button"
+        onClick={() => {
+          setStartMenu({
+            visible: true,
+            buttons: [
+              {
+                text: 'Add programs',
+                onClick: () => addWindow({ type: 'add-programs' }),
+              },
+              {
+                text: 'Disk Properties',
+                onClick: () => addWindow({ type: 'drive-properties' }),
+              },
+            ],
+          })
+        }}
+      >
+        <img alt="Start" src={windowsPng} style={{ pointerEvents: 'none' }} />
+        Start
+      </button>
+    </>
   )
 }

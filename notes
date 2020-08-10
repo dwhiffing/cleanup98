@@ -9,9 +9,3 @@ it is also difficult to find files that can be deleted due to permissions
 
 You must spend a currency to increase the rendering speed and file deletion speed, as well as to gain access to blocked files
 
-
-  // TODO: various directory deletion depth upgrades
-  // TODO: various selection of multiple files at once upgrades
-  // TODO: remove nag prompt
-  // TODO: drag to select multiple files
-  // TODO: remove confirm delete prompt

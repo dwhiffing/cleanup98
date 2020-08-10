@@ -12,6 +12,7 @@ export const Prompt = ({
   height = 122,
   buttons = [{ text: 'OK', onClick: () => true }],
 }) => {
+  // TODO: refactor
   const nodeRef = React.useRef(null)
   return (
     <Draggable

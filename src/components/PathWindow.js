@@ -2,12 +2,13 @@ import React, { useState, useEffect, useRef } from 'react'
 import Draggable from 'react-draggable'
 import { Resizable } from 're-resizable'
 import { useHotkeys } from 'react-hotkeys-hook'
-import { fs, getDirectories } from '../utils/files.js'
+import { fs, getContentForPath } from '../utils/files.js'
 import { Icon } from './Icon'
 import deleteFilePng from '../assets/delete-file.png'
 import Selection from '@simonwep/selection-js'
-import { deletePaths, getUpgrade } from '../utils'
+import { deletePaths, getUpgrades } from '../utils'
 import errorPng from '../assets/error.png'
+import uniq from 'lodash/uniq'
 
 export const PathWindow = ({
   window,
@@ -19,42 +20,45 @@ export const PathWindow = ({
   onActive,
   isActive,
 }) => {
-  let isFolder = useRef()
-  let canSelectBox = useRef(getUpgrade('select-box'))
-  let canSelectMultiple = useRef(
-    canSelectBox.current || getUpgrade('select-multiple'),
-  )
+  const [upgrades, setUpgrades] = useState([])
   let selectionRef = useRef()
   let isSelectingRef = useRef()
   let children
   const [value, setValue] = useState(0)
   const [selected, setSelected] = useState([])
-  const [directories, setDirectories] = useState([])
   const [content, setContent] = useState([])
   const [speed, setSpeed] = useState(0)
 
+  // TODO: refactor
+
   useEffect(() => {
-    const file = getUpgrade('delete-speed-1')
-    const file2 = getUpgrade('delete-speed-2')
-    const file3 = getUpgrade('delete-speed-3')
-    let newSpeed = 200
-    if (file) newSpeed = 150
-    if (file2) newSpeed = 100
-    if (file3) newSpeed = 50
-    setSpeed(newSpeed)
+    // TODO: upgrades need to refresh when purchased
+    getUpgrades().then((u) => {
+      setUpgrades(u.map((t) => t.replace('.txt', '')))
+    })
   }, [])
 
+  useEffect(() => {
+    let newSpeed = 200
+    if (upgrades.includes('delete-speed-1')) newSpeed = 150
+    if (upgrades.includes('delete-speed-2')) newSpeed = 100
+    if (upgrades.includes('delete-speed-3')) newSpeed = 50
+    setSpeed(newSpeed)
+  }, [upgrades])
+
   try {
-    if (isFolder.current) {
-      children = directories.map((item) => (
+    // TODO: make async
+    if (fs.statSync(window.path).isDirectory()) {
+      children = content.map((item) => (
         <Icon
           key={`item-${item.name}`}
           item={item}
           addWindow={addWindow}
           onClick={() => {
-            if (selected.length > 0 && !canSelectMultiple.current) return
+            if (selected.length > 0 && !upgrades.includes('select-multiple'))
+              return
 
-            setSelected((selected) => [...selected, item.name])
+            setSelected((selected) => uniq([...selected, item.name]))
           }}
           selected={selected.includes(item.name)}
         />
@@ -68,18 +72,14 @@ export const PathWindow = ({
   }
 
   useEffect(() => {
-    try {
-      isFolder.current = fs.statSync(window.path).isDirectory()
-      isFolder.current
-        ? setDirectories(getDirectories({ path: window.path }))
-        : setContent(fs.readFileSync(window.path).toString())
-    } catch (e) {}
-    if (isActive && canSelectBox.current) {
+    getContentForPath({ path: window.path }).then(setContent)
+
+    if (isActive && upgrades.includes('select-box')) {
       // TODO: make select box visible
       selectionRef.current = new Selection({
         class: 'selection',
-        selectables: ['.window .icon-item'],
-        boundaries: ['.window'],
+        selectables: ['.drag-window .icon-item'],
+        boundaries: ['.drag-window'],
       })
       selectionRef.current.on('start', (evt) => {
         isSelectingRef.current = true
@@ -95,11 +95,10 @@ export const PathWindow = ({
     } else {
       selectionRef.current && selectionRef.current.destroy()
     }
-  }, [window.path, value, isActive])
+  }, [window.path, upgrades, value, isActive])
 
   const showDeleteProgress = (_files) => {
     const files = _files.map((file) => `${window.path}/${file}`)
-    console.log(speed)
     addWindow({
       type: 'progress-prompt',
       image: deleteFilePng,
@@ -112,9 +111,11 @@ export const PathWindow = ({
             setValue(Date.now())
           },
           () => {
-            const stats = files.map((path) => fs.statSync(path))
-            const canDeleteFolder = getUpgrade('delete-folders')
-            if (stats.some((stat) => stat.isDirectory()) && !canDeleteFolder) {
+            // TODO: make async
+            const anyDirectory = files.some((path) =>
+              fs.statSync(path).isDirectory(),
+            )
+            if (anyDirectory && !upgrades.includes('delete-folders')) {
               addWindow({
                 type: 'prompt',
                 image: errorPng,
@@ -158,7 +159,7 @@ export const PathWindow = ({
   useHotkeys(
     'backspace,delete',
     () => {
-      if (!isActive) return
+      if (!isActive || selected.length === 0) return
       showConfirmDeletePrompt(selected)
       setSelected([])
     },
@@ -184,6 +185,7 @@ export const PathWindow = ({
           setSelected([])
         onActive(window)
       }}
+      isActive={isActive}
       onMinimize={() => onMinimize(window)}
       onClose={() => removeWindow(window.index)}
       zIndex={zIndex}
@@ -203,6 +205,7 @@ const Window = ({
   onClose,
   onClick,
   onMinimize,
+  isActive,
   onMaximize,
   children,
 }) => {
@@ -240,7 +243,7 @@ const Window = ({
           }}
         >
           <div
-            className="window"
+            className={`window ${isActive ? 'drag-window' : ''}`}
             style={{
               width: '100%',
               height: '100%',

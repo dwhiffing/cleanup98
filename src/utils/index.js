@@ -1,4 +1,4 @@
-import { fs, rmdir } from './files.js'
+import { promiseFs, rmdir } from './files.js'
 
 export const deletePaths = (paths, onComplete, validate = () => true) => {
   try {
@@ -14,10 +14,10 @@ export const deletePaths = (paths, onComplete, validate = () => true) => {
   }
 }
 
-export const getUpgrade = (key) => {
-  let result
+export const getUpgrades = async () => {
+  let result = { then: () => [] }
   try {
-    result = fs.readFileSync(`/C:/Program Files/${key}.txt`)
+    result = promiseFs.readdirAsync(`/C:/Program Files`)
   } catch (e) {}
   return result
 }

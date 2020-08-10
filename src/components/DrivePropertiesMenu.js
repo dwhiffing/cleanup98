@@ -8,6 +8,7 @@ export const DrivePropertiesMenu = ({ onClose, onClick }) => {
   const nodeRef = React.useRef(null)
   const width = 400
   const height = 200
+  // TODO: refactor
   return (
     <Draggable
       nodeRef={nodeRef}

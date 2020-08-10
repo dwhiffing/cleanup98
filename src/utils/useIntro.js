@@ -3,8 +3,8 @@ import errorPng from '../assets/error.png'
 import trashFullPng from '../assets/trash-full.png'
 export const useIntro = ({ addWindow, onComplete, skip }) => {
   useEffect(() => {
-    if (skip) {
-      onComplete()
+    if (skip || localStorage.getItem('seen-intro')) {
+      onComplete && onComplete()
       return
     }
     addWindow({
@@ -35,7 +35,8 @@ export const useIntro = ({ addWindow, onComplete, skip }) => {
                     {
                       text: 'OK',
                       onClick: () => {
-                        onComplete()
+                        localStorage.setItem('seen-intro', 'true')
+                        onComplete && onComplete()
                         return true
                       },
                     },

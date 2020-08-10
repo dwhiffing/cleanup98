@@ -1,23 +1,24 @@
 import React, { useState, useEffect } from 'react'
 import Draggable from 'react-draggable'
-import { fs } from '../utils/files'
+import { addFile } from '../utils/files'
 import errorPng from '../assets/error.png'
 import { useStorageDetails } from '../utils/useStorageDetails'
+import { getUpgrades } from '../utils'
 
 export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
-  const { freeSpace, updateFiles } = useStorageDetails()
+  const { freeSpace } = useStorageDetails()
   const [selected, setSelected] = useState(null)
   const [purchased, setPurchased] = useState(null)
   const nodeRef = React.useRef(null)
   const width = 400
   const height = 400
+  // TODO: prompt on success
+  // TODO: refactor
 
   useEffect(() => {
-    try {
-      fs.readdir('/C:/Program Files', (e, rv) => {
-        setPurchased(rv)
-      })
-    } catch (e) {}
+    getUpgrades().then((u) => {
+      setPurchased(u.map((t) => t.replace('.txt', '')))
+    })
   }, [])
 
   return (
@@ -86,7 +87,7 @@ export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
                 <button
                   style={{ marginTop: 20 }}
                   onClick={() => {
-                    if (purchased.includes(`${selected.key}.txt`)) {
+                    if (purchased.includes(selected.key)) {
                       addWindow({
                         type: 'prompt',
                         image: errorPng,
@@ -106,12 +107,11 @@ export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
                     }
 
                     try {
-                      fs.writeFileSync(
+                      addFile(
                         `/C:/Program Files/${selected.key}.txt`,
                         new Array(selected.cost + 1).join('a'),
                       )
-                      setPurchased([...purchased, `${selected.key}.txt`])
-                      updateFiles()
+                      setPurchased([...purchased, selected.key])
                     } catch (e) {}
                   }}
                 >
@@ -133,7 +133,7 @@ export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
     </Draggable>
   )
 }
-
+// TODO: move to constants
 const upgrades = [
   {
     key: 'delete-speed-1',

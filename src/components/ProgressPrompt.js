@@ -14,7 +14,7 @@ export const ProgressPrompt = ({
   useEffect(() => {
     let timeout = setTimeout(() => {
       if (progress >= 10) {
-        setTimeout(onComplete, 2000)
+        onComplete && onComplete()
         onClose()
       } else {
         setProgress((p) => p + 1)
