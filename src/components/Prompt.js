@@ -12,7 +12,6 @@ export const Prompt = ({
   height = 122,
   buttons = [{ text: 'OK', onClick: () => true }],
 }) => {
-  // TODO: refactor
   const nodeRef = React.useRef(null)
   return (
     <Draggable
@@ -24,14 +23,7 @@ export const Prompt = ({
       }}
       handle=".title-bar"
     >
-      <div
-        ref={nodeRef}
-        onClick={onClick}
-        style={{
-          zIndex: 90,
-          position: 'absolute',
-        }}
-      >
+      <div ref={nodeRef} onClick={onClick} className="prompt-wrap">
         <div className="window" style={{ width, height }}>
           <div className="title-bar">
             <div className="title-bar-text">{title}</div>
@@ -41,38 +33,17 @@ export const Prompt = ({
               )}
             </div>
           </div>
-          <div
-            className="window-body"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
-            <div
-              style={{
-                display: 'flex',
-                padding: '10px 0 10px',
-                textAlign: 'center',
-                lineHeight: 1.4,
-              }}
-            >
-              <img
-                src={image}
-                alt="logo"
-                style={{ marginLeft: 10, marginRight: 20 }}
-              />
+          <div className="window-body">
+            <div className="flex text-center py-2" style={{ lineHeight: 1.4 }}>
+              <img src={image} alt="logo" className="ml-2 mr-4" />
               {label}
             </div>
 
-            <div style={{ display: 'flex' }}>
+            <div className="flex">
               {buttons.map(({ onClick, text }) => (
                 <button
                   key={`button-${text}`}
-                  onClick={() => {
-                    const shouldClose = onClick()
-                    if (shouldClose) onClose()
-                  }}
+                  onClick={() => onClick() && onClose()}
                 >
                   {text}
                 </button>

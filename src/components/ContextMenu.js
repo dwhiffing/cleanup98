@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 
 const ContextMenu = ({ openProperties }) => {
-  const [contextMenu, setContextMenu] = useState(false)
+  const [state, setState] = useState(false)
 
   useEffect(() => {
     document.addEventListener(
@@ -10,23 +10,16 @@ const ContextMenu = ({ openProperties }) => {
         e.preventDefault()
 
         const listener = document.addEventListener('click', () => {
-          setTimeout(() => {
-            setContextMenu({ visible: false })
-          }, 100)
+          setTimeout(() => setState({ visible: false }), 100)
           document.removeEventListener('click', listener)
         })
 
         if (e.target.classList.contains('drive')) {
-          setContextMenu({
+          setState({
             visible: true,
             x: e.screenX,
             y: e.screenY - 130,
-            buttons: [
-              {
-                text: 'Properties',
-                onClick: openProperties,
-              },
-            ],
+            buttons: [{ text: 'Properties', onClick: openProperties }],
           })
         }
       },
@@ -36,17 +29,10 @@ const ContextMenu = ({ openProperties }) => {
 
   return (
     <div>
-      {contextMenu.visible && (
-        <div
-          style={{
-            position: 'absolute',
-            left: contextMenu.x,
-            top: contextMenu.y,
-            zIndex: 99,
-          }}
-        >
+      {state.visible && (
+        <div className="absolute z-50" style={{ left: state.x, top: state.y }}>
           <div className="window" style={{ width: 80, height: 200 }}>
-            {contextMenu.buttons.map((b) => (
+            {state.buttons.map((b) => (
               <button key={`button-${b.text}`} onClick={b.onClick}>
                 {b.text}
               </button>

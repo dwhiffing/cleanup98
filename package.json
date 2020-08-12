@@ -11,17 +11,24 @@
     "@testing-library/user-event": "^7.2.1",
     "bluebird": "^3.7.2",
     "browserfs": "^1.4.3",
+    "chokidar-cli": "^2.1.0",
     "faker": "^4.1.0",
     "fs-web": "^1.0.1",
+    "npm-run-all": "^4.1.5",
     "re-resizable": "^6.5.4",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-draggable": "^4.4.3",
     "react-hotkeys-hook": "^2.2.2",
-    "react-scripts": "3.4.1"
+    "react-scripts": "3.4.1",
+    "tailwindcss": "^1.6.2"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "build:tailwind": "tailwind build src/index.css -o src/tailwind.output.css",
+    "watch:tailwind": "chokidar 'src/**/*.css' 'src/**/*.scss' --ignore src/tailwind.output.css -c 'npm run build:tailwind'",
+    "start": "npm-run-all build:tailwind --parallel watch:tailwind start:react",
+    "start:react": "react-scripts start",
+    "prebuild": "run-s build:tailwind",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -40,5 +47,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "autoprefixer": "^9.8.6",
+    "postcss-cli": "^7.1.1"
   }
 }

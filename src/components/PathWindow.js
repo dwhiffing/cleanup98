@@ -7,8 +7,8 @@ import { Icon } from './Icon'
 import deleteFilePng from '../assets/delete-file.png'
 import Selection from '@simonwep/selection-js'
 import { deletePaths, getUpgrades } from '../utils'
-import errorPng from '../assets/error.png'
 import uniq from 'lodash/uniq'
+import { PERMISSIONS_ERROR } from '../constants/index.js'
 
 export const PathWindow = ({
   window,
@@ -22,7 +22,8 @@ export const PathWindow = ({
 }) => {
   const [upgrades, setUpgrades] = useState([])
   let selectionRef = useRef()
-  let isSelectingRef = useRef()
+  let coordsRef = useRef({ x: zIndex * 20, y: zIndex * 20 })
+  let selectingRef = useRef()
   let children
   const [value, setValue] = useState(0)
   const [selected, setSelected] = useState([])
@@ -55,8 +56,9 @@ export const PathWindow = ({
           item={item}
           addWindow={addWindow}
           onClick={() => {
-            if (selected.length > 0 && !upgrades.includes('select-multiple'))
-              return
+            if (selected.length > 0 && !upgrades.includes('select-multiple')) {
+              return setSelected(() => [item.name])
+            }
 
             setSelected((selected) => uniq([...selected, item.name]))
           }}
@@ -73,23 +75,27 @@ export const PathWindow = ({
 
   useEffect(() => {
     getContentForPath({ path: window.path }).then(setContent)
-
     if (isActive && upgrades.includes('select-box')) {
       // TODO: make select box visible
       selectionRef.current = new Selection({
         class: 'selection',
+        mode: 'center',
+        selectionAreaContainer: '.drag-window',
         selectables: ['.drag-window .icon-item'],
         boundaries: ['.drag-window'],
+        startareas: ['.drag-window'],
       })
       selectionRef.current.on('start', (evt) => {
-        isSelectingRef.current = true
+        selectingRef.current = true
       })
-      selectionRef.current.on('move', (evt) => {
-        setSelected(evt.selected.map((c) => c.textContent.split('\n')[0]))
+      selectionRef.current.on('move', ({ selected, area }) => {
+        area.style.marginLeft = `-${coordsRef.current.x}px`
+        area.style.marginTop = `-${coordsRef.current.y}px`
+        setSelected(selected.map((c) => c.innerText.split('\n')[0]))
       })
       selectionRef.current.on('stop', (evt) => {
         setTimeout(() => {
-          isSelectingRef.current = false
+          selectingRef.current = false
         }, 100)
       })
     } else {
@@ -116,12 +122,7 @@ export const PathWindow = ({
               fs.statSync(path).isDirectory(),
             )
             if (anyDirectory && !upgrades.includes('delete-folders')) {
-              addWindow({
-                type: 'prompt',
-                image: errorPng,
-                title: 'Administrator',
-                label: "You don't have permission to delete this folder.",
-              })
+              addWindow(PERMISSIONS_ERROR)
               return false
             }
             return true
@@ -177,11 +178,8 @@ export const PathWindow = ({
     <Window
       key={`window-${window.index}`}
       onMaximize={() => onMaximize(window)}
-      onClick={(e) => {
-        if (
-          !isSelectingRef.current &&
-          (!e.target.classList.contains('icon-button') || selected.length > 0)
-        )
+      onClick={({ target }) => {
+        if (!selectingRef.current && !target.classList.contains('icon-button'))
           setSelected([])
         onActive(window)
       }}
@@ -189,6 +187,7 @@ export const PathWindow = ({
       onMinimize={() => onMinimize(window)}
       onClose={() => removeWindow(window.index)}
       zIndex={zIndex}
+      coordsRef={coordsRef}
       {...window}
     >
       {children}
@@ -208,6 +207,7 @@ const Window = ({
   isActive,
   onMaximize,
   children,
+  coordsRef,
 }) => {
   const nodeRef = React.useRef(null)
   return (
@@ -216,17 +216,17 @@ const Window = ({
       disabled={maximized}
       position={maximized ? { x: 0, y: 0 } : null}
       bounds={{ left: 0, top: 0 }}
+      onDrag={(event, node) => {
+        coordsRef.current = { x: node.x, y: node.y }
+      }}
       defaultPosition={{ x: zIndex * 20, y: zIndex * 20 }}
       handle=".title-bar"
     >
       <div
         ref={nodeRef}
         onClick={onClick}
-        style={{
-          display: minimized ? 'none' : 'block',
-          zIndex: 10 + zIndex,
-          position: 'absolute',
-        }}
+        className="absolute"
+        style={{ display: minimized ? 'none' : 'block', zIndex: 10 + zIndex }}
       >
         <Resizable
           enable={RESIZEABLE_SIDES}
@@ -237,20 +237,9 @@ const Window = ({
           }
           minWidth={640}
           minHeight={400}
-          defaultSize={{
-            width: 640,
-            height: 400,
-          }}
+          defaultSize={{ width: 640, height: 400 }}
         >
-          <div
-            className={`window ${isActive ? 'drag-window' : ''}`}
-            style={{
-              width: '100%',
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-            }}
-          >
+          <div className={`window w-full h-full flex flex-col`}>
             <div className="title-bar">
               <div className="title-bar-text">{title || path}</div>
               <div className="title-bar-controls">
@@ -260,16 +249,9 @@ const Window = ({
               </div>
             </div>
             <div
-              className="window-body-white"
-              style={{
-                flex: 1,
-                display: 'flex',
-                flexWrap: 'wrap',
-                overflow: 'auto',
-                alignContent: 'flex-start',
-                alignItems: 'flex-start',
-                justifyContent: 'flex-start',
-              }}
+              className={`${
+                isActive ? 'drag-window' : ''
+              } window-body-white flex flex-1 flex-wrap overflow-auto content-start items-start justify-start`}
             >
               {children}
             </div>

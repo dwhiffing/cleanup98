@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 body {
   background-color: teal;
   overflow: hidden;
@@ -26,6 +30,7 @@ body {
   align-items: center;
   flex-direction: column;
   user-select: none;
+  text-align: center;
 }
 
 .icon-button p {
@@ -103,6 +108,57 @@ button.active {
 }
 
 .selection {
-  background-color: blue;
+  border-style: dotted;
+  border-color: #888;
+  border-width: 1px;
   z-index: 100;
+  /* margin-left: -20px !important;
+  margin-top: -20px !important; */
+}
+
+.icon-item {
+  margin: 10px;
+}
+
+.icon-item.selected p.filename {
+  background-color: rgb(0, 21, 163);
+  padding: 0 5px;
+}
+
+.icon-item.selected .tint {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  top: 0;
+}
+
+.icon-item.selected .tint:before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(0, 255, 255, 0.5);
+  transition: all 0.3s linear;
+  background-color: rgb(0, 21, 163, 0.5);
+}
+
+.window-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.prompt-wrap {
+  z-index: 90;
+  position: absolute;
+}
+
+.row {
+  display: flex;
+  flex: 1;
+  width: 100%;
+  justify-content: space-between;
 }

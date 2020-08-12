@@ -1,6 +1,5 @@
 import React, { useEffect, useCallback, useState } from 'react'
 import { TaskBar } from './components/TaskBar'
-import trashFullPng from './assets/trash-full.png'
 import { Windows } from './components/Windows'
 import ContextMenu from './components/ContextMenu'
 import { Desktop } from './components/Desktop'
@@ -8,8 +7,9 @@ import useWindowState from './utils/useWindowState'
 import { useIntro } from './utils/useIntro'
 import { useClockSettingsPrompt } from './utils/useClockSettingsPrompt'
 import { useStorageDetails } from './utils/useStorageDetails'
-import './index.css'
+import './tailwind.output.css'
 import '98.css'
+import { WIN_PROMPT } from './constants'
 
 function App() {
   const [showDesktop, setShowDesktop] = useState(false)
@@ -28,17 +28,8 @@ function App() {
     onComplete: () => setShowDesktop(true),
   })
 
-  // TODO: make constants for various prompts/windows?
-
   useEffect(() => {
-    if (usedSpace < 0.01) {
-      addWindow({
-        type: 'prompt',
-        image: trashFullPng,
-        title: 'Success',
-        label: 'You win!',
-      })
-    }
+    if (usedSpace < 0.01) addWindow(WIN_PROMPT)
   }, [addWindow, usedSpace])
 
   return (

@@ -1,19 +1,11 @@
 import React, { useState, useEffect } from 'react'
 import windowsPng from '../assets/windows-4.png'
+import { ADD_PROGRAMS_MENU, DRIVE_PROPERTIES_MENU } from '../constants'
 
 export const TaskBar = ({ windows, addWindow, onMinimize }) => {
   return (
     <div>
-      <div
-        className="window"
-        style={{
-          position: 'absolute',
-          bottom: 0,
-          left: 0,
-          right: 0,
-          display: 'flex',
-        }}
-      >
+      <div className="absolute flex window bottom-0 left-0 right-0">
         <StartButton addWindow={addWindow} />
 
         {windows
@@ -55,14 +47,7 @@ export const StartButton = ({ addWindow }) => {
   return (
     <>
       {startMenu.visible && (
-        <div
-          style={{
-            position: 'absolute',
-            left: 3,
-            top: -125,
-            zIndex: 99,
-          }}
-        >
+        <div className="absolute z-50" style={{ left: 3, top: -125 }}>
           <div className="window" style={{ width: 120, height: 120 }}>
             {startMenu.buttons.map((b) => (
               <button key={`button-${b.text}`} onClick={b.onClick}>
@@ -80,17 +65,17 @@ export const StartButton = ({ addWindow }) => {
             buttons: [
               {
                 text: 'Add programs',
-                onClick: () => addWindow({ type: 'add-programs' }),
+                onClick: () => addWindow(ADD_PROGRAMS_MENU),
               },
               {
                 text: 'Disk Properties',
-                onClick: () => addWindow({ type: 'drive-properties' }),
+                onClick: () => addWindow(DRIVE_PROPERTIES_MENU),
               },
             ],
           })
         }}
       >
-        <img alt="Start" src={windowsPng} style={{ pointerEvents: 'none' }} />
+        <img alt="Start" className="pointer-events-none" src={windowsPng} />
         Start
       </button>
     </>

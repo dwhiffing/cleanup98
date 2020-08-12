@@ -1,9 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import Draggable from 'react-draggable'
 import { addFile } from '../utils/files'
-import errorPng from '../assets/error.png'
 import { useStorageDetails } from '../utils/useStorageDetails'
 import { getUpgrades } from '../utils'
+import {
+  ALREADY_INSTALLED_ERROR,
+  NOT_ENOUGH_SPACE_ERROR,
+  UPGRADES,
+} from '../constants'
 
 export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
   const { freeSpace } = useStorageDetails()
@@ -21,6 +25,25 @@ export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
     })
   }, [])
 
+  const buySelected = () => {
+    if (purchased.includes(selected.key)) {
+      addWindow(ALREADY_INSTALLED_ERROR)
+      return
+    }
+    if (freeSpace * 1024 < selected.cost) {
+      addWindow(NOT_ENOUGH_SPACE_ERROR)
+      return
+    }
+
+    try {
+      addFile(
+        `/C:/Program Files/${selected.key}.txt`,
+        new Array(selected.cost + 1).join('a'),
+      )
+      setPurchased([...purchased, selected.key])
+    } catch (e) {}
+  }
+
   return (
     <Draggable
       nodeRef={nodeRef}
@@ -31,14 +54,7 @@ export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
       }}
       handle=".title-bar"
     >
-      <div
-        ref={nodeRef}
-        onClick={onClick}
-        style={{
-          zIndex: 90,
-          position: 'absolute',
-        }}
-      >
+      <div ref={nodeRef} onClick={onClick} className="prompt-wrap">
         <div className="window" style={{ width, height }}>
           <div className="title-bar">
             <div className="title-bar-text">Add Programs</div>
@@ -46,31 +62,25 @@ export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
               <button aria-label="Close" onClick={onClose}></button>
             </div>
           </div>
-          <div
-            className="window-body"
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-            }}
-          >
+
+          <div className="window-body">
             <p>Free space: {freeSpace.toFixed(2)}KB</p>
-            <ul className="tree-view" style={{ width: '90%', height: 120 }}>
-              {upgrades.map((upgrade) => (
+
+            <ul className="tree-view w-full" style={{ height: 180 }}>
+              {UPGRADES.map((upgrade) => (
                 <li
                   key={upgrade.key}
                   onClick={() => setSelected(upgrade)}
+                  className="cursor-pointer p-1"
                   style={{
                     background:
                       selected && selected.key === upgrade.key
-                        ? 'blue'
+                        ? 'rgb(0,21,163)'
                         : 'transparent',
                     color:
                       selected && selected.key === upgrade.key
                         ? 'white'
                         : 'black',
-                    padding: 2,
-                    cursor: 'pointer',
                   }}
                 >
                   {upgrade.name}...............
@@ -84,47 +94,13 @@ export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
                 <p>{selected.name}</p>
                 <p>cost: {(selected.cost / 1024).toFixed(2)}KB</p>
                 <p>{selected.description}</p>
-                <button
-                  style={{ marginTop: 20 }}
-                  onClick={() => {
-                    if (purchased.includes(selected.key)) {
-                      addWindow({
-                        type: 'prompt',
-                        image: errorPng,
-                        title: 'Error',
-                        label: 'Already have this upgrade',
-                      })
-                      return
-                    }
-                    if (freeSpace * 1024 < selected.cost) {
-                      addWindow({
-                        type: 'prompt',
-                        image: errorPng,
-                        title: 'Error',
-                        label: "You don't have enough free space",
-                      })
-                      return
-                    }
-
-                    try {
-                      addFile(
-                        `/C:/Program Files/${selected.key}.txt`,
-                        new Array(selected.cost + 1).join('a'),
-                      )
-                      setPurchased([...purchased, selected.key])
-                    } catch (e) {}
-                  }}
-                >
+                <button className="mt-4" onClick={buySelected}>
                   Add
                 </button>
               </div>
             )}
-            <button
-              style={{ marginTop: 20 }}
-              onClick={() => {
-                onClose()
-              }}
-            >
+
+            <button className="mt-4" onClick={onClose}>
               OK
             </button>
           </div>
@@ -133,42 +109,3 @@ export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
     </Draggable>
   )
 }
-// TODO: move to constants
-const upgrades = [
-  {
-    key: 'delete-speed-1',
-    name: 'Delete speed',
-    cost: 10,
-    description: 'Reduce the time it takes to delete a file',
-  },
-  {
-    key: 'delete-speed-2',
-    name: 'Delete speed 2',
-    cost: 100,
-    description: 'Reduce the time it takes to delete a file further',
-  },
-  {
-    key: 'delete-speed-3',
-    name: 'Delete speed 3',
-    cost: 1000,
-    description: 'Reduce the time it takes to delete a file even further',
-  },
-  {
-    key: 'select-multiple',
-    name: 'Select multiple',
-    cost: 100,
-    description: 'Allow selection of multiple files',
-  },
-  {
-    key: 'select-box',
-    name: 'Select box',
-    cost: 100,
-    description: 'Allow selection of multiple files via box',
-  },
-  {
-    key: 'delete-folders',
-    name: 'Delete folders',
-    cost: 100,
-    description: 'Allow deletion of folders',
-  },
-]

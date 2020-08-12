@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import errorPng from '../assets/error.png'
 import trashFullPng from '../assets/trash-full.png'
+
 export const useIntro = ({ addWindow, onComplete, skip }) => {
   useEffect(() => {
     if (skip || localStorage.getItem('seen-intro')) {

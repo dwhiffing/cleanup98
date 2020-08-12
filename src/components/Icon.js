@@ -9,25 +9,19 @@ export const Icon = ({
   onClick,
   onDoubleClick,
 }) => {
+  const { name, size } = item
   return (
     <IconBase
       type="folder"
-      label={`${item.name}\n${
-        item.size && !item.name.match(/My Computer|C:/)
-          ? `${item.size.toFixed(4)}KB`
-          : ''
-      }`}
+      label={name}
+      size={!name.match(/My Computer|C:/) ? `${size.toFixed(4)}KB` : ''}
       image={item.image}
       className={item.name === 'C:' ? 'drive' : ''}
       textColor={textColor}
       selected={selected}
       onClick={onClick}
       onDoubleClick={() => {
-        addWindow({
-          type: 'path',
-          title: item.name,
-          path: item.path,
-        })
+        addWindow({ type: 'path', title: item.name, path: item.path })
         onDoubleClick && onDoubleClick()
       }}
     />
@@ -40,6 +34,7 @@ const IconBase = ({
   onDoubleClick,
   onClick,
   selected,
+  size,
   className = '',
   textColor = 'black',
 }) => {
@@ -49,22 +44,32 @@ const IconBase = ({
 
   return (
     <Draggable nodeRef={nodeRef}>
-      <div
-        className="icon-item"
-        ref={nodeRef}
-        style={{
-          background: selected ? 'blue' : 'transparent',
-          margin: 10,
-          width: 70,
-        }}
-      >
+      <div className={`icon-item ${selected ? 'selected' : ''}`} ref={nodeRef}>
         <div
           onClick={onClick}
           onDoubleClick={onDoubleClick}
           className={`icon-button ${className} `}
         >
           <img alt="icon" src={image} />
-          <p style={{ color: selected ? 'white' : textColor }}>{label}</p>
+          <div className="tint" />
+          <p
+            className="filename"
+            style={{ color: selected ? 'white' : textColor }}
+          >
+            {label}
+            {size && (
+              <span
+                style={{
+                  display: 'block',
+                  color: selected ? 'white' : '#777',
+                  margin: 0,
+                  fontSize: 10,
+                }}
+              >
+                {size}
+              </span>
+            )}
+          </p>
         </div>
       </div>
     </Draggable>
