@@ -5,8 +5,8 @@ let windowId = 0
 export const useWindowState = () => {
   const [windows, setWindows] = useState([])
 
-  const addWindow = useCallback((window, index = windowId++) => {
-    setWindows((windows) => [...windows, { ...window, index }])
+  const addWindow = useCallback((windowData, index = windowId++) => {
+    setWindows((windows) => [...windows, { ...windowData, index }])
     return index
   }, [])
 
@@ -24,11 +24,11 @@ export const useWindowState = () => {
   const onMinimize = (w) => updateWindow(w.index, { minimized: !w.minimized })
   const onMaximize = (w) => updateWindow(w.index, { maximized: !w.maximized })
 
-  const onActive = (window) => {
+  const onActive = (windowData) => {
     setWindows((windows) =>
       [...windows].sort((a, b) => {
-        if (a.index === window.index) return 1
-        if (b.index === window.index) return -1
+        if (a.index === windowData.index) return 1
+        if (b.index === windowData.index) return -1
         return 0
       }),
     )

@@ -1,4 +1,5 @@
 import trashFullPng from '../assets/trash-full.png'
+import deleteFilePng from '../assets/delete-file.png'
 import errorPng from '../assets/error.png'
 
 export const WIN_PROMPT = {
@@ -27,6 +28,19 @@ export const PERMISSIONS_ERROR = {
   image: errorPng,
   title: 'Administrator',
   label: "You don't have permission to delete this folder.",
+}
+
+export const DELETE_PROMPT = {
+  type: 'progress-prompt',
+  title: 'Deleting...',
+  image: deleteFilePng,
+}
+
+export const DELETE_CONFIRM_PROMPT = {
+  type: 'prompt',
+  title: 'Confirm File Delete',
+  label: 'Are you sure you want to send this to the Recycle Bin?',
+  image: deleteFilePng,
 }
 
 export const DRIVE_PROPERTIES_MENU = { type: 'drive-properties' }
@@ -70,3 +84,14 @@ export const UPGRADES = [
     description: 'Allow deletion of folders',
   },
 ]
+
+export const RESIZEABLE_SIDES = {
+  top: false,
+  right: true,
+  bottom: true,
+  left: false,
+  topRight: false,
+  bottomRight: true,
+  bottomLeft: false,
+  topLeft: false,
+}

@@ -101,12 +101,14 @@ export async function getFileSizeForPath(directoryName, result = []) {
   let stat = await promiseFs.statAsync(directoryName)
   let files
 
-  if (stat.isDirectory()) {
-    files = await promiseFs.readdirAsync(directoryName)
-  } else {
-    result.push(stat.size)
-    files = []
-  }
+  try {
+    if (stat.isDirectory()) {
+      files = await promiseFs.readdirAsync(directoryName)
+    } else {
+      result.push(stat.size)
+      files = []
+    }
+  } catch (e) {}
 
   for (let f of files) {
     let fullPath = path.join(directoryName, f)

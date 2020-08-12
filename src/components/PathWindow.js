@@ -1,17 +1,18 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
+import { useHotkeys } from 'react-hotkeys-hook'
+import uniq from 'lodash/uniq'
 import Draggable from 'react-draggable'
 import { Resizable } from 're-resizable'
-import { useHotkeys } from 'react-hotkeys-hook'
-import { fs, getContentForPath } from '../utils/files.js'
 import { Icon } from './Icon'
-import deleteFilePng from '../assets/delete-file.png'
-import Selection from '@simonwep/selection-js'
-import { deletePaths, getUpgrades } from '../utils'
-import uniq from 'lodash/uniq'
-import { PERMISSIONS_ERROR } from '../constants/index.js'
+import Window from './Window'
+import { getUpgrades } from '../utils'
+import { fs, getContentForPath } from '../utils/files'
+import { useSelectBox } from '../utils/useSelectBox'
+import { showDeletePrompt } from '../utils/showDeletePrompt'
+import { RESIZEABLE_SIDES } from '../constants/index'
 
 export const PathWindow = ({
-  window,
+  windowData,
   zIndex,
   addWindow,
   removeWindow,
@@ -20,255 +21,110 @@ export const PathWindow = ({
   onActive,
   isActive,
 }) => {
+  const nodeRef = React.useRef(null)
   const [upgrades, setUpgrades] = useState([])
-  let selectionRef = useRef()
-  let coordsRef = useRef({ x: zIndex * 20, y: zIndex * 20 })
-  let selectingRef = useRef()
-  let children
-  const [value, setValue] = useState(0)
-  const [selected, setSelected] = useState([])
   const [content, setContent] = useState([])
-  const [speed, setSpeed] = useState(0)
-
-  // TODO: refactor
-
-  useEffect(() => {
-    // TODO: upgrades need to refresh when purchased
-    getUpgrades().then((u) => {
-      setUpgrades(u.map((t) => t.replace('.txt', '')))
-    })
-  }, [])
+  const [value, setValue] = useState(0)
+  // TODO: refactor coordsRef, selectingRef, cleanup effects properly
+  const [selected, setSelected, coordsRef, selectingRef] = useSelectBox({
+    start: { x: zIndex * 20, y: zIndex * 20 },
+    disabled: !isActive || !upgrades.includes('select-box'),
+  })
 
   useEffect(() => {
-    let newSpeed = 200
-    if (upgrades.includes('delete-speed-1')) newSpeed = 150
-    if (upgrades.includes('delete-speed-2')) newSpeed = 100
-    if (upgrades.includes('delete-speed-3')) newSpeed = 50
-    setSpeed(newSpeed)
-  }, [upgrades])
-
-  try {
-    // TODO: make async
-    if (fs.statSync(window.path).isDirectory()) {
-      children = content.map((item) => (
-        <Icon
-          key={`item-${item.name}`}
-          item={item}
-          addWindow={addWindow}
-          onClick={() => {
-            if (selected.length > 0 && !upgrades.includes('select-multiple')) {
-              return setSelected(() => [item.name])
-            }
-
-            setSelected((selected) => uniq([...selected, item.name]))
-          }}
-          selected={selected.includes(item.name)}
-        />
-      ))
-    } else {
-      children = <p key={`content-${window.path}`}>{content}</p>
-    }
-  } catch (e) {
-    console.log(e)
-    removeWindow(window.index)
-  }
-
-  useEffect(() => {
-    getContentForPath({ path: window.path }).then(setContent)
-    if (isActive && upgrades.includes('select-box')) {
-      // TODO: make select box visible
-      selectionRef.current = new Selection({
-        class: 'selection',
-        mode: 'center',
-        selectionAreaContainer: '.drag-window',
-        selectables: ['.drag-window .icon-item'],
-        boundaries: ['.drag-window'],
-        startareas: ['.drag-window'],
-      })
-      selectionRef.current.on('start', (evt) => {
-        selectingRef.current = true
-      })
-      selectionRef.current.on('move', ({ selected, area }) => {
-        area.style.marginLeft = `-${coordsRef.current.x}px`
-        area.style.marginTop = `-${coordsRef.current.y}px`
-        setSelected(selected.map((c) => c.innerText.split('\n')[0]))
-      })
-      selectionRef.current.on('stop', (evt) => {
-        setTimeout(() => {
-          selectingRef.current = false
-        }, 100)
-      })
-    } else {
-      selectionRef.current && selectionRef.current.destroy()
-    }
-  }, [window.path, upgrades, value, isActive])
-
-  const showDeleteProgress = (_files) => {
-    const files = _files.map((file) => `${window.path}/${file}`)
-    addWindow({
-      type: 'progress-prompt',
-      image: deleteFilePng,
-      speed,
-      title: 'Deleting...',
-      onComplete: () => {
-        deletePaths(
-          files,
-          () => {
-            setValue(Date.now())
-          },
-          () => {
-            // TODO: make async
-            const anyDirectory = files.some((path) =>
-              fs.statSync(path).isDirectory(),
-            )
-            if (anyDirectory && !upgrades.includes('delete-folders')) {
-              addWindow(PERMISSIONS_ERROR)
-              return false
-            }
-            return true
-          },
-        )
-        setValue(Date.now())
-      },
-    })
-  }
-
-  const showConfirmDeletePrompt = (files) => {
-    addWindow({
-      type: 'prompt',
-      title: 'Confirm File Delete',
-      image: deleteFilePng,
-      buttons: [
-        {
-          text: 'Yes',
-          onClick: () => {
-            showDeleteProgress(files)
-            return true
-          },
-        },
-        {
-          text: 'No',
-          onClick: () => {
-            return true
-          },
-        },
-      ],
-      label: 'Are you sure you want to send this to the Recycle Bin?',
-    })
-  }
+    if (!isActive) setSelected([])
+    getContentForPath({ path: windowData.path }).then(setContent)
+    getUpgrades().then((u) => setUpgrades(u.map((t) => t.replace('.txt', ''))))
+  }, [windowData.path, value, isActive, setSelected])
 
   useHotkeys(
     'backspace,delete',
     () => {
       if (!isActive || selected.length === 0) return
-      showConfirmDeletePrompt(selected)
+      const files = selected.map((file) => `${windowData.path}/${file}`)
+      const onDelete = () => setValue((v) => v + 1)
       setSelected([])
+      showDeletePrompt({ files, upgrades, addWindow, onDelete })
     },
     {},
     [selected, isActive],
   )
 
-  useEffect(() => {
-    if (!isActive) {
+  const onClickWindow = ({ target }) => {
+    if (!selectingRef.current && !target.classList.contains('icon-button'))
       setSelected([])
+    onActive(windowData)
+  }
+
+  const getOnClickIcon = (item) => () => {
+    if (selected.length > 0 && !upgrades.includes('select-multiple')) {
+      return setSelected(() => [item.name])
     }
-  }, [isActive])
 
-  return (
-    <Window
-      key={`window-${window.index}`}
-      onMaximize={() => onMaximize(window)}
-      onClick={({ target }) => {
-        if (!selectingRef.current && !target.classList.contains('icon-button'))
-          setSelected([])
-        onActive(window)
-      }}
-      isActive={isActive}
-      onMinimize={() => onMinimize(window)}
-      onClose={() => removeWindow(window.index)}
-      zIndex={zIndex}
-      coordsRef={coordsRef}
-      {...window}
-    >
-      {children}
-    </Window>
-  )
-}
+    setSelected((selected) => uniq([...selected, item.name]))
+  }
 
-const Window = ({
-  title = '',
-  path,
-  maximized,
-  zIndex = 0,
-  minimized,
-  onClose,
-  onClick,
-  onMinimize,
-  isActive,
-  onMaximize,
-  children,
-  coordsRef,
-}) => {
-  const nodeRef = React.useRef(null)
+  let children
+  try {
+    // TODO: make async
+    if (fs.statSync(windowData.path).isDirectory()) {
+      children = content.map((item) => (
+        <Icon
+          key={`item-${item.name}`}
+          item={item}
+          addWindow={addWindow}
+          onClick={getOnClickIcon(item)}
+          selected={selected.includes(item.name)}
+        />
+      ))
+    } else {
+      children = <p key={`content-${windowData.path}`}>{content}</p>
+    }
+  } catch (e) {
+    removeWindow(windowData.index)
+  }
+
   return (
     <Draggable
+      handle=".title-bar"
       nodeRef={nodeRef}
-      disabled={maximized}
-      position={maximized ? { x: 0, y: 0 } : null}
+      disabled={windowData.maximized}
+      position={windowData.maximized ? { x: 0, y: 0 } : null}
       bounds={{ left: 0, top: 0 }}
       onDrag={(event, node) => {
         coordsRef.current = { x: node.x, y: node.y }
       }}
       defaultPosition={{ x: zIndex * 20, y: zIndex * 20 }}
-      handle=".title-bar"
     >
       <div
         ref={nodeRef}
-        onClick={onClick}
         className="absolute"
-        style={{ display: minimized ? 'none' : 'block', zIndex: 10 + zIndex }}
+        onClick={onClickWindow}
+        style={{ display: windowData.minimized ? 'none' : 'block', zIndex }}
       >
         <Resizable
           enable={RESIZEABLE_SIDES}
-          size={
-            maximized
-              ? { width: window.innerWidth - 5, height: window.innerHeight - 5 }
-              : null
-          }
           minWidth={640}
           minHeight={400}
           defaultSize={{ width: 640, height: 400 }}
+          size={
+            windowData.maximized
+              ? { width: window.innerWidth - 5, height: window.innerHeight - 5 }
+              : null
+          }
         >
-          <div className={`window w-full h-full flex flex-col`}>
-            <div className="title-bar">
-              <div className="title-bar-text">{title || path}</div>
-              <div className="title-bar-controls">
-                <button onClick={onMinimize} aria-label="Minimize"></button>
-                <button onClick={onMaximize} aria-label="Maximize"></button>
-                <button onClick={onClose} aria-label="Close"></button>
-              </div>
-            </div>
-            <div
-              className={`${
-                isActive ? 'drag-window' : ''
-              } window-body-white flex flex-1 flex-wrap overflow-auto content-start items-start justify-start`}
-            >
-              {children}
-            </div>
-          </div>
+          <Window
+            key={`window-${windowData.index}`}
+            isActive={isActive}
+            onMinimize={() => onMinimize(windowData)}
+            onMaximize={() => onMaximize(windowData)}
+            onClose={() => removeWindow(windowData.index)}
+            windowData={windowData}
+          >
+            {children}
+          </Window>
         </Resizable>
       </div>
     </Draggable>
   )
-}
-
-const RESIZEABLE_SIDES = {
-  top: false,
-  right: true,
-  bottom: true,
-  left: false,
-  topRight: false,
-  bottomRight: true,
-  bottomLeft: false,
-  topLeft: false,
 }
