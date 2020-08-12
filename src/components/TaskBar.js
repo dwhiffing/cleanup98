@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react'
 import windowsPng from '../assets/windows-4.png'
 import { ADD_PROGRAMS_MENU, DRIVE_PROPERTIES_MENU } from '../constants'
+import { useWindowState } from '../utils/recoil'
 
-export const TaskBar = ({ windows, addWindow, onMinimize }) => {
+export const TaskBar = () => {
+  const [windows, actions] = useWindowState()
   return (
     <div>
       <div className="absolute flex window bottom-0 left-0 right-0">
-        <StartButton addWindow={addWindow} />
+        <StartButton />
 
         {windows
           .concat()
@@ -21,7 +23,7 @@ export const TaskBar = ({ windows, addWindow, onMinimize }) => {
                 // TODO: if window is active, should minimize
                 // if window is minimized, should maximize
                 // if window is inactive, should make active
-                onMinimize(w)
+                actions.onMinimize(w)
               }}
             >
               {w.title}
@@ -32,8 +34,9 @@ export const TaskBar = ({ windows, addWindow, onMinimize }) => {
   )
 }
 
-export const StartButton = ({ addWindow }) => {
+export const StartButton = () => {
   const [startMenu, setStartMenu] = useState({})
+  const [, actions] = useWindowState()
 
   useEffect(() => {
     const listener = document.addEventListener('click', (e) => {
@@ -65,11 +68,11 @@ export const StartButton = ({ addWindow }) => {
             buttons: [
               {
                 text: 'Add programs',
-                onClick: () => addWindow(ADD_PROGRAMS_MENU),
+                onClick: () => actions.addWindow(ADD_PROGRAMS_MENU),
               },
               {
                 text: 'Disk Properties',
-                onClick: () => addWindow(DRIVE_PROPERTIES_MENU),
+                onClick: () => actions.addWindow(DRIVE_PROPERTIES_MENU),
               },
             ],
           })

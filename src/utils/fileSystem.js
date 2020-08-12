@@ -179,7 +179,7 @@ BrowserFS.configure(
     localStorage.setItem('has-fs', 'true')
     await promiseFs.mkdirAsync('/C:')
     await promiseFs.mkdirAsync('/C:/My Documents')
-    await promiseFs.mkdirAsync('/C:/Program fileSystem')
+    await promiseFs.mkdirAsync('/C:/Program Files')
     await promiseFs.mkdirAsync('/C:/Windows')
     randomFs({ path: './C:', depth: 0, number: 10 })
     randomFs({ path: './C:/Windows', depth: 4, number: 30 })

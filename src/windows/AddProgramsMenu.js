@@ -7,9 +7,9 @@ import {
   NOT_ENOUGH_SPACE_ERROR,
   UPGRADES,
 } from '../constants'
-import { useUpgradeState } from '../utils/recoil'
+import { useUpgradeState, useWindowState } from '../utils/recoil'
 
-export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
+export const AddProgramsMenu = ({ onClose, windowData }) => {
   const { freeSpace } = useStorageDetails()
   const [selected, setSelected] = useState(null)
   const nodeRef = React.useRef(null)
@@ -18,14 +18,15 @@ export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
   // TODO: prompt on success
   // TODO: refactor
   const [upgrades, setUpgrades] = useUpgradeState()
+  const [, actions] = useWindowState()
 
   const buySelected = () => {
     if (upgrades.includes(selected.key)) {
-      addWindow(ALREADY_INSTALLED_ERROR)
+      actions.addWindow(ALREADY_INSTALLED_ERROR)
       return
     }
     if (freeSpace * 1024 < selected.cost) {
-      addWindow(NOT_ENOUGH_SPACE_ERROR)
+      actions.addWindow(NOT_ENOUGH_SPACE_ERROR)
       return
     }
 
@@ -48,7 +49,7 @@ export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
       }}
       handle=".title-bar"
     >
-      <div ref={nodeRef} onClick={onClick} className="prompt-wrap">
+      <div ref={nodeRef} onClick={windowData.onClick} className="prompt-wrap">
         <div className="window" style={{ width, height }}>
           <div className="title-bar">
             <div className="title-bar-text">Add Programs</div>

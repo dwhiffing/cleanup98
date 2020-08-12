@@ -4,35 +4,31 @@ import { Prompt } from './Prompt'
 import { DrivePropertiesMenu } from './DrivePropertiesMenu'
 import { AddProgramsMenu } from './AddProgramsMenu'
 import { ProgressPrompt } from './ProgressPrompt'
+import { useWindowState } from '../utils/recoil'
 
-export const Windows = ({ windows, actions }) => {
-  return windows.map((windowData, index) => {
-    const isActive = windowData.index === windows[windows.length - 1].index
+export const Windows = () => {
+  const [windows, actions] = useWindowState()
+  return windows.map((data, index) => {
     const props = {
-      // TODO: fix this duplication
-      ...windowData,
-      ...actions,
-      windowData,
+      windowData: data,
       zIndex: index,
-      isActive,
-      onClose: () => actions.removeWindow(windowData.index),
+      isActive: data.index === windows[windows.length - 1].index,
+      onClose: () => actions.removeWindow(data.index),
     }
-    if (windowData.type === 'path')
-      return <PathWindow key={`window-${windowData.index}`} {...props} />
+    if (data.type === 'path')
+      return <PathWindow key={`window-${data.index}`} {...props} />
 
-    if (windowData.type === 'prompt')
-      return <Prompt key={`window-${windowData.index}`} {...props} />
+    if (data.type === 'prompt')
+      return <Prompt key={`window-${data.index}`} {...props} />
 
-    if (windowData.type === 'progress-prompt')
-      return <ProgressPrompt key={`window-${windowData.index}`} {...props} />
+    if (data.type === 'progress-prompt')
+      return <ProgressPrompt key={`window-${data.index}`} {...props} />
 
-    if (windowData.type === 'drive-properties')
-      return (
-        <DrivePropertiesMenu key={`window-${windowData.index}`} {...props} />
-      )
+    if (data.type === 'drive-properties')
+      return <DrivePropertiesMenu key={`window-${data.index}`} {...props} />
 
-    if (windowData.type === 'add-programs')
-      return <AddProgramsMenu key={`window-${windowData.index}`} {...props} />
+    if (data.type === 'add-programs')
+      return <AddProgramsMenu key={`window-${data.index}`} {...props} />
 
     return null
   })

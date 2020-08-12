@@ -1,17 +1,18 @@
 import React from 'react'
 import Draggable from 'react-draggable'
 
-export const Prompt = ({
-  title = '',
-  label = '',
-  allowClose = true,
-  image,
-  onClose,
-  onClick,
-  width = 400,
-  height = 122,
-  buttons = [{ text: 'OK', onClick: () => true }],
-}) => {
+export const Prompt = ({ windowData, onClose }) => {
+  console.log(windowData)
+  const {
+    title = '',
+    label = '',
+    allowClose = true,
+    image,
+    onClick,
+    width = 400,
+    height = 122,
+    buttons = [{ text: 'OK', onClick: () => true }],
+  } = windowData
   const nodeRef = React.useRef(null)
   return (
     <Draggable

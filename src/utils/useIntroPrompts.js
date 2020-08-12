@@ -1,14 +1,16 @@
 import { useEffect } from 'react'
 import errorPng from '../assets/error.png'
 import trashFullPng from '../assets/trash-full.png'
+import { useWindowState } from './recoil'
 
-export const useIntroPrompts = ({ addWindow, onComplete, skip }) => {
+export const useIntroPrompts = ({ onComplete, skip }) => {
+  const [, actions] = useWindowState()
   useEffect(() => {
     if (skip || localStorage.getItem('seen-intro')) {
       onComplete && onComplete()
       return
     }
-    addWindow({
+    actions.addWindow({
       type: 'prompt',
       image: trashFullPng,
       allowClose: false,
@@ -20,13 +22,13 @@ export const useIntroPrompts = ({ addWindow, onComplete, skip }) => {
         {
           text: 'Disk Cleanup',
           onClick: () => {
-            addWindow({
+            actions.addWindow({
               type: 'progress-prompt',
               title: 'Running Disk Cleanup...',
               image: trashFullPng,
               allowClose: false,
               onComplete: () => {
-                addWindow({
+                actions.addWindow({
                   type: 'prompt',
                   image: errorPng,
                   title: 'Windows has encountered an error',

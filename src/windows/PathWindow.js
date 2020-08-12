@@ -7,24 +7,19 @@ import { Icon } from '../components/Icon'
 import Window from '../components/Window'
 import { fs, getContentForPath } from '../utils/fileSystem'
 import { useSelectBox } from '../utils/useSelectBox'
-import { showDeletePrompt } from '../utils/showDeletePrompt'
+import { useDeletePrompt } from '../utils/useDeletePrompt'
 import { RESIZEABLE_SIDES } from '../constants/index'
-import { useUpgradeState } from '../utils/recoil'
+import { useUpgradeState, useWindowState } from '../utils/recoil'
 
-export const PathWindow = ({
-  windowData,
-  zIndex,
-  addWindow,
-  removeWindow,
-  onMinimize,
-  onMaximize,
-  onActive,
-  isActive,
-}) => {
+export const PathWindow = ({ windowData, zIndex, isActive }) => {
   const nodeRef = React.useRef(null)
   const [upgrades] = useUpgradeState()
+  const [, actions] = useWindowState()
   const [content, setContent] = useState([])
   const [value, setValue] = useState(0)
+  const showDeletePrompt = useDeletePrompt({
+    onDelete: () => setValue((v) => v + 1),
+  })
   // TODO: refactor coordsRef, selectingRef, cleanup effects properly
   const [selected, setSelected, coordsRef, selectingRef] = useSelectBox({
     start: { x: zIndex * 20, y: zIndex * 20 },
@@ -41,9 +36,8 @@ export const PathWindow = ({
     () => {
       if (!isActive || selected.length === 0) return
       const files = selected.map((file) => `${windowData.path}/${file}`)
-      const onDelete = () => setValue((v) => v + 1)
+      showDeletePrompt(files)
       setSelected([])
-      showDeletePrompt({ files, upgrades, addWindow, onDelete })
     },
     {},
     [selected, isActive],
@@ -52,7 +46,7 @@ export const PathWindow = ({
   const onClickWindow = ({ target }) => {
     if (!selectingRef.current && !target.classList.contains('icon-button'))
       setSelected([])
-    onActive(windowData)
+    actions.onActive(windowData)
   }
 
   const getOnClickIcon = (item) => () => {
@@ -71,7 +65,7 @@ export const PathWindow = ({
         <Icon
           key={`item-${item.name}`}
           item={item}
-          addWindow={addWindow}
+          addWindow={actions.addWindow}
           onClick={getOnClickIcon(item)}
           selected={selected.includes(item.name)}
         />
@@ -80,7 +74,7 @@ export const PathWindow = ({
       children = <p key={`content-${windowData.path}`}>{content}</p>
     }
   } catch (e) {
-    removeWindow(windowData.index)
+    actions.removeWindow(windowData.index)
   }
 
   return (
@@ -115,9 +109,9 @@ export const PathWindow = ({
           <Window
             key={`window-${windowData.index}`}
             isActive={isActive}
-            onMinimize={() => onMinimize(windowData)}
-            onMaximize={() => onMaximize(windowData)}
-            onClose={() => removeWindow(windowData.index)}
+            onMinimize={() => actions.onMinimize(windowData)}
+            onMaximize={() => actions.onMaximize(windowData)}
+            onClose={() => actions.removeWindow(windowData.index)}
             windowData={windowData}
           >
             {children}

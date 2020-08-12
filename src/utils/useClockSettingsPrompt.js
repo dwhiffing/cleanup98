@@ -1,13 +1,15 @@
 import { useEffect, useRef } from 'react'
 import timePng from '../assets/time.png'
+import { useWindowState } from './recoil'
 
-export const useClockSettingsPrompt = ({ addWindow }) => {
+export const useClockSettingsPrompt = () => {
+  const [, actions] = useWindowState()
   const clockSettingsRef = useRef()
   useEffect(() => {
     const interval = setInterval(() => {
-      if (clockSettingsRef.current || !addWindow) return
+      if (clockSettingsRef.current) return
       clockSettingsRef.current = true
-      addWindow({
+      actions.addWindow({
         type: 'prompt',
         key: 'clock-settings',
         title: 'New Clock settings',

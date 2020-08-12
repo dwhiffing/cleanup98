@@ -6,12 +6,7 @@ export const Desktop = (props) =>
   props.shouldRender && (
     <div className="absolute">
       {[MY_COMPUTER].map((item) => (
-        <Icon
-          key={`item-${item.name}`}
-          item={item}
-          textColor="white"
-          {...props.actions}
-        />
+        <Icon key={`item-${item.name}`} item={item} textColor="white" />
       ))}
     </div>
   )

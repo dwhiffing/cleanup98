@@ -1,14 +1,9 @@
 import React from 'react'
 import Draggable from 'react-draggable'
+import { useWindowState } from '../utils/recoil'
 
-export const Icon = ({
-  addWindow,
-  item,
-  textColor,
-  selected,
-  onClick,
-  onDoubleClick,
-}) => {
+export const Icon = ({ item, textColor, selected, onClick, onDoubleClick }) => {
+  const [, windowActions] = useWindowState()
   const { name, size } = item
   return (
     <IconBase
@@ -21,7 +16,11 @@ export const Icon = ({
       selected={selected}
       onClick={onClick}
       onDoubleClick={() => {
-        addWindow({ type: 'path', title: item.name, path: item.path })
+        windowActions.addWindow({
+          type: 'path',
+          title: item.name,
+          path: item.path,
+        })
         onDoubleClick && onDoubleClick()
       }}
     />

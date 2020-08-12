@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
+import { useWindowState } from '../utils/recoil'
 
-export const ContextMenu = ({ openProperties }) => {
+export const ContextMenu = () => {
   const [state, setState] = useState(false)
+  const [, actions] = useWindowState()
 
   useEffect(() => {
     document.addEventListener(
@@ -19,13 +21,13 @@ export const ContextMenu = ({ openProperties }) => {
             visible: true,
             x: e.screenX,
             y: e.screenY - 130,
-            buttons: [{ text: 'Properties', onClick: openProperties }],
+            buttons: [{ text: 'Properties', onClick: actions.openProperties }],
           })
         }
       },
       false,
     )
-  }, [openProperties])
+  }, [actions.openProperties])
 
   return (
     <div>

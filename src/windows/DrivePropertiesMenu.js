@@ -2,7 +2,7 @@ import React from 'react'
 import Draggable from 'react-draggable'
 import { useStorageDetails } from '../utils/useStorageDetails'
 
-export const DrivePropertiesMenu = ({ onClose, onClick }) => {
+export const DrivePropertiesMenu = ({ onClose, windowData }) => {
   const { capacity, freeSpace, usedSpace } = useStorageDetails()
   const nodeRef = React.useRef(null)
   const width = 400
@@ -17,7 +17,7 @@ export const DrivePropertiesMenu = ({ onClose, onClick }) => {
       }}
       handle=".title-bar"
     >
-      <div ref={nodeRef} onClick={onClick} className="prompt-wrap">
+      <div ref={nodeRef} onClick={windowData.onClick} className="prompt-wrap">
         <div className="window" style={{ width, height }}>
           <div className="title-bar">
             <div className="title-bar-text">Drive Properties</div>
