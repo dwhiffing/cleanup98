@@ -5,11 +5,12 @@ import Draggable from 'react-draggable'
 import { Resizable } from 're-resizable'
 import { Icon } from './Icon'
 import Window from './Window'
-import { getUpgrades } from '../utils'
 import { fs, getContentForPath } from '../utils/files'
 import { useSelectBox } from '../utils/useSelectBox'
 import { showDeletePrompt } from '../utils/showDeletePrompt'
 import { RESIZEABLE_SIDES } from '../constants/index'
+import { useRecoilState } from 'recoil'
+import { upgradeState } from '../utils/recoil'
 
 export const PathWindow = ({
   windowData,
@@ -22,7 +23,7 @@ export const PathWindow = ({
   isActive,
 }) => {
   const nodeRef = React.useRef(null)
-  const [upgrades, setUpgrades] = useState([])
+  const [upgrades] = useRecoilState(upgradeState)
   const [content, setContent] = useState([])
   const [value, setValue] = useState(0)
   // TODO: refactor coordsRef, selectingRef, cleanup effects properly
@@ -34,7 +35,6 @@ export const PathWindow = ({
   useEffect(() => {
     if (!isActive) setSelected([])
     getContentForPath({ path: windowData.path }).then(setContent)
-    getUpgrades().then((u) => setUpgrades(u.map((t) => t.replace('.txt', ''))))
   }, [windowData.path, value, isActive, setSelected])
 
   useHotkeys(

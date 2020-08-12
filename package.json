@@ -21,6 +21,7 @@
     "react-draggable": "^4.4.3",
     "react-hotkeys-hook": "^2.2.2",
     "react-scripts": "3.4.1",
+    "recoil": "0.0.10",
     "tailwindcss": "^1.6.2"
   },
   "scripts": {

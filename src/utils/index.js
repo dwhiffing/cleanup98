@@ -1,9 +1,9 @@
 import { promiseFs } from './files.js'
 
 export const getUpgrades = async () => {
-  let result = { then: () => [] }
+  let upgrades = []
   try {
-    result = promiseFs.readdirAsync(`/C:/Program Files`)
+    upgrades = await promiseFs.readdirAsync(`/C:/Program Files`)
   } catch (e) {}
-  return result
+  return upgrades.map((t) => t.replace('.txt', ''))
 }

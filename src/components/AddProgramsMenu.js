@@ -1,32 +1,27 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import Draggable from 'react-draggable'
 import { addFile } from '../utils/files'
 import { useStorageDetails } from '../utils/useStorageDetails'
-import { getUpgrades } from '../utils'
 import {
   ALREADY_INSTALLED_ERROR,
   NOT_ENOUGH_SPACE_ERROR,
   UPGRADES,
 } from '../constants'
+import { useRecoilState } from 'recoil'
+import { upgradeState } from '../utils/recoil'
 
 export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
   const { freeSpace } = useStorageDetails()
   const [selected, setSelected] = useState(null)
-  const [purchased, setPurchased] = useState(null)
   const nodeRef = React.useRef(null)
   const width = 400
   const height = 400
   // TODO: prompt on success
   // TODO: refactor
-
-  useEffect(() => {
-    getUpgrades().then((u) => {
-      setPurchased(u.map((t) => t.replace('.txt', '')))
-    })
-  }, [])
+  const [upgrades, setUpgrades] = useRecoilState(upgradeState)
 
   const buySelected = () => {
-    if (purchased.includes(selected.key)) {
+    if (upgrades.includes(selected.key)) {
       addWindow(ALREADY_INSTALLED_ERROR)
       return
     }
@@ -40,7 +35,7 @@ export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
         `/C:/Program Files/${selected.key}.txt`,
         new Array(selected.cost + 1).join('a'),
       )
-      setPurchased([...purchased, selected.key])
+      setUpgrades([...upgrades, selected.key])
     } catch (e) {}
   }
 
