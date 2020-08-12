@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useWindowState } from '../utils/recoil'
+import { useWindowState } from '../recoil'
 
 export const ContextMenu = () => {
   const [state, setState] = useState(false)

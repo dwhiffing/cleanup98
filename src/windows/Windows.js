@@ -4,7 +4,7 @@ import { Prompt } from './Prompt'
 import { DrivePropertiesMenu } from './DrivePropertiesMenu'
 import { AddProgramsMenu } from './AddProgramsMenu'
 import { ProgressPrompt } from './ProgressPrompt'
-import { useWindowState } from '../utils/recoil'
+import { useWindowState } from '../recoil'
 
 export const Windows = () => {
   const [windows, actions] = useWindowState()

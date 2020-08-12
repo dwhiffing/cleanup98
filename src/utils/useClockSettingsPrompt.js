@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import timePng from '../assets/time.png'
-import { useWindowState } from './recoil'
+import { useWindowState } from '../recoil'
 
 export const useClockSettingsPrompt = () => {
   const [, actions] = useWindowState()

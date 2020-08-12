@@ -9,7 +9,7 @@ import { fs, getContentForPath } from '../utils/fileSystem'
 import { useSelectBox } from '../utils/useSelectBox'
 import { useDeletePrompt } from '../utils/useDeletePrompt'
 import { RESIZEABLE_SIDES } from '../constants/index'
-import { useUpgradeState, useWindowState } from '../utils/recoil'
+import { useUpgradeState, useWindowState } from '../recoil'
 
 export const PathWindow = ({ windowData, zIndex, isActive }) => {
   const nodeRef = React.useRef(null)

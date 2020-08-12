@@ -1,6 +1,6 @@
 import { atom, useRecoilState } from 'recoil'
 import { useEffect, useCallback } from 'react'
-import { getUpgrades } from './fileSystem'
+import { getUpgrades } from '../utils/fileSystem'
 
 export const upgradeState = atom({
   key: 'upgradeState',

@@ -4,7 +4,7 @@ import {
   DELETE_CONFIRM_PROMPT,
   DELETE_PROMPT,
 } from '../constants/index.js'
-import { useUpgradeState, useWindowState } from './recoil'
+import { useUpgradeState, useWindowState } from '../recoil'
 
 export const useDeletePrompt = ({ onComplete }) => {
   const [upgrades] = useUpgradeState()

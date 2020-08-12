@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import errorPng from '../assets/error.png'
 import trashFullPng from '../assets/trash-full.png'
-import { useWindowState } from './recoil'
+import { useWindowState } from '../recoil'
 
 export const useIntroPrompts = ({ onComplete, skip }) => {
   const [, actions] = useWindowState()

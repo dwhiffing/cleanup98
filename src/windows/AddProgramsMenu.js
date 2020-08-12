@@ -7,7 +7,7 @@ import {
   NOT_ENOUGH_SPACE_ERROR,
   UPGRADES,
 } from '../constants'
-import { useUpgradeState, useWindowState } from '../utils/recoil'
+import { useUpgradeState, useWindowState } from '../recoil'
 
 export const AddProgramsMenu = ({ onClose, windowData }) => {
   const { freeSpace } = useStorageDetails()
