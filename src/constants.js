@@ -1,6 +1,7 @@
-import trashFullPng from '../assets/trash-full.png'
-import deleteFilePng from '../assets/delete-file.png'
-import errorPng from '../assets/error.png'
+import trashFullPng from './assets/trash-full.png'
+import deleteFilePng from './assets/delete-file.png'
+import errorPng from './assets/error.png'
+import computerPng from './assets/computer.png'
 
 export const WIN_PROMPT = {
   type: 'prompt',
@@ -95,3 +96,13 @@ export const RESIZEABLE_SIDES = {
   bottomLeft: false,
   topLeft: false,
 }
+
+export const DESKTOP_ICONS = [
+  {
+    type: 'folder',
+    name: 'My Computer',
+    image: computerPng,
+    isFolder: true,
+    path: '/',
+  },
+]

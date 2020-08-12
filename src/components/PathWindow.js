@@ -4,14 +4,14 @@ import uniq from 'lodash/uniq'
 import Draggable from 'react-draggable'
 import { Resizable } from 're-resizable'
 import { Icon } from '../components/Icon'
-import Window from '../components/Window'
 import { fs, getContentForPath } from '../utils/fileSystem'
 import { useSelectBox } from '../utils/useSelectBox'
 import { useDeletePrompt } from '../utils/useDeletePrompt'
-import { RESIZEABLE_SIDES } from '../constants/index'
-import { useUpgradeState, useWindowState } from '../recoil'
+import { RESIZEABLE_SIDES } from '../constants'
+import { useWindowState } from '../utils/useWindowState'
+import { useUpgradeState } from '../utils/useUpgradeState'
 
-export const PathWindow = ({ windowData, zIndex, isActive }) => {
+export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
   const nodeRef = React.useRef(null)
   const [upgrades] = useUpgradeState()
   const [, actions] = useWindowState()
@@ -106,16 +106,31 @@ export const PathWindow = ({ windowData, zIndex, isActive }) => {
               : null
           }
         >
-          <Window
-            key={`window-${windowData.index}`}
-            isActive={isActive}
-            onMinimize={() => actions.onMinimize(windowData)}
-            onMaximize={() => actions.onMaximize(windowData)}
-            onClose={() => actions.removeWindow(windowData.index)}
-            windowData={windowData}
-          >
-            {children}
-          </Window>
+          <div className={`window w-full h-full flex flex-col`}>
+            <div className="title-bar">
+              <div className="title-bar-text">
+                {windowData.title || windowData.path || ''}
+              </div>
+              <div className="title-bar-controls">
+                <button
+                  onClick={() => actions.onMinimize(windowData)}
+                  aria-label="Minimize"
+                ></button>
+                <button
+                  onClick={() => actions.onMaximize(windowData)}
+                  aria-label="Maximize"
+                ></button>
+                <button onClick={onClose} aria-label="Close"></button>
+              </div>
+            </div>
+            <div
+              className={`${
+                isActive ? 'drag-window' : ''
+              } window-body-white flex flex-1 flex-wrap overflow-auto content-start items-start justify-start`}
+            >
+              {children}
+            </div>
+          </div>
         </Resizable>
       </div>
     </Draggable>

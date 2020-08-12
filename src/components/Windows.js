@@ -1,10 +1,9 @@
 import React from 'react'
-import { PathWindow } from '../windows/PathWindow'
-import { Prompt } from './Prompt'
+import { PathWindow } from '../components/PathWindow'
 import { DrivePropertiesMenu } from './DrivePropertiesMenu'
 import { AddProgramsMenu } from './AddProgramsMenu'
-import { ProgressPrompt } from './ProgressPrompt'
-import { useWindowState } from '../recoil'
+import { Prompt, ProgressPrompt } from './Prompt'
+import { useWindowState } from '../utils/useWindowState'
 
 export const Windows = () => {
   const [windows, actions] = useWindowState()

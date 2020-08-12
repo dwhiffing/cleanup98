@@ -3,8 +3,9 @@ import {
   PERMISSIONS_ERROR,
   DELETE_CONFIRM_PROMPT,
   DELETE_PROMPT,
-} from '../constants/index.js'
-import { useUpgradeState, useWindowState } from '../recoil'
+} from '../constants.js'
+import { useUpgradeState } from '../utils/useUpgradeState'
+import { useWindowState } from '../utils/useWindowState'
 
 export const useDeletePrompt = ({ onComplete }) => {
   const [upgrades] = useUpgradeState()

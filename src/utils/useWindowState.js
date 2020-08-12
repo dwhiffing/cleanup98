@@ -1,24 +1,10 @@
 import { atom, useRecoilState } from 'recoil'
-import { useEffect, useCallback } from 'react'
-import { getUpgrades } from '../utils/fileSystem'
-
-export const upgradeState = atom({
-  key: 'upgradeState',
-  default: [],
-})
+import { useCallback } from 'react'
 
 export const windowState = atom({
   key: 'windowState',
   default: [],
 })
-
-export const useUpgradeState = () => {
-  const [upgrades, setUpgrades] = useRecoilState(upgradeState)
-  useEffect(() => {
-    getUpgrades().then(setUpgrades)
-  }, [setUpgrades])
-  return [upgrades, setUpgrades]
-}
 
 let windowId = 0
 export const useWindowState = () => {

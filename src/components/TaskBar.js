@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import windowsPng from '../assets/windows-4.png'
 import { ADD_PROGRAMS_MENU, DRIVE_PROPERTIES_MENU } from '../constants'
-import { useWindowState } from '../recoil'
+import { useWindowState } from '../utils/useWindowState'
 
 export const TaskBar = () => {
   const [windows, actions] = useWindowState()

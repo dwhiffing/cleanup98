@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import timePng from '../assets/time.png'
-import { useWindowState } from '../recoil'
+import { useWindowState } from '../utils/useWindowState'
 
 export const useClockSettingsPrompt = () => {
   const [, actions] = useWindowState()
@@ -13,6 +13,8 @@ export const useClockSettingsPrompt = () => {
         type: 'prompt',
         key: 'clock-settings',
         title: 'New Clock settings',
+        label:
+          'Windows has updated your clock settings as a result of Daylight Savings Time. Please verify that your new clock settings are correct.',
         image: timePng,
         buttons: [
           {
@@ -23,8 +25,6 @@ export const useClockSettingsPrompt = () => {
             },
           },
         ],
-        label:
-          'Windows has updated your clock settings as a result of Daylight Savings Time. Please verify that your new clock settings are correct.',
       })
       return () => clearInterval(interval)
     }, 60000)
