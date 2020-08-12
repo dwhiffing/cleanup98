@@ -36,5 +36,3 @@ export const useWindowState = () => {
 
   return { windows, addWindow, removeWindow, onActive, onMinimize, onMaximize }
 }
-
-export default useWindowState

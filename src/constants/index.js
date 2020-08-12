@@ -69,7 +69,7 @@ export const UPGRADES = [
     key: 'select-multiple',
     name: 'Select multiple',
     cost: 100,
-    description: 'Allow selection of multiple files',
+    description: 'Allow selection of multiple fileSystem',
   },
   {
     key: 'select-box',

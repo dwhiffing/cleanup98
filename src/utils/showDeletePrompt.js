@@ -1,4 +1,4 @@
-import { fs, rmdir } from '../utils/files.js'
+import { fs, rmdir } from '../utils/fileSystem'
 import {
   PERMISSIONS_ERROR,
   DELETE_CONFIRM_PROMPT,

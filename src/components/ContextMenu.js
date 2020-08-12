@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 
-const ContextMenu = ({ openProperties }) => {
+export const ContextMenu = ({ openProperties }) => {
   const [state, setState] = useState(false)
 
   useEffect(() => {
@@ -43,5 +43,3 @@ const ContextMenu = ({ openProperties }) => {
     </div>
   )
 }
-
-export default ContextMenu

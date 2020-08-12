@@ -1,14 +1,13 @@
 import React, { useState } from 'react'
 import Draggable from 'react-draggable'
-import { addFile } from '../utils/files'
+import { addFile } from '../utils/fileSystem'
 import { useStorageDetails } from '../utils/useStorageDetails'
 import {
   ALREADY_INSTALLED_ERROR,
   NOT_ENOUGH_SPACE_ERROR,
   UPGRADES,
 } from '../constants'
-import { useRecoilState } from 'recoil'
-import { upgradeState } from '../utils/recoil'
+import { useUpgradeState } from '../utils/recoil'
 
 export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
   const { freeSpace } = useStorageDetails()
@@ -18,7 +17,7 @@ export const AddProgramsMenu = ({ onClose, onClick, addWindow }) => {
   const height = 400
   // TODO: prompt on success
   // TODO: refactor
-  const [upgrades, setUpgrades] = useRecoilState(upgradeState)
+  const [upgrades, setUpgrades] = useUpgradeState()
 
   const buySelected = () => {
     if (upgrades.includes(selected.key)) {

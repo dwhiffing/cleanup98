@@ -7,6 +7,13 @@ import Promise from 'bluebird'
 export const fs = BrowserFS.BFSRequire('fs')
 export const promiseFs = Promise.promisifyAll(fs)
 export const path = BrowserFS.BFSRequire('path')
+export const getUpgrades = async () => {
+  let upgrades = []
+  try {
+    upgrades = await promiseFs.readdirAsync(`/C:/Program Files`)
+  } catch (e) {}
+  return upgrades.map((t) => t.replace('.txt', ''))
+}
 
 export const randomFs = function (config) {
   let promise = config.wipe ? rmdir(config.path) : Promise.resolve()
@@ -172,7 +179,7 @@ BrowserFS.configure(
     localStorage.setItem('has-fs', 'true')
     await promiseFs.mkdirAsync('/C:')
     await promiseFs.mkdirAsync('/C:/My Documents')
-    await promiseFs.mkdirAsync('/C:/Program Files')
+    await promiseFs.mkdirAsync('/C:/Program fileSystem')
     await promiseFs.mkdirAsync('/C:/Windows')
     randomFs({ path: './C:', depth: 0, number: 10 })
     randomFs({ path: './C:/Windows', depth: 4, number: 30 })

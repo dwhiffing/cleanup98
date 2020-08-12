@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { getFileSizeForPath } from './files'
+import { getFileSizeForPath } from './fileSystem'
 
 export const useStorageDetails = () => {
   const [capacity, setCapacity] = useState(100)

@@ -3,14 +3,13 @@ import { useHotkeys } from 'react-hotkeys-hook'
 import uniq from 'lodash/uniq'
 import Draggable from 'react-draggable'
 import { Resizable } from 're-resizable'
-import { Icon } from './Icon'
-import Window from './Window'
-import { fs, getContentForPath } from '../utils/files'
+import { Icon } from '../components/Icon'
+import Window from '../components/Window'
+import { fs, getContentForPath } from '../utils/fileSystem'
 import { useSelectBox } from '../utils/useSelectBox'
 import { showDeletePrompt } from '../utils/showDeletePrompt'
 import { RESIZEABLE_SIDES } from '../constants/index'
-import { useRecoilState } from 'recoil'
-import { upgradeState } from '../utils/recoil'
+import { useUpgradeState } from '../utils/recoil'
 
 export const PathWindow = ({
   windowData,
@@ -23,7 +22,7 @@ export const PathWindow = ({
   isActive,
 }) => {
   const nodeRef = React.useRef(null)
-  const [upgrades] = useRecoilState(upgradeState)
+  const [upgrades] = useUpgradeState()
   const [content, setContent] = useState([])
   const [value, setValue] = useState(0)
   // TODO: refactor coordsRef, selectingRef, cleanup effects properly

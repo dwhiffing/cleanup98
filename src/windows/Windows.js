@@ -1,5 +1,5 @@
 import React from 'react'
-import { PathWindow } from './PathWindow'
+import { PathWindow } from '../windows/PathWindow'
 import { Prompt } from './Prompt'
 import { DrivePropertiesMenu } from './DrivePropertiesMenu'
 import { AddProgramsMenu } from './AddProgramsMenu'
