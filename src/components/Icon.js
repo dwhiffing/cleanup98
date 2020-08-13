@@ -1,5 +1,4 @@
 import React from 'react'
-import Draggable from 'react-draggable'
 import { useWindowState } from '../utils/useWindowState'
 
 export const Icon = ({ item, textColor, selected, onClick, onDoubleClick }) => {
@@ -37,40 +36,34 @@ const IconBase = ({
   className = '',
   textColor = 'black',
 }) => {
-  const nodeRef = React.useRef(null)
-  // TODO: add more file images based on extenion
-  // txt, bat, exe
-
   return (
-    <Draggable nodeRef={nodeRef}>
-      <div className={`icon-item ${selected ? 'selected' : ''}`} ref={nodeRef}>
-        <div
-          onClick={onClick}
-          onDoubleClick={onDoubleClick}
-          className={`icon-button ${className} `}
+    <div className={`icon-item ${selected ? 'selected' : ''}`}>
+      <div
+        onClick={onClick}
+        onDoubleClick={onDoubleClick}
+        className={`icon-button relative ${className} `}
+      >
+        <img alt="icon" src={image} style={{ width: 40 }} />
+        <div className="tint" />
+        <p
+          className="filename"
+          style={{ color: selected ? 'white' : textColor }}
         >
-          <img alt="icon" src={image} />
-          <div className="tint" />
-          <p
-            className="filename"
-            style={{ color: selected ? 'white' : textColor }}
-          >
-            {label}
-            {size && (
-              <span
-                style={{
-                  display: 'block',
-                  color: selected ? 'white' : '#777',
-                  margin: 0,
-                  fontSize: 10,
-                }}
-              >
-                {size}
-              </span>
-            )}
-          </p>
-        </div>
+          {label}
+          {size && (
+            <span
+              style={{
+                display: 'block',
+                color: selected ? 'white' : '#777',
+                margin: 0,
+                fontSize: 10,
+              }}
+            >
+              {size}
+            </span>
+          )}
+        </p>
       </div>
-    </Draggable>
+    </div>
   )
 }

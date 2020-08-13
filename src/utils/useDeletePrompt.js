@@ -52,6 +52,7 @@ export const deleteFiles = (files, onComplete = () => {}) => {
   }
 }
 
+// TODO: delete duration should be based on file size
 export const getDeleteSpeed = (upgrades) => {
   if (upgrades.includes('delete-speed-3')) return 50
   if (upgrades.includes('delete-speed-2')) return 100

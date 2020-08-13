@@ -44,8 +44,11 @@ body {
 
 .window-body-white {
   background: white;
-  padding: 10px 0;
   margin: 1px;
+}
+
+.window-body-white p {
+  margin: 10px;
 }
 
 button.active {
@@ -130,8 +133,8 @@ button.active {
 
 .icon-item.selected .tint {
   position: absolute;
-  width: 50px;
-  height: 50px;
+  width: 40px;
+  height: 40px;
   top: 0;
 }
 
@@ -182,4 +185,9 @@ button.active {
 }
 .start-menu-button:hover > p {
   color: white;
+}
+
+img.crisp {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
 }

@@ -9,7 +9,6 @@ export const Prompt = ({ windowData, onClose }) => {
     allowClose = true,
     image,
     onClick,
-    zIndex = 0,
     width = 400,
     height = 122,
     buttons = [{ text: 'OK', onClick: () => true }],

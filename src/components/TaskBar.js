@@ -7,6 +7,7 @@ import helpPng from '../assets/help.png'
 import arrowPng from '../assets/arrow.png'
 import installPng from '../assets/install.png'
 import drivePng from '../assets/drive.png'
+import trashPng from '../assets/trash-empty.png'
 import programPng from '../assets/programs.png'
 import findPng from '../assets/find.png'
 import settingsPng from '../assets/settings.png'
@@ -71,7 +72,7 @@ export const StartButton = () => {
         },
         upgrades.includes('autodeleter') && {
           text: 'Autodeleter',
-          image: installPng,
+          image: trashPng,
           onClick: () =>
             actions.addWindow({
               type: 'auto-delete-prompt',

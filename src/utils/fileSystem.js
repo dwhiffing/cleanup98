@@ -1,9 +1,17 @@
 import * as BrowserFS from 'browserfs'
-import filePng from '../assets/txt.png'
+import txtPng from '../assets/txt.png'
+import exePng from '../assets/exe.png'
+import bmpPng from '../assets/bmp.png'
+import batPng from '../assets/bat.png'
+import unknownPng from '../assets/unknown.png'
+import iniPng from '../assets/ini.png'
 import folderPng from '../assets/folder.png'
 import drivePng from '../assets/drive.png'
 import faker from 'faker'
 import Promise from 'bluebird'
+import { sample } from 'lodash'
+import imgGen from 'js-image-generator'
+import { Base64 } from 'js-base64'
 
 export const fs = BrowserFS.BFSRequire('fs')
 export const promiseFs = Promise.promisifyAll(fs)
@@ -23,45 +31,29 @@ export const randomFs = function (config) {
     let promises = []
 
     for (let i = 0; i < config.number; i++) {
-      let name
-      let dirPath = []
-      let directories = {}
-      let depth = Math.round(Math.random() * config.depth)
-
-      for (let j = 0; j < depth; j++) {
-        if (directories.hasOwnProperty(`${j}`)) {
-          let ar = directories[`${j}`]
-          let index = Math.ceil(Math.random() * ar.length)
-          if (index === ar.length) {
-            name = randomName(2)
-            ar.push(name)
-          } else {
-            name = ar[index]
-          }
-        } else {
-          name = randomName(2)
-          directories[`${j}`] = [name]
-        }
-        dirPath.push(name)
-      }
-      dirPath = dirPath.join(path.sep)
-
+      const extension = sample(FILE_EXTENSIONS)
       const filepath =
-        path.resolve(process.cwd(), config.path, dirPath, randomName(2)) +
+        path.resolve(process.cwd(), config.path, randomName(2)) +
         '.' +
-        faker.system.fileExt()
-      const content = faker.lorem.paragraph(1)
-
-      promises.push(addFile(filepath, content))
+        extension
+      if (extension === 'bmp') {
+        imgGen.generateImage(100, 100, 80, function (err, content) {
+          const data = Base64.fromUint8Array(content.data)
+          promises.push(addFile(filepath, data, 'utf8'))
+        })
+      } else {
+        const content = faker.lorem.paragraph(1)
+        promises.push(addFile(filepath, content, 'utf8'))
+      }
     }
 
     return Promise.all(promises)
   })
 }
 
-export const addFile = (filepath, content) =>
+export const addFile = (filepath, content, format) =>
   mkdir(path.dirname(filepath)).then(() =>
-    promiseFs.writeFileAsync(filepath, content, 'utf8'),
+    promiseFs.writeFileAsync(filepath, content, format),
   )
 
 export const mkdir = (filepath) =>
@@ -137,7 +129,9 @@ export async function getFileSizeForPath(directoryName, result = []) {
 export async function getContentForPath(_file) {
   const stat = await promiseFs.statAsync(_file.path)
   if (!stat.isDirectory()) {
-    return promiseFs.readFileAsync(_file.path).then((f) => f.toString())
+    return promiseFs.readFileAsync(_file.path).then((f) => {
+      return f.toString()
+    })
   }
 
   return promiseFs
@@ -156,11 +150,16 @@ export async function getContentForPath(_file) {
       files.map((file) => {
         const isFolder = file.stat.isDirectory()
         const isDrive = file.path === '/C:'
+        const extension = file.name.split('.')[1]
         return {
           ...file,
           type: isFolder ? 'folder' : 'file',
           isFolder,
-          image: isDrive ? drivePng : isFolder ? folderPng : filePng,
+          image: isDrive
+            ? drivePng
+            : isFolder
+            ? folderPng
+            : EXTENSION_IMAGES[extension],
         }
       }),
     )
@@ -183,8 +182,60 @@ BrowserFS.configure(
     await promiseFs.mkdirAsync('/C:/My Documents')
     await promiseFs.mkdirAsync('/C:/Program Files')
     await promiseFs.mkdirAsync('/C:/Windows')
-    randomFs({ path: './C:', depth: 0, number: 10 })
-    randomFs({ path: './C:/Windows', depth: 4, number: 30 })
-    randomFs({ path: './C:/My Documents', depth: 0, number: 25 })
+    //TODO
+    // should be able to specify likelyhood of each file
+    // should define a few folder archetypes:
+    // user files (mostly txt, bmp, nested 1 or 2 levels)
+    // program files (mostly dll, cfg, exe nested 3 or 4 levels)
+    // system files (mostly dll, cfg, exe, unknown nested 6 or 8 levels)
+    randomFs({ path: './C:', number: 10 })
+    randomFs({ path: './C:/Windows', number: 30 })
+    randomFs({ path: './C:/Windows/System32', number: 30 })
+    randomFs({ path: './C:/Outlook', number: 30 })
+    randomFs({ path: './C:/Compaq', number: 30 })
+    randomFs({ path: './C:/Acrobat', number: 30 })
+    randomFs({ path: './C:/downloads', number: 100 })
+    randomFs({ path: './C:/My Documents', number: 25 })
   },
 )
+
+const EXTENSION_IMAGES = {
+  exe: exePng,
+  txt: txtPng,
+  dll: batPng,
+  bat: batPng,
+  bmp: bmpPng,
+  ini: iniPng,
+  cfg: unknownPng,
+}
+
+// tiny: 0.1kb
+// small: 1kb
+// medium: 50kb
+// large: 200kb
+// huge: 500kb
+
+// txt files are small and common and need no permissions
+// images files are medium sized and need no permissions but rare
+// exe files are huge but rare and need max permissions
+// cfg/bat/ini/dll files are medium sized but rare and need moderate permissions
+// const FILE_EXTENSIONS = ['txt', 'dll', 'bat', 'exe', 'bmp', 'ini', 'cfg']
+const FILE_EXTENSIONS = [
+  'txt',
+  'txt',
+  'txt',
+  'txt',
+  'txt',
+  'txt',
+  'txt',
+  'txt',
+  'txt',
+  'txt',
+  'txt',
+  'dll',
+  'bat',
+  'exe',
+  'bmp',
+  'ini',
+  'cfg',
+]

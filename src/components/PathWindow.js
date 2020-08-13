@@ -1,19 +1,19 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import uniq from 'lodash/uniq'
 import Draggable from 'react-draggable'
 import { Resizable } from 're-resizable'
 import { Icon } from '../components/Icon'
-import { fs } from '../utils/fileSystem'
 import { useSelectBox } from '../utils/useSelectBox'
 import { useDeletePrompt } from '../utils/useDeletePrompt'
-import { RESIZEABLE_SIDES } from '../constants'
+import { RESIZEABLE_SIDES, ERROR_PROMPT } from '../constants'
 import { useWindowState } from '../utils/useWindowState'
 import { useUpgradeState } from '../utils/useUpgradeState'
 import { useFileState } from '../utils/useFileState'
 
 export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
   const nodeRef = useRef(null)
+  const [children, setChildren] = useState(null)
   const [upgrades] = useUpgradeState()
   const [, actions] = useWindowState()
   const { files: _files, updatePath, removePath } = useFileState()
@@ -23,11 +23,68 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
     disabled: !isActive || !upgrades.includes('select-box'),
   })
 
-  const files = _files[windowData.path] || []
+  const onClickWindow = ({ target }) => {
+    if (!selectingRef.current && !target.classList.contains('icon-button'))
+      setSelected([])
+    actions.onActive(windowData)
+  }
+
+  useEffect(() => {
+    const getOnClickIcon = (item) => () => {
+      if (selected.length > 0 && !upgrades.includes('select-multiple')) {
+        return setSelected(() => [item.name])
+      }
+
+      setSelected((selected) => uniq([...selected, item.name]))
+    }
+
+    let files = _files[windowData.path] || []
+    if (Array.isArray(files)) {
+      setChildren(
+        files
+          .concat()
+          .sort((a, b) => {
+            if (a.isFolder) return -1
+            if (b.isFolder) return 1
+            return 0
+          })
+          .map((item) => (
+            <Icon
+              key={`item-${item.name}`}
+              item={item}
+              addWindow={actions.addWindow}
+              onClick={getOnClickIcon(item)}
+              selected={selected.includes(item.name)}
+            />
+          )),
+      )
+    } else {
+      const extension = windowData.title.split('.')[1]
+      if (extension === 'bmp') {
+        setChildren(
+          <img
+            className="crisp"
+            src={`data:image/jpg;base64,${files}`}
+            style={{ width: '100%' }}
+            alt="random"
+          />,
+        )
+      } else if (extension === 'txt') {
+        setChildren(<p>{files.toString()}</p>)
+      } else {
+        actions.addWindow(ERROR_PROMPT)
+        actions.removeWindow(windowData.index)
+      }
+    }
+    // TODO: fix this
+    // eslint-disable-next-line
+  }, [_files, selected, upgrades])
 
   useEffect(() => {
     if (!isActive) setSelected([])
     if (isActive) updatePath(windowData.path)
+    // TODO: fix this
+    // eslint-disable-next-line
   }, [windowData.path, isActive, setSelected])
 
   useHotkeys(
@@ -48,40 +105,6 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
     {},
     [selected, isActive],
   )
-
-  const onClickWindow = ({ target }) => {
-    if (!selectingRef.current && !target.classList.contains('icon-button'))
-      setSelected([])
-    actions.onActive(windowData)
-  }
-
-  const getOnClickIcon = (item) => () => {
-    if (selected.length > 0 && !upgrades.includes('select-multiple')) {
-      return setSelected(() => [item.name])
-    }
-
-    setSelected((selected) => uniq([...selected, item.name]))
-  }
-
-  let children
-  try {
-    // TODO: make async
-    if (fs.statSync(windowData.path).isDirectory()) {
-      children = files.map((item) => (
-        <Icon
-          key={`item-${item.name}`}
-          item={item}
-          addWindow={actions.addWindow}
-          onClick={getOnClickIcon(item)}
-          selected={selected.includes(item.name)}
-        />
-      ))
-    } else {
-      children = <p key={`files-${windowData.path}`}>{files}</p>
-    }
-  } catch (e) {
-    actions.removeWindow(windowData.index)
-  }
 
   return (
     <Draggable

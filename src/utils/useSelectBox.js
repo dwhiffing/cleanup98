@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import Selection from '@simonwep/selection-js'
 
+//TODO: fix visible box being offset when window is scrollable
 export const useSelectBox = ({
   start = {},
   disabled,

@@ -10,6 +10,13 @@ export const WIN_PROMPT = {
   label: 'You win!',
 }
 
+export const ERROR_PROMPT = {
+  type: 'prompt',
+  image: errorPng,
+  title: 'Error',
+  label: 'Windows has encountered an error.',
+}
+
 export const ALREADY_INSTALLED_ERROR = {
   type: 'prompt',
   image: errorPng,
