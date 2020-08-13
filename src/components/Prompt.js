@@ -75,12 +75,20 @@ export const ProgressPrompt = ({ windowData, onClose }) => {
 
   return (
     <Prompt
+      onClose={onClose}
       windowData={{
+        allowClose: false,
         ...windowData,
-        label: <ProgressBar progress={progress} />,
+        label: (
+          <div className="flex flex-col">
+            <ProgressBar progress={progress} />
+            <p style={{ marginTop: 8 }}>
+              Time remaining: {getDuration(speed * (10 - progress))}
+            </p>
+          </div>
+        ),
         buttons: [],
         image: deleteFilePng,
-        allowClose: false,
       }}
     />
   )
@@ -92,4 +100,32 @@ export const ProgressBar = ({ progress, size = 10 }) => {
       <span style={{ width: `${progress * size}%` }}></span>
     </div>
   )
+}
+
+var getDuration = function (millis) {
+  var dur = {}
+  var units = [
+    { mod: 1000 },
+    { label: 'seconds', mod: 60 },
+    { label: 'minutes', mod: 60 },
+    { label: 'hours', mod: 24 },
+    { label: 'days', mod: 31 },
+  ]
+  units.forEach(function (u) {
+    millis = (millis - (dur[u.label] = millis % u.mod)) / u.mod
+  })
+  return units
+    .reverse()
+    .filter(function (u) {
+      if (!u.label) return false
+      return dur[u.label]
+    })
+    .map(function (u) {
+      return (
+        dur[u.label] +
+        ' ' +
+        (dur[u.label] === 1 ? u.label.slice(0, -1) : u.label)
+      )
+    })
+    .join(', ')
 }

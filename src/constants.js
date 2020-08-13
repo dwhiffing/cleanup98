@@ -42,6 +42,7 @@ export const DELETE_PROMPT = {
   type: 'progress-prompt',
   title: 'Deleting...',
   image: deleteFilePng,
+  allowClose: true,
 }
 
 export const DELETE_CONFIRM_PROMPT = {

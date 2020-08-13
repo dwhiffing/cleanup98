@@ -49,10 +49,11 @@ export const TaskBar = () => {
 export const StartButton = () => {
   const [startMenu, setStartMenu] = useState({})
   const [, actions] = useWindowState()
-  const [upgrades] = useUpgradeState()
+  const [upgrades, , forceUpdate] = useUpgradeState()
 
   useEffect(() => {
     const listener = document.addEventListener('click', (e) => {
+      forceUpdate()
       if (!e.target.classList.contains('start-button')) {
         setStartMenu({ visible: false })
       }

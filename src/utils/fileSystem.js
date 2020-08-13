@@ -37,6 +37,7 @@ export const randomFs = function (config) {
         '.' +
         extension
       if (extension === 'bmp') {
+        // TODO: should randomize size to create different sized files
         imgGen.generateImage(100, 100, 80, function (err, content) {
           const data = Base64.fromUint8Array(content.data)
           promises.push(addFile(filepath, data, 'utf8'))

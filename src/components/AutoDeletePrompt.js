@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react'
 import { Prompt, ProgressBar } from './Prompt'
-import { deleteFiles } from '../utils/useDeletePrompt'
+import { deleteFiles, getDeleteSpeed } from '../utils/useDeletePrompt'
+import errorPng from '../assets/error.png'
 import { useWindowState } from '../utils/useWindowState'
 import deleteFilePng from '../assets/delete-file.png'
 import { useFileState } from '../utils/useFileState'
+import { useUpgradeState } from '../utils/useUpgradeState'
 
 // TODO: figure out upgrades/interface
 // limit to one open at a time
+// should display estimated time to delete
+// should display filename being deleted
 export const AutoDeletePrompt = ({ onClose }) => {
   const [windows] = useWindowState()
+  const [upgrades, , forceUpdate] = useUpgradeState()
   const [path, setPath] = useState()
   const { files: _files, removePath } = useFileState()
   const files = _files[path] || []
@@ -17,6 +22,7 @@ export const AutoDeletePrompt = ({ onClose }) => {
     disabled: false,
     files,
     onDelete: (file) => {
+      forceUpdate()
       removePath(file.path)
     },
   })
@@ -27,6 +33,20 @@ export const AutoDeletePrompt = ({ onClose }) => {
       setPath(activeWindow.path)
     }
   }, [windows])
+
+  if (!upgrades.includes('autodeleter')) {
+    return (
+      <Prompt
+        progress={counter}
+        windowData={{
+          title: 'Unknown error',
+          image: errorPng,
+          label: 'AutoDeleter was corrupted',
+        }}
+        onClose={onClose}
+      />
+    )
+  }
 
   return (
     <Prompt
@@ -51,16 +71,18 @@ const getSmallestFile = (files) =>
   files.filter((c) => !c.isFolder).sort((a, b) => a.size - b.size)[0]
 
 const useAutoDeleter = ({ disabled, files, onDelete }) => {
+  const [upgrades] = useUpgradeState()
   const [counter, setCounter] = useState(0)
   const [smallestFile, setSmallestFile] = useState(null)
 
   useEffect(() => {
+    if (!smallestFile) return
     const timeout = setTimeout(() => {
       setCounter((c) => (smallestFile ? c + 1 : 0))
-    }, 200)
+    }, getDeleteSpeed(upgrades, smallestFile.size))
 
     return () => clearTimeout(timeout)
-  }, [smallestFile, counter])
+  }, [smallestFile, upgrades, counter])
 
   useEffect(() => {
     if (counter < 10 || !smallestFile) return

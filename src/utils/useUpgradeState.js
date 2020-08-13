@@ -12,5 +12,8 @@ export const useUpgradeState = () => {
   useEffect(() => {
     getUpgrades().then(setUpgrades)
   }, [setUpgrades])
-  return [upgrades, setUpgrades]
+  const forceUpdate = () => {
+    getUpgrades().then(setUpgrades)
+  }
+  return [upgrades, setUpgrades, forceUpdate]
 }

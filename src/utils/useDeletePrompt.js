@@ -10,20 +10,20 @@ import { useWindowState } from '../utils/useWindowState'
 export const useDeletePrompt = () => {
   const [upgrades] = useUpgradeState()
   const [, actions] = useWindowState()
-  const speed = getDeleteSpeed(upgrades)
 
   const showDeletePrompt = (files, opts = {}) => {
-    let anyDirectory
-    try {
-      anyDirectory = files.some((path) => fs.statSync(path).isDirectory())
-    } catch (e) {
-      return
-    }
+    const anyDirectory = files.some((f) => f.isFolder)
     if (anyDirectory && !upgrades.includes('delete-folders')) {
       return actions.addWindow(PERMISSIONS_ERROR)
     }
+    const totalSizeKb = files.reduce((sum, f) => sum + f.size, 0)
+    const speed = getDeleteSpeed(upgrades, totalSizeKb)
 
-    const onDelete = () => deleteFiles(files, opts.onComplete)
+    const onDelete = () =>
+      deleteFiles(
+        files.map((f) => f.path),
+        opts.onComplete,
+      )
     const startDelete = () => {
       actions.addWindow({ ...DELETE_PROMPT, speed, onComplete: onDelete })
       return true
@@ -52,10 +52,11 @@ export const deleteFiles = (files, onComplete = () => {}) => {
   }
 }
 
-// TODO: delete duration should be based on file size
-export const getDeleteSpeed = (upgrades) => {
-  if (upgrades.includes('delete-speed-3')) return 50
-  if (upgrades.includes('delete-speed-2')) return 100
-  if (upgrades.includes('delete-speed-1')) return 150
-  return 200
+export const getDeleteSpeed = (upgrades, totalSize) => {
+  let rate = 1
+  if (upgrades.includes('delete-speed-3')) rate = 4
+  if (upgrades.includes('delete-speed-2')) rate = 3
+  if (upgrades.includes('delete-speed-1')) rate = 2
+
+  return (totalSize * 1024) / rate
 }

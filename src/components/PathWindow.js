@@ -91,13 +91,13 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
     'backspace,delete',
     () => {
       if (!isActive || selected.length === 0) return
-      const files = selected.map((file) => `${windowData.path}/${file}`)
-      showDeletePrompt(files, {
+      const selectedFiles = _files[windowData.path].filter((f) =>
+        selected.find((file) => f.path === `${windowData.path}/${file}`),
+      )
+      showDeletePrompt(selectedFiles, {
         confirm: true,
         onComplete: () => {
-          files.forEach((file) => {
-            removePath(file)
-          })
+          selectedFiles.forEach((file) => removePath(file.path))
         },
       })
       setSelected([])
