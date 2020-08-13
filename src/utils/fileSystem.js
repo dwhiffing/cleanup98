@@ -12,6 +12,7 @@ import Promise from 'bluebird'
 import { sample } from 'lodash'
 import imgGen from 'js-image-generator'
 import { Base64 } from 'js-base64'
+import { UPGRADES } from '../constants'
 
 export const fs = BrowserFS.BFSRequire('fs')
 export const promiseFs = Promise.promisifyAll(fs)
@@ -21,7 +22,23 @@ export const getUpgrades = async () => {
   try {
     upgrades = await promiseFs.readdirAsync(`/C:/Program Files`)
   } catch (e) {}
-  return upgrades.map((t) => t.replace('.exe', ''))
+  let output = {}
+  upgrades.forEach((u) => {
+    const [key, level] = u.replace('.exe', '').split('_') || [0]
+    output[key] = +level
+  })
+  UPGRADES.forEach((u) => {
+    const currentUpgrade = upgrades.find((upgrade) => {
+      const [key] = upgrade.replace('.exe', '').split('_')
+      return key === u.key
+    })
+    let level = 0
+    if (currentUpgrade) {
+      level = currentUpgrade.replace('.exe', '').split('_')[1]
+    }
+    output[u.key] = level ? +level : 0
+  })
+  return output
 }
 // TODO: expand on inital file system, add new directories with bigger files that require permissions
 export const randomFs = function (config) {

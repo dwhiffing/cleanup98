@@ -63,45 +63,35 @@ export const ADD_PROGRAMS_MENU = {
 }
 export const UPGRADES = [
   {
-    key: 'delete-speed-1',
+    key: 'delete-speed',
     name: 'Delete speed',
-    cost: 10,
-    description: 'Reduce the time it takes to delete a file',
-  },
-  {
-    key: 'delete-speed-2',
-    name: 'Delete speed 2',
     cost: 100,
-    description: 'Reduce the time it takes to delete a file further',
-  },
-  {
-    key: 'delete-speed-3',
-    name: 'Delete speed 3',
-    cost: 1000,
-    description: 'Reduce the time it takes to delete a file even further',
+    costFactor: 2,
+    maxLevel: 10,
+    description: 'Reduce the time it takes to delete a file',
   },
   {
     key: 'select-multiple',
     name: 'Select multiple',
-    cost: 100,
+    cost: 1000,
     description: 'Allow selection of multiple fileSystem',
   },
   {
     key: 'select-box',
     name: 'Select box',
-    cost: 100,
+    cost: 1000,
     description: 'Allow selection of multiple files via box',
   },
   {
     key: 'delete-folders',
     name: 'Delete folders',
-    cost: 100,
+    cost: 1000,
     description: 'Allow deletion of folders',
   },
   {
     key: 'autodeleter',
     name: 'Auto deleter',
-    cost: 100,
+    cost: 1000,
     description:
       'Auto deletes the smallest file in the active window every 10 seconds',
   },

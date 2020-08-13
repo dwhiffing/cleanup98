@@ -1,4 +1,4 @@
-import { fs, rmdir } from './fileSystem'
+import { rmdir } from './fileSystem'
 import {
   PERMISSIONS_ERROR,
   DELETE_CONFIRM_PROMPT,
@@ -13,7 +13,7 @@ export const useDeletePrompt = () => {
 
   const showDeletePrompt = (files, opts = {}) => {
     const anyDirectory = files.some((f) => f.isFolder)
-    if (anyDirectory && !upgrades.includes('delete-folders')) {
+    if (anyDirectory && !upgrades['delete-folders']) {
       return actions.addWindow(PERMISSIONS_ERROR)
     }
     const totalSizeKb = files.reduce((sum, f) => sum + f.size, 0)
@@ -53,10 +53,7 @@ export const deleteFiles = (files, onComplete = () => {}) => {
 }
 
 export const getDeleteSpeed = (upgrades, totalSize) => {
-  let rate = 1
-  if (upgrades.includes('delete-speed-3')) rate = 4
-  if (upgrades.includes('delete-speed-2')) rate = 3
-  if (upgrades.includes('delete-speed-1')) rate = 2
+  let rate = upgrades['delete-speed'] + 1 || 1
 
   return (totalSize * 1024) / rate
 }

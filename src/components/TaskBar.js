@@ -49,7 +49,7 @@ export const TaskBar = () => {
 export const StartButton = () => {
   const [startMenu, setStartMenu] = useState({})
   const [, actions] = useWindowState()
-  const [upgrades, , forceUpdate] = useUpgradeState()
+  const [upgrades, forceUpdate] = useUpgradeState()
 
   useEffect(() => {
     const listener = document.addEventListener('click', (e) => {
@@ -71,7 +71,7 @@ export const StartButton = () => {
           image: installPng,
           onClick: () => actions.addWindow(ADD_PROGRAMS_MENU),
         },
-        upgrades.includes('autodeleter') && {
+        upgrades['autodeleter'] && {
           text: 'Autodeleter',
           image: trashPng,
           onClick: () =>

@@ -13,7 +13,7 @@ import { useUpgradeState } from '../utils/useUpgradeState'
 // should display filename being deleted
 export const AutoDeletePrompt = ({ onClose }) => {
   const [windows] = useWindowState()
-  const [upgrades, , forceUpdate] = useUpgradeState()
+  const [upgrades, forceUpdate] = useUpgradeState()
   const [path, setPath] = useState()
   const { files: _files, removePath } = useFileState()
   const files = _files[path] || []
@@ -34,7 +34,7 @@ export const AutoDeletePrompt = ({ onClose }) => {
     }
   }, [windows])
 
-  if (!upgrades.includes('autodeleter')) {
+  if (!upgrades.autodeleter) {
     return (
       <Prompt
         progress={counter}

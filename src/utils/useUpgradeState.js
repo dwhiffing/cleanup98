@@ -15,5 +15,5 @@ export const useUpgradeState = () => {
   const forceUpdate = () => {
     getUpgrades().then(setUpgrades)
   }
-  return [upgrades, setUpgrades, forceUpdate]
+  return [upgrades, forceUpdate]
 }

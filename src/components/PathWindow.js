@@ -20,7 +20,7 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
   const showDeletePrompt = useDeletePrompt()
   const [selected, setSelected, coordsRef, selectingRef] = useSelectBox({
     start: { x: zIndex * 20, y: zIndex * 20 },
-    disabled: !isActive || !upgrades.includes('select-box'),
+    disabled: !isActive || !upgrades['select-box'],
   })
 
   const onClickWindow = ({ target }) => {
@@ -31,7 +31,7 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
 
   useEffect(() => {
     const getOnClickIcon = (item) => () => {
-      if (selected.length > 0 && !upgrades.includes('select-multiple')) {
+      if (selected.length > 0 && !upgrades['select-multiple']) {
         return setSelected(() => [item.name])
       }
 
