@@ -34,7 +34,7 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
 
     try {
       addFile(
-        `/C:/Program Files/${selected.key}.txt`,
+        `/C:/Program Files/${selected.key}.exe`,
         new Array(selected.cost + 1).join('a'),
       )
       setUpgrades([...upgrades, selected.key])

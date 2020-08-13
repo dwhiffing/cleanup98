@@ -21,7 +21,7 @@ export const getUpgrades = async () => {
   try {
     upgrades = await promiseFs.readdirAsync(`/C:/Program Files`)
   } catch (e) {}
-  return upgrades.map((t) => t.replace('.txt', ''))
+  return upgrades.map((t) => t.replace('.exe', ''))
 }
 // TODO: expand on inital file system, add new directories with bigger files that require permissions
 export const randomFs = function (config) {
@@ -36,16 +36,10 @@ export const randomFs = function (config) {
         path.resolve(process.cwd(), config.path, randomName(2)) +
         '.' +
         extension
-      if (extension === 'bmp') {
-        // TODO: should randomize size to create different sized files
-        imgGen.generateImage(100, 100, 80, function (err, content) {
-          const data = Base64.fromUint8Array(content.data)
-          promises.push(addFile(filepath, data, 'utf8'))
-        })
-      } else {
-        const content = faker.lorem.paragraph(1)
+
+      EXTENSION_CONTENT[extension]((content) => {
         promises.push(addFile(filepath, content, 'utf8'))
-      }
+      })
     }
 
     return Promise.all(promises)
@@ -208,6 +202,20 @@ const EXTENSION_IMAGES = {
   bmp: bmpPng,
   ini: iniPng,
   cfg: unknownPng,
+}
+
+const EXTENSION_CONTENT = {
+  exe: (cb) => cb(faker.lorem.paragraph(100)),
+  txt: (cb) => cb(faker.lorem.paragraph(20)),
+  dll: (cb) => cb(faker.lorem.paragraph(50)),
+  bat: (cb) => cb(faker.lorem.paragraph(50)),
+  ini: (cb) => cb(faker.lorem.paragraph(50)),
+  cfg: (cb) => cb(faker.lorem.paragraph(50)),
+  bmp: (cb) => {
+    imgGen.generateImage(100, 100, 80, function (err, content) {
+      cb(Base64.fromUint8Array(content.data))
+    })
+  },
 }
 
 // tiny: 0.1kb

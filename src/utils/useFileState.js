@@ -18,9 +18,13 @@ export const useFileState = () => {
 
   const removePath = (path) => {
     setFiles((files) => {
-      const values = mapValues(files, (file) =>
-        file.filter((f) => f.path !== path),
-      )
+      const values = mapValues(files, (file) => {
+        if (!file.filter) {
+          console.log(file)
+          return file
+        }
+        return file.filter((f) => f.path !== path)
+      })
       return values
     })
   }
