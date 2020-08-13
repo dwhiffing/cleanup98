@@ -22,10 +22,6 @@ function App() {
   // useClockSettingsPrompt()
 
   useEffect(() => {
-    // windowActions.addWindow({ type: 'auto-delete-prompt' })
-  }, [])
-
-  useEffect(() => {
     if (usedSpace < 0.01) windowActions.addWindow(WIN_PROMPT)
   }, [windowActions, usedSpace])
 

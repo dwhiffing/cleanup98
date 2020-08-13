@@ -5,8 +5,8 @@ import { useWindowState } from '../utils/useWindowState'
 import deleteFilePng from '../assets/delete-file.png'
 import { useFileState } from '../utils/useFileState'
 
-// TODO: needs to force path windows to update
-// should move file state to recoil?
+// TODO: figure out upgrades/interface
+// limit to one open at a time
 export const AutoDeletePrompt = ({ onClose }) => {
   const [windows] = useWindowState()
   const [path, setPath] = useState()
@@ -40,7 +40,6 @@ export const AutoDeletePrompt = ({ onClose }) => {
           'No files to delete'
         ),
         buttons: [],
-        allowClose: false,
         width: 300,
       }}
       onClose={onClose}

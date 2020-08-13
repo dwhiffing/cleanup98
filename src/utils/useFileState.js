@@ -21,7 +21,6 @@ export const useFileState = () => {
       const values = mapValues(files, (file) =>
         file.filter((f) => f.path !== path),
       )
-      console.log(path, files, values)
       return values
     })
   }

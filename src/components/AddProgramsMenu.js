@@ -18,6 +18,7 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
   const height = 400
   // TODO: prompt on success
   // TODO: refactor
+  // TODO: improve design
   const [upgrades, setUpgrades] = useUpgradeState()
   const [, actions] = useWindowState()
 
@@ -62,7 +63,10 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
           <div className="window-body">
             <p>Free space: {freeSpace.toFixed(2)}KB</p>
 
-            <ul className="tree-view w-full" style={{ height: 180 }}>
+            <ul
+              className="tree-view w-full"
+              style={{ height: 180, overflowY: 'scroll' }}
+            >
               {UPGRADES.map((upgrade) => (
                 <li
                   key={upgrade.key}

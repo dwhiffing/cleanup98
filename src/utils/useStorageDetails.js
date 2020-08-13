@@ -5,10 +5,7 @@ export const useStorageDetails = () => {
   const [capacity, setCapacity] = useState(100)
   const [usedSpace, setUsedSpace] = useState(100)
 
-  // TODO (PERF): this should be rewritten to determine capacity once
-  // and only set usedSpace one via getFileSizeForPath
-  // afterwards, it should change the cached value directly
-  // for each deleted file
+  // TODO replace this with file state
   useEffect(() => {
     getFileSizeForPath('/').then((size) => {
       let _capacity = +localStorage.getItem('capacity')

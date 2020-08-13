@@ -15,7 +15,7 @@ export const getUpgrades = async () => {
   } catch (e) {}
   return upgrades.map((t) => t.replace('.txt', ''))
 }
-
+// TODO: expand on inital file system, add new directories with bigger files that require permissions
 export const randomFs = function (config) {
   let promise = config.wipe ? rmdir(config.path) : Promise.resolve()
 

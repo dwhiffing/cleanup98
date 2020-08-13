@@ -44,9 +44,15 @@ export const DELETE_CONFIRM_PROMPT = {
   image: deleteFilePng,
 }
 
-export const DRIVE_PROPERTIES_MENU = { type: 'drive-properties' }
+export const DRIVE_PROPERTIES_MENU = {
+  type: 'drive-properties',
+  title: 'Drive Properties',
+}
 
-export const ADD_PROGRAMS_MENU = { type: 'add-programs' }
+export const ADD_PROGRAMS_MENU = {
+  type: 'add-programs',
+  title: 'Install Programs',
+}
 export const UPGRADES = [
   {
     key: 'delete-speed-1',
@@ -83,6 +89,13 @@ export const UPGRADES = [
     name: 'Delete folders',
     cost: 100,
     description: 'Allow deletion of folders',
+  },
+  {
+    key: 'autodeleter',
+    name: 'Auto deleter',
+    cost: 100,
+    description:
+      'Auto deletes the smallest file in the active window every 10 seconds',
   },
 ]
 

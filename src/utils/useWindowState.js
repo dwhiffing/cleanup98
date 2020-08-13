@@ -1,5 +1,6 @@
 import { atom, useRecoilState } from 'recoil'
 import { useCallback } from 'react'
+import { DRIVE_PROPERTIES_MENU } from '../constants'
 
 export const windowState = atom({
   key: 'windowState',
@@ -43,7 +44,7 @@ export const useWindowState = () => {
   const onMaximize = (w) => updateWindow(w.index, { maximized: !w.maximized })
 
   const openProperties = useCallback(() => {
-    addWindow({ type: 'drive-properties' })
+    addWindow(DRIVE_PROPERTIES_MENU)
   }, [addWindow])
 
   const actions = {
