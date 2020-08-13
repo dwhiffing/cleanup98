@@ -1,9 +1,8 @@
-import Draggable from 'react-draggable'
 import React, { useState, useEffect } from 'react'
+import Draggable from 'react-draggable'
 import deleteFilePng from '../assets/delete-file.png'
 
 export const Prompt = ({ windowData, onClose }) => {
-  console.log(windowData)
   const {
     title = '',
     label = '',
@@ -78,15 +77,19 @@ export const ProgressPrompt = ({ windowData, onClose }) => {
     <Prompt
       windowData={{
         ...windowData,
-        label: (
-          <div className="meter">
-            <span style={{ width: `${progress * 10}%` }}></span>
-          </div>
-        ),
+        label: <ProgressBar progress={progress} />,
         buttons: [],
         image: deleteFilePng,
         allowClose: false,
       }}
     />
+  )
+}
+
+export const ProgressBar = ({ progress, size = 10 }) => {
+  return (
+    <div className="meter">
+      <span style={{ width: `${progress * size}%` }}></span>
+    </div>
   )
 }

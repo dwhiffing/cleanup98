@@ -5,9 +5,10 @@ import { Windows } from './components/Windows'
 import { Icon } from './components/Icon'
 import { useWindowState } from './utils/useWindowState'
 import { useIntroPrompts } from './utils/useIntroPrompts'
-import { useClockSettingsPrompt } from './utils/useClockSettingsPrompt'
 import { useStorageDetails } from './utils/useStorageDetails'
 import { WIN_PROMPT, DESKTOP_ICONS } from './constants'
+// import { useClockSettingsPrompt } from './utils/useClockSettingsPrompt'
+
 import './tailwind.output.css'
 import '98.css'
 
@@ -18,7 +19,11 @@ function App() {
 
   useIntroPrompts({ onComplete: () => setShowDesktop(true) })
 
-  useClockSettingsPrompt()
+  // useClockSettingsPrompt()
+
+  useEffect(() => {
+    // windowActions.addWindow({ type: 'auto-delete-prompt' })
+  }, [])
 
   useEffect(() => {
     if (usedSpace < 0.01) windowActions.addWindow(WIN_PROMPT)

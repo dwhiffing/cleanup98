@@ -9,3 +9,18 @@ it is also difficult to find files that can be deleted due to permissions
 
 You must spend a currency to increase the rendering speed and file deletion speed, as well as to gain access to blocked files
 
+upgrade ideas:
+  show file size
+  show folder size
+  auto deleter
+    max number of windows
+    speed of deletion
+
+  sort by file size
+  manual delete speed
+  max manual select count?
+  permissions
+    different folders have different permissions levels to allow deleting of files
+    higher permissions folders have more/bigger files
+  
+  disable delete confirmation

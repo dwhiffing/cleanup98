@@ -1,6 +1,7 @@
 import * as BrowserFS from 'browserfs'
 import filePng from '../assets/txt.png'
 import folderPng from '../assets/folder.png'
+import drivePng from '../assets/drive.png'
 import faker from 'faker'
 import Promise from 'bluebird'
 
@@ -154,11 +155,12 @@ export async function getContentForPath(_file) {
     .then((files) =>
       files.map((file) => {
         const isFolder = file.stat.isDirectory()
+        const isDrive = file.path === '/C:'
         return {
           ...file,
           type: isFolder ? 'folder' : 'file',
           isFolder,
-          image: isFolder ? folderPng : filePng,
+          image: isDrive ? drivePng : isFolder ? folderPng : filePng,
         }
       }),
     )

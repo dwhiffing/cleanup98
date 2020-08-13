@@ -1,42 +1,48 @@
-import React, { useState, useEffect } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useHotkeys } from 'react-hotkeys-hook'
 import uniq from 'lodash/uniq'
 import Draggable from 'react-draggable'
 import { Resizable } from 're-resizable'
 import { Icon } from '../components/Icon'
-import { fs, getContentForPath } from '../utils/fileSystem'
+import { fs } from '../utils/fileSystem'
 import { useSelectBox } from '../utils/useSelectBox'
 import { useDeletePrompt } from '../utils/useDeletePrompt'
 import { RESIZEABLE_SIDES } from '../constants'
 import { useWindowState } from '../utils/useWindowState'
 import { useUpgradeState } from '../utils/useUpgradeState'
+import { useFileState } from '../utils/useFileState'
 
 export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
-  const nodeRef = React.useRef(null)
+  const nodeRef = useRef(null)
   const [upgrades] = useUpgradeState()
   const [, actions] = useWindowState()
-  const [content, setContent] = useState([])
-  const [value, setValue] = useState(0)
-  const showDeletePrompt = useDeletePrompt({
-    onDelete: () => setValue((v) => v + 1),
-  })
-  // TODO: refactor coordsRef, selectingRef, cleanup effects properly
+  const { files: _files, updatePath, removePath } = useFileState()
+  const showDeletePrompt = useDeletePrompt()
   const [selected, setSelected, coordsRef, selectingRef] = useSelectBox({
     start: { x: zIndex * 20, y: zIndex * 20 },
     disabled: !isActive || !upgrades.includes('select-box'),
   })
 
+  const files = _files[windowData.path] || []
+
   useEffect(() => {
     if (!isActive) setSelected([])
-    getContentForPath({ path: windowData.path }).then(setContent)
-  }, [windowData.path, value, isActive, setSelected])
+    if (isActive) updatePath(windowData.path)
+  }, [windowData.path, isActive, setSelected])
 
   useHotkeys(
     'backspace,delete',
     () => {
       if (!isActive || selected.length === 0) return
       const files = selected.map((file) => `${windowData.path}/${file}`)
-      showDeletePrompt(files)
+      showDeletePrompt(files, {
+        confirm: true,
+        onComplete: () => {
+          files.forEach((file) => {
+            removePath(file)
+          })
+        },
+      })
       setSelected([])
     },
     {},
@@ -61,7 +67,7 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
   try {
     // TODO: make async
     if (fs.statSync(windowData.path).isDirectory()) {
-      children = content.map((item) => (
+      children = files.map((item) => (
         <Icon
           key={`item-${item.name}`}
           item={item}
@@ -71,7 +77,7 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
         />
       ))
     } else {
-      children = <p key={`content-${windowData.path}`}>{content}</p>
+      children = <p key={`files-${windowData.path}`}>{files}</p>
     }
   } catch (e) {
     actions.removeWindow(windowData.index)

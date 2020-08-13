@@ -4,6 +4,7 @@ import { DrivePropertiesMenu } from './DrivePropertiesMenu'
 import { AddProgramsMenu } from './AddProgramsMenu'
 import { Prompt, ProgressPrompt } from './Prompt'
 import { useWindowState } from '../utils/useWindowState'
+import { AutoDeletePrompt } from './AutoDeletePrompt'
 
 export const Windows = () => {
   const [windows, actions] = useWindowState()
@@ -22,6 +23,9 @@ export const Windows = () => {
 
     if (data.type === 'progress-prompt')
       return <ProgressPrompt key={`window-${data.index}`} {...props} />
+
+    if (data.type === 'auto-delete-prompt')
+      return <AutoDeletePrompt key={`window-${data.index}`} {...props} />
 
     if (data.type === 'drive-properties')
       return <DrivePropertiesMenu key={`window-${data.index}`} {...props} />
