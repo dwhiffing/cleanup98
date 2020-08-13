@@ -17,29 +17,7 @@ import { UPGRADES } from '../constants'
 export const fs = BrowserFS.BFSRequire('fs')
 export const promiseFs = Promise.promisifyAll(fs)
 export const path = BrowserFS.BFSRequire('path')
-export const getUpgrades = async () => {
-  let upgrades = []
-  try {
-    upgrades = await promiseFs.readdirAsync(`/C:/Program Files`)
-  } catch (e) {}
-  let output = {}
-  upgrades.forEach((u) => {
-    const [key, level] = u.replace('.exe', '').split('_') || [0]
-    output[key] = +level
-  })
-  UPGRADES.forEach((u) => {
-    const currentUpgrade = upgrades.find((upgrade) => {
-      const [key] = upgrade.replace('.exe', '').split('_')
-      return key === u.key
-    })
-    let level = 0
-    if (currentUpgrade) {
-      level = currentUpgrade.replace('.exe', '').split('_')[1]
-    }
-    output[u.key] = level ? +level : 0
-  })
-  return output
-}
+
 // TODO: expand on inital file system, add new directories with bigger files that require permissions
 export const randomFs = function (config) {
   let promise = config.wipe ? rmdir(config.path) : Promise.resolve()
@@ -152,6 +130,7 @@ export async function getContentForPath(_file) {
       const fullPath = path.join(_file.path, file)
       return Promise.props({
         stat: promiseFs.statAsync(fullPath),
+        accessLevel: getAccessLevel(fullPath),
         size: getFileSizeForPath(fullPath),
         path: fullPath,
         name: file,
@@ -265,3 +244,45 @@ const FILE_EXTENSIONS = [
   'ini',
   'cfg',
 ]
+
+// first delete txt files in unprotected folders
+// get some delete speed upgrades to speed up this process
+// unlock basic permissions to access bigger files
+// get auto deleter and start clearing out folders full of text
+// unlock permissions level 2 and get enough space for auto deleter
+// use auto deleter to purge permissions level 2 folders
+// get upgrade that automatically focuses/opens a new window of no files are left
+// use that data to unlock windows permissions
+// delete all windows data
+// delete all program data
+// win the game
+
+export const getUpgrades = async () => {
+  let upgrades = []
+  try {
+    upgrades = await promiseFs.readdirAsync(`/C:/Program Files`)
+  } catch (e) {}
+  let output = {}
+  upgrades.forEach((u) => {
+    const [key, level] = u.replace('.exe', '').split('_') || [0]
+    output[key] = +level
+  })
+  UPGRADES.forEach((u) => {
+    const currentUpgrade = upgrades.find((upgrade) => {
+      const [key] = upgrade.replace('.exe', '').split('_')
+      return key === u.key
+    })
+    let level = 0
+    if (currentUpgrade) {
+      level = currentUpgrade.replace('.exe', '').split('_')[1]
+    }
+    output[u.key] = level ? +level : 0
+  })
+  return output
+}
+
+const getAccessLevel = (path) => {
+  if (path.match(/\/Windows/)) return 3
+  if (path.match(/\/downloads/)) return 0
+  return 1
+}

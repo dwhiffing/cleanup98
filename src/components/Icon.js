@@ -1,9 +1,18 @@
 import React from 'react'
 import { useWindowState } from '../utils/useWindowState'
+import { ERROR_PROMPT } from '../constants'
 
-export const Icon = ({ item, textColor, selected, onClick, onDoubleClick }) => {
+export const Icon = ({
+  item,
+  upgrades = {},
+  textColor,
+  selected,
+  onClick,
+  onDoubleClick,
+}) => {
   const [, windowActions] = useWindowState()
   const { name, size } = item
+  const disabled = upgrades.permissions < item.accessLevel
   return (
     <IconBase
       type="folder"
@@ -14,11 +23,20 @@ export const Icon = ({ item, textColor, selected, onClick, onDoubleClick }) => {
       textColor={textColor}
       selected={selected}
       onClick={onClick}
+      disabled={disabled}
       onDoubleClick={() => {
+        if (disabled) {
+          windowActions.addWindow({
+            ...ERROR_PROMPT,
+            label: 'Cannot view this protected folder',
+          })
+          return
+        }
         windowActions.addWindow({
           type: 'path',
           title: item.name,
           path: item.path,
+          accessLevel: item.accessLevel,
         })
         onDoubleClick && onDoubleClick()
       }}
@@ -31,13 +49,17 @@ const IconBase = ({
   label,
   onDoubleClick,
   onClick,
+  disabled,
   selected,
   size,
   className = '',
   textColor = 'black',
 }) => {
   return (
-    <div className={`icon-item ${selected ? 'selected' : ''}`}>
+    <div
+      className={`icon-item ${selected ? 'selected' : ''}`}
+      style={{ opacity: disabled ? 0.5 : 1 }}
+    >
       <div
         onClick={onClick}
         onDoubleClick={onDoubleClick}

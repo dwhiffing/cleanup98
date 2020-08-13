@@ -52,8 +52,8 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
             <Icon
               key={`item-${item.name}`}
               item={item}
-              addWindow={actions.addWindow}
               onClick={getOnClickIcon(item)}
+              upgrades={upgrades}
               selected={selected.includes(item.name)}
             />
           )),

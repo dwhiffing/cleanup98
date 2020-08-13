@@ -16,8 +16,6 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
   const nodeRef = React.useRef(null)
   const width = 400
   const height = 400
-  // TODO: prompt on success
-  // TODO: refactor
   // TODO: improve design
   const [upgrades, forceUpdate] = useUpgradeState()
   const [, actions] = useWindowState()

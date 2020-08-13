@@ -59,6 +59,8 @@ export const StartButton = () => {
       }
     })
     return () => document.removeEventListener('click', listener)
+    // TODO: fix this
+    // eslint-disable-next-line
   }, [])
 
   const START_MENU_BUTTONS = [

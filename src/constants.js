@@ -35,7 +35,7 @@ export const PERMISSIONS_ERROR = {
   type: 'prompt',
   image: errorPng,
   title: 'Administrator',
-  label: "You don't have permission to delete this folder.",
+  label: "You don't have permission to delete this.",
 }
 
 export const DELETE_PROMPT = {
@@ -71,22 +71,11 @@ export const UPGRADES = [
     description: 'Reduce the time it takes to delete a file',
   },
   {
-    key: 'select-multiple',
-    name: 'Select multiple',
-    cost: 1000,
-    description: 'Allow selection of multiple fileSystem',
-  },
-  {
     key: 'select-box',
     name: 'Select box',
     cost: 1000,
+    maxLevel: 1,
     description: 'Allow selection of multiple files via box',
-  },
-  {
-    key: 'delete-folders',
-    name: 'Delete folders',
-    cost: 1000,
-    description: 'Allow deletion of folders',
   },
   {
     key: 'autodeleter',
@@ -97,6 +86,16 @@ export const UPGRADES = [
     description:
       'Auto deletes the smallest file in the active window every 10 seconds',
   },
+  {
+    key: 'permissions',
+    name: 'File Access Level',
+    cost: 1000,
+    costFactor: 2,
+    maxLevel: 5,
+    description: 'Allows navigation and deletion of protected files',
+  },
+
+  // hotkeys?
 ]
 
 export const RESIZEABLE_SIDES = {

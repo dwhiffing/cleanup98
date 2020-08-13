@@ -20,7 +20,6 @@ export const useFileState = () => {
     setFiles((files) => {
       const values = mapValues(files, (file) => {
         if (!file.filter) {
-          console.log(file)
           return file
         }
         return file.filter((f) => f.path !== path)

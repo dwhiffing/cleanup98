@@ -7,14 +7,25 @@ import {
 import { useUpgradeState } from '../utils/useUpgradeState'
 import { useWindowState } from '../utils/useWindowState'
 
+const checkCanDelete = (files, upgrades) => {
+  const anyDirectory = files.some((f) => f.isFolder)
+  if (anyDirectory) {
+    return PERMISSIONS_ERROR
+  }
+  const noAccess = files.some((f) => f.accessLevel > upgrades.permissions)
+  if (noAccess) {
+    return PERMISSIONS_ERROR
+  }
+}
+
 export const useDeletePrompt = () => {
   const [upgrades] = useUpgradeState()
   const [, actions] = useWindowState()
 
   const showDeletePrompt = (files, opts = {}) => {
-    const anyDirectory = files.some((f) => f.isFolder)
-    if (anyDirectory && !upgrades['delete-folders']) {
-      return actions.addWindow(PERMISSIONS_ERROR)
+    const prompt = checkCanDelete(files, upgrades)
+    if (prompt) {
+      return actions.addWindow(prompt)
     }
     const totalSizeKb = files.reduce((sum, f) => sum + f.size, 0)
     const speed = getDeleteSpeed(upgrades, totalSizeKb)

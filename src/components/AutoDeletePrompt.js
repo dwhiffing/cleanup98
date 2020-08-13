@@ -76,6 +76,8 @@ export const AutoDeletePrompt = ({ onClose }) => {
 }
 
 const getSmallestFile = (files) =>
+  files &&
+  files.filter &&
   files.filter((c) => !c.isFolder).sort((a, b) => a.size - b.size)[0]
 
 const useAutoDeleter = ({ disabled, files, onDelete }) => {
