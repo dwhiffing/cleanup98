@@ -62,7 +62,6 @@ function App() {
         </div>
       )}
       <Windows />
-      <ContextMenu />
       <TaskBar />
     </div>
   )

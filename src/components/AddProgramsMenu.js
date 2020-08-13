@@ -103,8 +103,13 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
                           : 'black',
                     }}
                   >
-                    {upgrade.name} {+currentLevel + 1}...............
-                    {(getUpgradeCost(upgrades, upgrade) / 1024).toFixed(2)}KB
+                    {upgrade.name} {disabled ? '' : +currentLevel + 1}
+                    ...............
+                    {disabled
+                      ? 'Max Level'
+                      : `${(getUpgradeCost(upgrades, upgrade) / 1024).toFixed(
+                          2,
+                        )}KB`}
                   </li>
                 )
               })}
@@ -113,10 +118,13 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
             {selected && (
               <div>
                 <p>{selected.name}</p>
-                <p>
-                  cost: {(getUpgradeCost(upgrades, selected) / 1024).toFixed(2)}
-                  KB
-                </p>
+                {!selectedDisabled && (
+                  <p>
+                    cost:{' '}
+                    {(getUpgradeCost(upgrades, selected) / 1024).toFixed(2)}
+                    KB
+                  </p>
+                )}
                 <p>{selected.description}</p>
                 {!selectedDisabled && (
                   <button className="mt-4" onClick={buySelected}>

@@ -10,6 +10,7 @@ import { RESIZEABLE_SIDES, ERROR_PROMPT } from '../constants'
 import { useWindowState } from '../utils/useWindowState'
 import { useUpgradeState } from '../utils/useUpgradeState'
 import { useFileState } from '../utils/useFileState'
+import { ContextMenu } from './ContextMenu'
 
 export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
   const nodeRef = useRef(null)
@@ -29,6 +30,7 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
     actions.onActive(windowData)
   }
 
+  let files = _files[windowData.path] || []
   useEffect(() => {
     const getOnClickIcon = (item) => () => {
       if (selected.length > 0) {
@@ -38,7 +40,6 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
       setSelected((selected) => uniq([...selected, item.name]))
     }
 
-    let files = _files[windowData.path] || []
     if (Array.isArray(files)) {
       setChildren(
         files
@@ -60,7 +61,7 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
       )
     } else {
       const extension = windowData.title.split('.')[1]
-      if (extension === 'bmp') {
+      if (extension.match(/bmp|gif|jpg/)) {
         setChildren(
           <img
             className="crisp"
@@ -87,13 +88,16 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
     // eslint-disable-next-line
   }, [windowData.path, isActive, setSelected])
 
+  const selectedFiles =
+    files.filter &&
+    files.filter((f) =>
+      selected.find((file) => f.path === `${windowData.path}/${file}`),
+    )
   useHotkeys(
     'backspace,delete',
     () => {
       if (!isActive || selected.length === 0) return
-      const selectedFiles = _files[windowData.path].filter((f) =>
-        selected.find((file) => f.path === `${windowData.path}/${file}`),
-      )
+
       showDeletePrompt(selectedFiles, {
         confirm: true,
         onComplete: () => {
@@ -107,61 +111,68 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
   )
 
   return (
-    <Draggable
-      handle=".title-bar"
-      nodeRef={nodeRef}
-      disabled={windowData.maximized}
-      position={windowData.maximized ? { x: 0, y: 0 } : null}
-      bounds={{ left: 0, top: 0 }}
-      onDrag={(event, node) => {
-        coordsRef.current = { x: node.x, y: node.y }
-      }}
-      defaultPosition={{ x: zIndex * 20, y: zIndex * 20 }}
-    >
-      <div
-        ref={nodeRef}
-        className="absolute"
-        onClick={onClickWindow}
-        style={{ display: windowData.minimized ? 'none' : 'block', zIndex }}
+    <>
+      {isActive && <ContextMenu files={files} selected={selectedFiles} />}
+
+      <Draggable
+        handle=".title-bar"
+        nodeRef={nodeRef}
+        disabled={windowData.maximized}
+        position={windowData.maximized ? { x: 0, y: 0 } : null}
+        bounds={{ left: 0, top: 0 }}
+        onDrag={(event, node) => {
+          coordsRef.current = { x: node.x, y: node.y }
+        }}
+        defaultPosition={{ x: zIndex * 20, y: zIndex * 20 }}
       >
-        <Resizable
-          enable={RESIZEABLE_SIDES}
-          minWidth={640}
-          minHeight={400}
-          defaultSize={{ width: 640, height: 400 }}
-          size={
-            windowData.maximized
-              ? { width: window.innerWidth - 5, height: window.innerHeight - 5 }
-              : null
-          }
+        <div
+          ref={nodeRef}
+          className="absolute"
+          onClick={onClickWindow}
+          style={{ display: windowData.minimized ? 'none' : 'block', zIndex }}
         >
-          <div className={`window w-full h-full flex flex-col`}>
-            <div className="title-bar">
-              <div className="title-bar-text">
-                {windowData.title || windowData.path || ''}
+          <Resizable
+            enable={RESIZEABLE_SIDES}
+            minWidth={640}
+            minHeight={400}
+            defaultSize={{ width: 640, height: 400 }}
+            size={
+              windowData.maximized
+                ? {
+                    width: window.innerWidth - 5,
+                    height: window.innerHeight - 5,
+                  }
+                : null
+            }
+          >
+            <div className={`window w-full h-full flex flex-col`}>
+              <div className="title-bar">
+                <div className="title-bar-text">
+                  {windowData.title || windowData.path || ''}
+                </div>
+                <div className="title-bar-controls">
+                  <button
+                    onClick={() => actions.onMinimize(windowData)}
+                    aria-label="Minimize"
+                  ></button>
+                  <button
+                    onClick={() => actions.onMaximize(windowData)}
+                    aria-label="Maximize"
+                  ></button>
+                  <button onClick={onClose} aria-label="Close"></button>
+                </div>
               </div>
-              <div className="title-bar-controls">
-                <button
-                  onClick={() => actions.onMinimize(windowData)}
-                  aria-label="Minimize"
-                ></button>
-                <button
-                  onClick={() => actions.onMaximize(windowData)}
-                  aria-label="Maximize"
-                ></button>
-                <button onClick={onClose} aria-label="Close"></button>
+              <div
+                className={`${
+                  isActive ? 'drag-window' : ''
+                } window-body-white flex flex-1 flex-wrap overflow-auto content-start items-start justify-start`}
+              >
+                {children}
               </div>
             </div>
-            <div
-              className={`${
-                isActive ? 'drag-window' : ''
-              } window-body-white flex flex-1 flex-wrap overflow-auto content-start items-start justify-start`}
-            >
-              {children}
-            </div>
-          </div>
-        </Resizable>
-      </div>
-    </Draggable>
+          </Resizable>
+        </div>
+      </Draggable>
+    </>
   )
 }

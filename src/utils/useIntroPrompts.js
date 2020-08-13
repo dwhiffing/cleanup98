@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
-import errorPng from '../assets/error.png'
 import trashFullPng from '../assets/trash-full.png'
 import { useWindowState } from '../utils/useWindowState'
+import { HELP_PROMPT } from '../constants'
 
 export const useIntroPrompts = ({ onComplete, skip }) => {
   const [, actions] = useWindowState()
@@ -29,11 +29,7 @@ export const useIntroPrompts = ({ onComplete, skip }) => {
               allowClose: false,
               onComplete: () => {
                 actions.addWindow({
-                  type: 'prompt',
-                  image: errorPng,
-                  title: 'Windows has encountered an error',
-                  label:
-                    'Disk Cleanup Utility not found.  Please remove all files from this computer manually by clicking on them and pressing delete.',
+                  ...HELP_PROMPT,
                   buttons: [
                     {
                       text: 'OK',

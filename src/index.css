@@ -47,7 +47,7 @@ body {
   margin: 1px;
 }
 
-.window-body-white p {
+.window-body-white > p {
   margin: 10px;
 }
 

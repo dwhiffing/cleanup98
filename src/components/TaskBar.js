@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import folderPng from '../assets/folder.png'
 import windowsPng from '../assets/windows-4.png'
 import logoutPng from '../assets/logout.png'
 import shutdownPng from '../assets/shutdown.png'
@@ -11,7 +10,11 @@ import trashPng from '../assets/trash-empty.png'
 import programPng from '../assets/programs.png'
 import findPng from '../assets/find.png'
 import settingsPng from '../assets/settings.png'
-import { ADD_PROGRAMS_MENU, DRIVE_PROPERTIES_MENU } from '../constants'
+import {
+  ADD_PROGRAMS_MENU,
+  DRIVE_PROPERTIES_MENU,
+  HELP_PROMPT,
+} from '../constants'
 import { useWindowState } from '../utils/useWindowState'
 import { useUpgradeState } from '../utils/useUpgradeState'
 
@@ -68,11 +71,6 @@ export const StartButton = () => {
       text: 'Programs',
       image: programPng,
       buttons: [
-        {
-          text: 'Install programs',
-          image: installPng,
-          onClick: () => actions.addWindow(ADD_PROGRAMS_MENU),
-        },
         upgrades['autodeleter'] && {
           text: 'Autodeleter',
           image: trashPng,
@@ -82,6 +80,17 @@ export const StartButton = () => {
               title: 'AutoDeleter',
             }),
         },
+      ].filter((t) => !!t),
+    },
+    {
+      text: 'Settings',
+      image: settingsPng,
+      buttons: [
+        {
+          text: 'Install programs',
+          image: installPng,
+          onClick: () => actions.addWindow(ADD_PROGRAMS_MENU),
+        },
         {
           text: 'Disk Properties',
           image: drivePng,
@@ -90,28 +99,57 @@ export const StartButton = () => {
       ],
     },
     {
-      text: 'Settings',
-      image: settingsPng,
-    },
-    {
       text: 'Find',
       image: findPng,
+      onClick: () =>
+        actions.addWindow({ type: 'path', path: '/', name: 'My Computer' }),
     },
     {
       text: 'Help',
       image: helpPng,
-    },
-    {
-      text: 'Run...',
-      image: folderPng,
+      onClick: () => actions.addWindow(HELP_PROMPT),
     },
     {
       text: 'Log Off',
       image: logoutPng,
+      onClick: () => {
+        actions.addWindow({
+          type: 'prompt',
+          title: 'Log Off',
+          image: logoutPng,
+          label: 'Do you want to reset your progress?',
+          buttons: [
+            {
+              text: 'OK',
+              onClick: () => {
+                localStorage.clear()
+                window.location.reload()
+              },
+            },
+          ],
+        })
+      },
     },
     {
       text: 'Shut Down...',
       image: shutdownPng,
+      onClick: () => {
+        actions.addWindow({
+          type: 'prompt',
+          image: shutdownPng,
+          title: 'Shut down',
+          label: 'Do you want to reset your progress?',
+          buttons: [
+            {
+              text: 'OK',
+              onClick: () => {
+                localStorage.clear()
+                window.location.reload()
+              },
+            },
+          ],
+        })
+      },
     },
   ]
 
@@ -172,13 +210,13 @@ export const HoverMenu = ({ buttons, showBanner = false }) => {
                 {b.text}
               </p>
 
-              {b.buttons && (
+              {b.buttons && b.buttons.length > 0 && (
                 <div className="absolute" style={{ right: 2 }}>
                   <img alt="arrow" src={arrowPng} />
                 </div>
               )}
 
-              {b.buttons && visibleMenu === b.text && (
+              {b.buttons && b.buttons.length > 0 && visibleMenu === b.text && (
                 <div
                   className="absolute"
                   style={{ top: -3, left: 157, width: 150 }}

@@ -1,41 +1,79 @@
-import React, { useState, useEffect } from 'react'
-import { useWindowState } from '../utils/useWindowState'
+import React, { useState, useEffect, useCallback } from 'react'
 import { HoverMenu } from '../components/TaskBar'
+import { useDeletePrompt } from '../utils/useDeletePrompt'
+import { useFileState } from '../utils/useFileState'
+import { useWindowState } from '../utils/useWindowState'
+import { useUpgradeState } from '../utils/useUpgradeState'
+import { PERMISSIONS_VIEW_ERROR } from '../constants'
 
-export const ContextMenu = () => {
+export const ContextMenu = ({ files, selected }) => {
   const [state, setState] = useState(false)
+  const { removePath } = useFileState()
+  const [upgrades] = useUpgradeState()
+  const showDeletePrompt = useDeletePrompt()
   const [, actions] = useWindowState()
+  const closeMenu = useCallback(() => {
+    setTimeout(() => setState({ visible: false }), 100)
+  }, [])
+  const openMenu = useCallback(
+    (e) => {
+      e.preventDefault()
+
+      document.addEventListener('click', closeMenu)
+      const clickedIcon = e.target.closest('.icon-item')
+      const clickedPath = clickedIcon ? clickedIcon.dataset.path : null
+      const clickedFile =
+        files.find && files.find((f) => f.path === clickedPath)
+      const disabled =
+        clickedFile && upgrades.permissions < clickedFile.accessLevel
+
+      const filesToDelete =
+        selected.length > 0 ? selected : clickedFile ? [clickedFile] : []
+
+      setState({
+        visible: true,
+        x: e.clientX,
+        y: e.clientY,
+        buttons: [
+          {
+            text: 'Open',
+            onClick: () =>
+              clickedFile &&
+              actions.addWindow(
+                disabled
+                  ? PERMISSIONS_VIEW_ERROR
+                  : {
+                      type: 'path',
+                      title: clickedFile.name,
+                      path: clickedFile.path,
+                      accessLevel: clickedFile.accessLevel,
+                    },
+              ),
+          },
+          {
+            text: 'Delete',
+            onClick: () =>
+              showDeletePrompt(filesToDelete, {
+                confirm: true,
+                onComplete: () =>
+                  filesToDelete.forEach((file) => removePath(file.path)),
+              }),
+          },
+          // { text: 'Rename' },
+          // { text: 'Properties' },
+        ],
+      })
+    },
+    [files, selected],
+  )
 
   useEffect(() => {
-    document.addEventListener(
-      'contextmenu',
-      function (e) {
-        e.preventDefault()
-
-        const listener = document.addEventListener('click', () => {
-          setTimeout(() => setState({ visible: false }), 100)
-          document.removeEventListener('click', listener)
-        })
-
-        // if (e.target.classList.contains('drive')) {
-        // TODO: how to get clicked path?
-        setState({
-          visible: true,
-          x: e.screenX,
-          y: e.screenY - 130,
-          buttons: [
-            { text: 'Open' },
-            { text: 'Create Shortcut' },
-            { text: 'Delete' },
-            { text: 'Rename' },
-            { text: 'Properties', onClick: actions.openProperties },
-          ],
-        })
-        // }
-      },
-      false,
-    )
-  }, [actions.openProperties])
+    document.addEventListener('contextmenu', openMenu)
+    return () => {
+      document.removeEventListener('click', closeMenu)
+      document.removeEventListener('contextmenu', openMenu)
+    }
+  }, [files, selected])
 
   return (
     <div>

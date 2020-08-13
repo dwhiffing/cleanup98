@@ -1,6 +1,6 @@
 import React from 'react'
 import { useWindowState } from '../utils/useWindowState'
-import { ERROR_PROMPT } from '../constants'
+import { ERROR_PROMPT, PERMISSIONS_VIEW_ERROR } from '../constants'
 
 export const Icon = ({
   item,
@@ -21,15 +21,13 @@ export const Icon = ({
       image={item.image}
       className={item.name === 'C:' ? 'drive' : ''}
       textColor={textColor}
+      path={item.path}
       selected={selected}
       onClick={onClick}
       disabled={disabled}
       onDoubleClick={() => {
         if (item.path && disabled) {
-          windowActions.addWindow({
-            ...ERROR_PROMPT,
-            label: 'Cannot view this protected folder',
-          })
+          windowActions.addWindow(PERMISSIONS_VIEW_ERROR)
           return
         }
         item.path &&
@@ -52,12 +50,14 @@ const IconBase = ({
   onClick,
   disabled,
   selected,
+  path,
   size,
   className = '',
   textColor = 'black',
 }) => {
   return (
     <div
+      data-path={path}
       className={`icon-item ${selected ? 'selected' : ''}`}
       style={{ opacity: disabled ? 0.5 : 1 }}
     >

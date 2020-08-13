@@ -56,6 +56,7 @@ export const AutoDeletePrompt = ({ onClose }) => {
           <ProgressBarWithDuration
             label={`Deleting ${file.name}`}
             progress={counter}
+            total={file && file.size}
             speed={deleteSpeed}
           />
         ) : smallest ? (
@@ -65,9 +66,10 @@ export const AutoDeletePrompt = ({ onClose }) => {
             speed={loadingSpeed}
           />
         ) : (
-          'No files to delete'
+          'No files to delete. Focus a window with available files to get started.'
         ),
         buttons: [],
+        height: 150,
         width: 300,
       }}
       onClose={onClose}
@@ -95,7 +97,7 @@ const useAutoDeleter = ({ disabled, files, onDelete }) => {
 
   // update the delete speed based on the smallest file
   useEffect(() => {
-    setLoadingSpeed(1000 - upgrades.autodeleter * 100)
+    setLoadingSpeed(1000 - upgrades.autodeleter * 200)
   }, [upgrades])
 
   // update the counters

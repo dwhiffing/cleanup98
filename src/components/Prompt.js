@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react'
 import Draggable from 'react-draggable'
 import deleteFilePng from '../assets/delete-file.png'
+import { useUpgradeState } from '../utils/useUpgradeState'
+import { getDeleteSpeed } from '../utils/useDeletePrompt'
 
 export const Prompt = ({ windowData, onClose }) => {
   const {
@@ -60,8 +62,10 @@ export const Prompt = ({ windowData, onClose }) => {
 }
 
 export const ProgressPrompt = ({ windowData, onClose }) => {
-  const { onComplete, speed = 200 } = windowData
+  const { onComplete, size } = windowData
   const [progress, setProgress] = useState(0)
+  const [upgrades] = useUpgradeState()
+  const speed = size ? getDeleteSpeed(upgrades, size) : 200
 
   useEffect(() => {
     let timeout = setTimeout(() => {
@@ -83,10 +87,11 @@ export const ProgressPrompt = ({ windowData, onClose }) => {
         ...windowData,
         label: (
           <div className="flex flex-col">
-            <ProgressBar progress={progress} />
-            <p style={{ marginTop: 8 }}>
-              Time remaining: {getDuration(speed * (10 - progress))}
-            </p>
+            <ProgressBarWithDuration
+              total={size}
+              progress={progress}
+              speed={speed}
+            />
           </div>
         ),
         buttons: [],
@@ -96,7 +101,8 @@ export const ProgressPrompt = ({ windowData, onClose }) => {
   )
 }
 
-export const ProgressBarWithDuration = ({ progress, speed, label }) => {
+export const ProgressBarWithDuration = ({ progress, speed, total, label }) => {
+  const rate = total ? (total / ((speed * 10) / 1000)).toFixed(2) : ''
   return (
     <div className="flex flex-col">
       {label && <p style={{ marginBottom: 8 }}>{label}</p>}
@@ -104,6 +110,7 @@ export const ProgressBarWithDuration = ({ progress, speed, label }) => {
       <p style={{ marginTop: 8 }}>
         Time remaining: {getDuration(speed * (10 - progress))}
       </p>
+      {rate && <p style={{ marginTop: 8 }}>Deleting {rate}KB per second</p>}
     </div>
   )
 }

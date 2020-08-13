@@ -7,6 +7,7 @@ import {
 import { useUpgradeState } from '../utils/useUpgradeState'
 import { useWindowState } from '../utils/useWindowState'
 
+//TODO should show delete confirmation?
 const checkCanDelete = (files, upgrades) => {
   const anyDirectory = files.some((f) => f.isFolder)
   if (anyDirectory) {
@@ -28,20 +29,26 @@ export const useDeletePrompt = () => {
       return actions.addWindow(prompt)
     }
     const totalSizeKb = files.reduce((sum, f) => sum + f.size, 0)
-    const speed = getDeleteSpeed(upgrades, totalSizeKb)
-
+    const fileName =
+      files.length === 1 ? files[0].name : `${files.length} files`
     const onDelete = () =>
       deleteFiles(
         files.map((f) => f.path),
         opts.onComplete,
       )
     const startDelete = () => {
-      actions.addWindow({ ...DELETE_PROMPT, speed, onComplete: onDelete })
+      actions.addWindow({
+        ...DELETE_PROMPT,
+        title: `Deleting ${fileName} (${totalSizeKb.toFixed(2)}KB)...`,
+        size: totalSizeKb,
+        onComplete: onDelete,
+      })
       return true
     }
     const startConfirm = () => {
       actions.addWindow({
         ...DELETE_CONFIRM_PROMPT,
+        label: `Are you sure you want to send ${fileName} to the Recycle Bin?`,
         buttons: [
           { text: 'Yes', onClick: startDelete },
           { text: 'No', onClick: () => true },
@@ -64,7 +71,7 @@ export const deleteFiles = (files, onComplete = () => {}) => {
 }
 
 export const getDeleteSpeed = (upgrades, totalSize) => {
-  let rate = upgrades['delete-speed'] + 1 || 1
+  let rate = upgrades['delete-speed'] + 1
 
   return (totalSize * 1024) / rate
 }

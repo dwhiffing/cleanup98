@@ -40,6 +40,13 @@ export const PERMISSIONS_ERROR = {
   label: "You don't have permission to delete this.",
 }
 
+export const PERMISSIONS_VIEW_ERROR = {
+  type: 'prompt',
+  image: errorPng,
+  title: 'Administrator',
+  label: "You don't have permission to open this.",
+}
+
 export const DELETE_PROMPT = {
   type: 'progress-prompt',
   title: 'Deleting...',
@@ -67,34 +74,34 @@ export const UPGRADES = [
   {
     key: 'delete-speed',
     name: 'Delete speed',
-    cost: 100,
-    costFactor: 2,
+    cost: 128,
+    costFactor: 3,
     maxLevel: 10,
     description: 'Reduce the time it takes to delete a file',
   },
   {
+    key: 'permissions',
+    name: 'File Access Level',
+    cost: 1024,
+    costFactor: 20,
+    maxLevel: 5,
+    description: 'Allows navigation and deletion of protected files',
+  },
+  {
     key: 'select-box',
     name: 'Select box',
-    cost: 1000,
+    cost: 10240,
     maxLevel: 1,
     description: 'Allow selection of multiple files via box',
   },
   {
     key: 'autodeleter',
     name: 'Auto deleter',
-    cost: 1000,
-    costFactor: 2,
-    maxLevel: 10,
-    description:
-      'Auto deletes the smallest file in the active window every 10 seconds',
-  },
-  {
-    key: 'permissions',
-    name: 'File Access Level',
-    cost: 1000,
+    cost: 102400,
     costFactor: 2,
     maxLevel: 5,
-    description: 'Allows navigation and deletion of protected files',
+    description:
+      'Auto deletes the smallest file in the active window every 10 seconds',
   },
 
   // hotkeys?
@@ -132,3 +139,11 @@ export const DESKTOP_ICONS = [
     onDoubleClick: () => DRIVE_PROPERTIES_MENU,
   },
 ]
+
+export const HELP_PROMPT = {
+  type: 'prompt',
+  image: errorPng,
+  title: 'Windows has encountered an error',
+  label:
+    'Disk Cleanup Utility not found.  Please remove all files from this computer manually by clicking on them and pressing delete.',
+}

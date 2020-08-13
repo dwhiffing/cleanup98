@@ -1,6 +1,7 @@
 import * as BrowserFS from 'browserfs'
 import txtPng from '../assets/txt.png'
 import exePng from '../assets/exe.png'
+import notePng from '../assets/note.png'
 import bmpPng from '../assets/bmp.png'
 import batPng from '../assets/bat.png'
 import unknownPng from '../assets/unknown.png'
@@ -26,12 +27,11 @@ export const randomFs = function (config) {
     let promises = []
 
     for (let i = 0; i < config.number; i++) {
-      const extension = sample(FILE_EXTENSIONS)
+      const extension = sample(config.extensions) || 'txt'
       const filepath =
         path.resolve(process.cwd(), config.path, randomName(2)) +
         '.' +
         extension
-
       EXTENSION_CONTENT[extension]((content) => {
         promises.push(addFile(filepath, content, 'utf8'))
       })
@@ -179,34 +179,69 @@ BrowserFS.configure(
     // user files (mostly txt, bmp, nested 1 or 2 levels)
     // program files (mostly dll, cfg, exe nested 3 or 4 levels)
     // system files (mostly dll, cfg, exe, unknown nested 6 or 8 levels)
-    randomFs({ path: './C:', number: 10 })
-    randomFs({ path: './C:/Windows', number: 30 })
-    randomFs({ path: './C:/Windows/System32', number: 30 })
-    randomFs({ path: './C:/Outlook', number: 30 })
-    randomFs({ path: './C:/Compaq', number: 30 })
-    randomFs({ path: './C:/Acrobat', number: 30 })
-    randomFs({ path: './C:/downloads', number: 100 })
-    randomFs({ path: './C:/My Documents', number: 25 })
+    randomFs({ path: './C:', number: 10, extensions: ['bat', 'dll', 'ini'] })
+    randomFs({
+      path: './C:/Windows',
+      number: 30,
+      extensions: ['bat', 'dll', 'ini'],
+    })
+    randomFs({
+      path: './C:/Windows/System32',
+      number: 30,
+      extensions: ['bat', 'dll', 'ini'],
+    })
+    randomFs({
+      path: './C:/downloads',
+      number: 30,
+      extensions: ['jpg', 'gif', 'bmp', 'exe'],
+    })
+    randomFs({
+      path: './C:/notes',
+      number: 20,
+      extensions: ['txt'],
+    })
+    randomFs({
+      path: './C:/My Documents',
+      number: 25,
+      extensions: ['bmp', 'txt'],
+    })
+    // randomFs({ path: './C:/Acrobat', number: 30 })
+    // randomFs({ path: './C:/Outlook', number: 30 })
+    // randomFs({ path: './C:/Compaq', number: 30 })
   },
 )
 
 const EXTENSION_IMAGES = {
   exe: exePng,
   txt: txtPng,
+  not: notePng,
   dll: batPng,
   bat: batPng,
   bmp: bmpPng,
+  jpg: bmpPng,
+  gif: bmpPng,
   ini: iniPng,
   cfg: unknownPng,
 }
 
 const EXTENSION_CONTENT = {
   exe: (cb) => cb(faker.lorem.paragraph(100)),
-  txt: (cb) => cb(faker.lorem.paragraph(20)),
+  txt: (cb) => cb(faker.lorem.paragraph(1)),
+  not: (cb) => cb(faker.lorem.paragraph(10)),
   dll: (cb) => cb(faker.lorem.paragraph(50)),
   bat: (cb) => cb(faker.lorem.paragraph(50)),
   ini: (cb) => cb(faker.lorem.paragraph(50)),
   cfg: (cb) => cb(faker.lorem.paragraph(50)),
+  jpg: (cb) => {
+    imgGen.generateImage(10, 10, 80, function (err, content) {
+      cb(Base64.fromUint8Array(content.data))
+    })
+  },
+  gif: (cb) => {
+    imgGen.generateImage(50, 50, 80, function (err, content) {
+      cb(Base64.fromUint8Array(content.data))
+    })
+  },
   bmp: (cb) => {
     imgGen.generateImage(100, 100, 80, function (err, content) {
       cb(Base64.fromUint8Array(content.data))
@@ -224,26 +259,6 @@ const EXTENSION_CONTENT = {
 // images files are medium sized and need no permissions but rare
 // exe files are huge but rare and need max permissions
 // cfg/bat/ini/dll files are medium sized but rare and need moderate permissions
-// const FILE_EXTENSIONS = ['txt', 'dll', 'bat', 'exe', 'bmp', 'ini', 'cfg']
-const FILE_EXTENSIONS = [
-  'txt',
-  'txt',
-  'txt',
-  'txt',
-  'txt',
-  'txt',
-  'txt',
-  'txt',
-  'txt',
-  'txt',
-  'txt',
-  'dll',
-  'bat',
-  'exe',
-  'bmp',
-  'ini',
-  'cfg',
-]
 
 // first delete txt files in unprotected folders
 // get some delete speed upgrades to speed up this process
@@ -283,6 +298,9 @@ export const getUpgrades = async () => {
 
 const getAccessLevel = (path) => {
   if (path.match(/\/Windows/)) return 3
-  if (path.match(/\/downloads/)) return 0
+  // if (path.match(/\/downloads/)) return 0
+  if (path === '/C:/notes') return 0
+  if (path.match(/\.txt/)) return 0
+  if (path === '/C:') return 0
   return 1
 }
