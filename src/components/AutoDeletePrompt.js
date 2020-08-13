@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Prompt, ProgressBar } from './Prompt'
+import { Prompt, ProgressBarWithDuration } from './Prompt'
 import { deleteFiles, getDeleteSpeed } from '../utils/useDeletePrompt'
 import errorPng from '../assets/error.png'
 import { useWindowState } from '../utils/useWindowState'
@@ -7,10 +7,7 @@ import deleteFilePng from '../assets/delete-file.png'
 import { useFileState } from '../utils/useFileState'
 import { useUpgradeState } from '../utils/useUpgradeState'
 
-// TODO: figure out upgrades/interface
-// limit to one open at a time
-// should display estimated time to delete
-// should display filename being deleted
+// TODO: add pause button?
 export const AutoDeletePrompt = ({ onClose }) => {
   const [windows] = useWindowState()
   const [upgrades, forceUpdate] = useUpgradeState()
@@ -18,7 +15,7 @@ export const AutoDeletePrompt = ({ onClose }) => {
   const { files: _files, removePath } = useFileState()
   const files = _files[path] || []
 
-  const { counter, hasFile } = useAutoDeleter({
+  const { deleteSpeed, loadingSpeed, counter, file } = useAutoDeleter({
     disabled: false,
     files,
     onDelete: (file) => {
@@ -47,6 +44,7 @@ export const AutoDeletePrompt = ({ onClose }) => {
       />
     )
   }
+  const smallest = getSmallestFile(files)
 
   return (
     <Prompt
@@ -54,8 +52,18 @@ export const AutoDeletePrompt = ({ onClose }) => {
       windowData={{
         title: 'AutoDelete',
         image: deleteFilePng,
-        label: hasFile ? (
-          <ProgressBar progress={counter} />
+        label: file ? (
+          <ProgressBarWithDuration
+            label={`Deleting ${file.name}`}
+            progress={counter}
+            speed={deleteSpeed}
+          />
+        ) : smallest ? (
+          <ProgressBarWithDuration
+            label={`searching for file in ${path}`}
+            progress={counter}
+            speed={loadingSpeed}
+          />
         ) : (
           'No files to delete'
         ),
@@ -73,34 +81,54 @@ const getSmallestFile = (files) =>
 const useAutoDeleter = ({ disabled, files, onDelete }) => {
   const [upgrades] = useUpgradeState()
   const [counter, setCounter] = useState(0)
+  const [deleteSpeed, setDeleteSpeed] = useState(1000)
+  const [loadingSpeed, setLoadingSpeed] = useState(1000)
   const [smallestFile, setSmallestFile] = useState(null)
 
+  // update the delete speed based on the smallest file
   useEffect(() => {
     if (!smallestFile) return
-    const timeout = setTimeout(() => {
-      setCounter((c) => (smallestFile ? c + 1 : 0))
-    }, getDeleteSpeed(upgrades, smallestFile.size))
+    setDeleteSpeed(getDeleteSpeed(upgrades, smallestFile.size))
+  }, [upgrades, smallestFile])
+
+  // update the delete speed based on the smallest file
+  useEffect(() => {
+    setLoadingSpeed(1000 - upgrades.autodeleter * 100)
+  }, [upgrades])
+
+  // update the counters
+  useEffect(() => {
+    const timeout = setTimeout(
+      () => {
+        setCounter((c) => (c < 10 ? c + 1 : c))
+      },
+      smallestFile ? deleteSpeed : loadingSpeed,
+    )
 
     return () => clearTimeout(timeout)
-  }, [smallestFile, upgrades, counter])
+  }, [upgrades, smallestFile, counter, loadingSpeed, deleteSpeed])
 
+  // delete the file if counter is 10 and one is available
   useEffect(() => {
-    if (counter < 10 || !smallestFile) return
-
+    if (counter < 10) return
+    if (!smallestFile) {
+      const smallest = getSmallestFile(files)
+      setSmallestFile(smallest)
+      if (smallest) {
+        setCounter(0)
+      }
+      return
+    }
     deleteFiles([smallestFile.path], () => {
       onDelete(smallestFile)
-      setSmallestFile(null)
       setCounter(0)
+      setSmallestFile(null)
     })
-  }, [counter, smallestFile, onDelete])
+  }, [counter, files, smallestFile, onDelete])
 
   useEffect(() => {
-    const smallest = getSmallestFile(files)
-    setSmallestFile(smallest)
-    if (smallest) {
-      setCounter(0)
-    }
+    setCounter(0)
   }, [files])
 
-  return { counter, hasFile: !!smallestFile }
+  return { counter, loadingSpeed, deleteSpeed, file: smallestFile }
 }

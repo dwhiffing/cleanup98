@@ -120,7 +120,10 @@ button.active {
 }
 
 .icon-item {
-  margin: 10px;
+  margin: 8px 0 0 0;
+}
+p.filename {
+  margin: 8px 0 0 0;
 }
 
 .icon-item.selected p.filename {

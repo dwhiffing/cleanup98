@@ -36,7 +36,9 @@ export const Prompt = ({ windowData, onClose }) => {
           </div>
           <div className="window-body">
             <div className="flex text-center py-2" style={{ lineHeight: 1.4 }}>
-              <img src={image} alt="logo" className="ml-2 mr-4" />
+              <div>
+                <img src={image} alt="logo" className="ml-2 mr-4" />
+              </div>
               {label}
             </div>
 
@@ -94,6 +96,18 @@ export const ProgressPrompt = ({ windowData, onClose }) => {
   )
 }
 
+export const ProgressBarWithDuration = ({ progress, speed, label }) => {
+  return (
+    <div className="flex flex-col">
+      {label && <p style={{ marginBottom: 8 }}>{label}</p>}
+      <ProgressBar progress={progress} />
+      <p style={{ marginTop: 8 }}>
+        Time remaining: {getDuration(speed * (10 - progress))}
+      </p>
+    </div>
+  )
+}
+
 export const ProgressBar = ({ progress, size = 10 }) => {
   return (
     <div className="meter">
@@ -102,7 +116,7 @@ export const ProgressBar = ({ progress, size = 10 }) => {
   )
 }
 
-var getDuration = function (millis) {
+export const getDuration = function (millis) {
   var dur = {}
   var units = [
     { mod: 1000 },

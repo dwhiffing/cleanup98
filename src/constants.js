@@ -92,6 +92,8 @@ export const UPGRADES = [
     key: 'autodeleter',
     name: 'Auto deleter',
     cost: 1000,
+    costFactor: 2,
+    maxLevel: 10,
     description:
       'Auto deletes the smallest file in the active window every 10 seconds',
   },

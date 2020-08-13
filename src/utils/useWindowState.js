@@ -1,6 +1,6 @@
 import { atom, useRecoilState } from 'recoil'
 import { useCallback } from 'react'
-import { DRIVE_PROPERTIES_MENU } from '../constants'
+import { DRIVE_PROPERTIES_MENU, ERROR_PROMPT } from '../constants'
 
 export const windowState = atom({
   key: 'windowState',
@@ -13,7 +13,19 @@ export const useWindowState = () => {
 
   const addWindow = useCallback(
     (windowData, index = windowId++) => {
-      setWindows((windows) => [...windows, { ...windowData, index }])
+      setWindows((windows) => {
+        if (
+          windowData.type === 'auto-delete-prompt' &&
+          windows.map((w) => w.type).includes('auto-delete-prompt')
+        ) {
+          return [
+            ...windows,
+            { ...ERROR_PROMPT, label: 'Autodeleter already open', index },
+          ]
+        }
+
+        return [...windows, { ...windowData, index }]
+      })
       return index
     },
     [setWindows],

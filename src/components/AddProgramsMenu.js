@@ -139,7 +139,6 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
 }
 
 const getUpgradeLevel = (upgrades, key) => {
-  console.log(upgrades)
   return upgrades[key] || 0
 }
 
