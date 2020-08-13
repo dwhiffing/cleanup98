@@ -17,7 +17,7 @@ export const Icon = ({
     <IconBase
       type="folder"
       label={name}
-      size={!name.match(/My Computer|C:/) ? `${size.toFixed(4)}KB` : ''}
+      size={size && !name.match(/My Computer|C:/) ? `${size.toFixed(4)}KB` : ''}
       image={item.image}
       className={item.name === 'C:' ? 'drive' : ''}
       textColor={textColor}
@@ -25,19 +25,20 @@ export const Icon = ({
       onClick={onClick}
       disabled={disabled}
       onDoubleClick={() => {
-        if (disabled) {
+        if (item.path && disabled) {
           windowActions.addWindow({
             ...ERROR_PROMPT,
             label: 'Cannot view this protected folder',
           })
           return
         }
-        windowActions.addWindow({
-          type: 'path',
-          title: item.name,
-          path: item.path,
-          accessLevel: item.accessLevel,
-        })
+        item.path &&
+          windowActions.addWindow({
+            type: 'path',
+            title: item.name,
+            path: item.path,
+            accessLevel: item.accessLevel,
+          })
         onDoubleClick && onDoubleClick()
       }}
     />

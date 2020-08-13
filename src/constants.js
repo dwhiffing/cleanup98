@@ -1,6 +1,8 @@
 import trashFullPng from './assets/trash-full.png'
 import deleteFilePng from './assets/delete-file.png'
 import errorPng from './assets/error.png'
+import installPng from './assets/install.png'
+import drivePng from './assets/drive.png'
 import computerPng from './assets/computer.png'
 
 export const WIN_PROMPT = {
@@ -116,5 +118,17 @@ export const DESKTOP_ICONS = [
     image: computerPng,
     isFolder: true,
     path: '/',
+  },
+  {
+    type: 'folder',
+    name: 'Install Programs',
+    image: installPng,
+    onDoubleClick: () => ADD_PROGRAMS_MENU,
+  },
+  {
+    type: 'folder',
+    name: 'Drive Properties',
+    image: drivePng,
+    onDoubleClick: () => DRIVE_PROPERTIES_MENU,
   },
 ]

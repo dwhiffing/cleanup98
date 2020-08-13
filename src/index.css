@@ -120,10 +120,11 @@ button.active {
 }
 
 .icon-item {
-  margin: 8px 0 0 0;
+  margin: 12px 0 0 0;
 }
 p.filename {
   margin: 8px 0 0 0;
+  line-height: 1.2;
 }
 
 .icon-item.selected p.filename {

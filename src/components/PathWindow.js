@@ -31,7 +31,7 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
 
   useEffect(() => {
     const getOnClickIcon = (item) => () => {
-      if (selected.length > 0 && !upgrades['select-multiple']) {
+      if (selected.length > 0) {
         return setSelected(() => [item.name])
       }
 
