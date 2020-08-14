@@ -13,7 +13,6 @@ export const Prompt = ({ windowData, onClose }) => {
     allowClose = true,
     image,
     onClick,
-    index,
     width = 360,
     height = 125,
     buttons = [{ text: 'OK', onClick: () => true }],
@@ -22,9 +21,8 @@ export const Prompt = ({ windowData, onClose }) => {
   useHotkeys(
     'enter',
     () => {
-      if (buttons[0]) {
-        buttons[0].onClick()
-        onClose()
+      if (buttons[0] && !buttons[0].hotkeyDisabled) {
+        buttons[0].onClick() && onClose()
       }
     },
     {},

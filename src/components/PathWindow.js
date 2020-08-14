@@ -11,7 +11,7 @@ import { useWindowState } from '../utils/useWindowState'
 import { useUpgradeState } from '../utils/useUpgradeState'
 import { useFileState } from '../utils/useFileState'
 import { ContextMenu } from './ContextMenu'
-
+// TODO: max starting pos
 export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
   const nodeRef = useRef(null)
   const [children, setChildren] = useState(null)

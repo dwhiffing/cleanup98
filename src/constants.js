@@ -88,7 +88,7 @@ export const ADD_PROGRAMS_MENU = {
 export const UPGRADES = [
   {
     key: 'delete-speed',
-    name: 'Delete speed',
+    name: 'Delete boost',
     cost: 512,
     costFactor: 2.5,
     maxLevel: 50,
@@ -97,19 +97,36 @@ export const UPGRADES = [
   {
     key: 'permissions',
     name: 'File Access Level',
-    cost: 1024,
-    costFactor: 20,
+    cost: 4096,
+    costFactor: 4,
     maxLevel: 5,
     description: 'Allows navigation and deletion of protected files',
   },
   {
     key: 'autodeleter',
-    name: 'Auto deleter',
-    cost: 10240,
-    costFactor: 2,
+    name: 'Auto deleter count',
+    cost: 5120,
+    costFactor: 8,
     maxLevel: 5,
     description:
-      'Auto deletes the smallest file in the active window every 10 seconds',
+      'Auto deletes the smallest file in the active window every 8 seconds. Each upgrade increases the amount you can have open.',
+  },
+  {
+    key: 'autodeleter-speed',
+    name: 'Auto deleter speed',
+    cost: 5120,
+    costFactor: 4,
+    maxLevel: 5,
+    description:
+      'Auto deletes the smallest file in the active window every 8 seconds. Each upgrade subtracts 2 seconds from the duration.',
+  },
+  {
+    key: 'delete-express',
+    name: 'Delete express',
+    cost: 10240,
+    costFactor: 5,
+    maxLevel: 10,
+    description: 'Extremely reduce the time it takes to delete a file',
   },
   {
     key: 'select-box',
@@ -118,7 +135,7 @@ export const UPGRADES = [
     maxLevel: 1,
     description: 'Allow selection of multiple files via box',
   },
-
+  // max number of simultaneous deletes?
   // hotkeys?
   // show file size?
   // order by filesize?
@@ -267,43 +284,43 @@ export const INITIAL_DIRECTORIES = {
     accessLevel: 5,
   },
   '/C:/Research/Results2/Secrets': {
-    number: 6,
+    number: 4,
     extensions: ['jpg', 'bmp', 'doc', 'txt'],
     accessLevel: 5,
   },
   '/C:/Research/Results2/Secrets/Are': {
-    number: 6,
+    number: 4,
     extensions: ['jpg', 'bmp', 'doc', 'txt'],
     accessLevel: 5,
   },
   '/C:/Research/Results2/Secrets/Are/Always': {
-    number: 6,
+    number: 4,
     extensions: ['jpg', 'bmp', 'doc', 'txt'],
     accessLevel: 5,
   },
   '/C:/Research/Results2/Secrets/Are/Always/Best': {
-    number: 6,
+    number: 4,
     extensions: ['jpg', 'bmp', 'doc', 'txt'],
     accessLevel: 5,
   },
   '/C:/Research/Results2/Secrets/Are/Always/Best/Hidden': {
-    number: 6,
+    number: 4,
     extensions: ['jpg', 'bmp', 'doc', 'txt'],
     accessLevel: 5,
   },
   '/C:/Research/Results2/Secrets/Are/Always/Best/Hidden/In': {
-    number: 6,
+    number: 4,
     extensions: ['jpg', 'bmp', 'doc', 'txt'],
     accessLevel: 5,
   },
   '/C:/Research/Results2/Secrets/Are/Always/Best/Hidden/In/Plain': {
-    number: 6,
+    number: 4,
     extensions: ['jpg', 'bmp', 'doc', 'txt'],
     accessLevel: 5,
   },
   '/C:/Research/Results2/Secrets/Are/Always/Best/Hidden/In/Plain/Sight': {
-    number: 6,
-    extensions: ['jpg', 'bmp', 'doc', 'txt'],
+    number: 50,
+    extensions: ['jpg', 'doc', 'txt'],
     accessLevel: 5,
   },
 

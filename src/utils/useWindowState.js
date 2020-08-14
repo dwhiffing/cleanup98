@@ -1,6 +1,7 @@
 import { atom, useRecoilState } from 'recoil'
 import { useCallback } from 'react'
 import { DRIVE_PROPERTIES_MENU, ERROR_PROMPT } from '../constants'
+import { useUpgradeState } from './useUpgradeState'
 
 export const windowState = atom({
   key: 'windowState',
@@ -10,13 +11,15 @@ export const windowState = atom({
 let windowId = 0
 export const useWindowState = () => {
   const [windows, setWindows] = useRecoilState(windowState)
+  const [upgrades] = useUpgradeState()
 
   const addWindow = useCallback(
     (windowData, index = windowId++) => {
       setWindows((windows) => {
         if (
           windowData.type === 'auto-delete-prompt' &&
-          windows.map((w) => w.type).includes('auto-delete-prompt')
+          windows.filter((w) => w.type === 'auto-delete-prompt').length >=
+            upgrades.autodeleter
         ) {
           return [
             ...windows,
@@ -28,7 +31,7 @@ export const useWindowState = () => {
       })
       return index
     },
-    [setWindows],
+    [setWindows, upgrades],
   )
 
   const removeWindow = useCallback(

@@ -40,10 +40,11 @@ export const randomFs = function (config) {
   })
 }
 
-export const addFile = (filepath, content, format) =>
+export const addFile = (filepath, content, format) => {
   mkdir(path.dirname(filepath)).then(() =>
     promiseFs.writeFileAsync(filepath, content, format),
   )
+}
 
 export const mkdir = (filepath) =>
   promiseFs.mkdirAsync(filepath).catch(function (e) {

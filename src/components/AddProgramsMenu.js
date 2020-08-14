@@ -16,7 +16,7 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
   const [selected, setSelected] = useState(null)
   const nodeRef = React.useRef(null)
   const width = 400
-  const height = 300
+  const height = 400
   // TODO: improve design, add context on what upgrades do
   const [upgrades, forceUpdate] = useUpgradeState()
   const [, actions] = useWindowState()

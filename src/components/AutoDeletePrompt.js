@@ -75,6 +75,7 @@ export const AutoDeletePrompt = ({ onClose }) => {
           {
             text: isLocked ? 'Unlock' : 'Lock to window',
             onClick: () => setIsLocked((l) => !l),
+            hotkeyDisabled: true,
           },
         ],
         height: 170,
@@ -105,7 +106,7 @@ const useAutoDeleter = ({ disabled, files, onDelete }) => {
 
   // update the delete speed based on the smallest file
   useEffect(() => {
-    setLoadingSpeed(1000 - upgrades.autodeleter * 200)
+    setLoadingSpeed(1000 - upgrades['autodeleter-speed'] * 200)
   }, [upgrades])
 
   // update the counters

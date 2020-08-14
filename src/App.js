@@ -19,7 +19,7 @@ function App() {
   const [selected, setSelected] = useState([])
   const { usedSpace } = useStorageDetails(windowActions)
 
-  useIntroPrompts({ skip: true, onComplete: () => setShowDesktop(true) })
+  useIntroPrompts({ skip: false, onComplete: () => setShowDesktop(true) })
 
   // TODO: bring this back with some variations and related upgrades?
   // useClockSettingsPrompt()
