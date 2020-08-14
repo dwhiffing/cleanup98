@@ -1,21 +1,21 @@
 {
   "files": {
-    "main.css": "/cleanup98/static/css/main.6b0a8030.chunk.css",
-    "main.js": "/cleanup98/static/js/main.87d8abae.chunk.js",
-    "main.js.map": "/cleanup98/static/js/main.87d8abae.chunk.js.map",
+    "main.css": "/cleanup98/static/css/main.f351d7c1.chunk.css",
+    "main.js": "/cleanup98/static/js/main.1f2001f8.chunk.js",
+    "main.js.map": "/cleanup98/static/js/main.1f2001f8.chunk.js.map",
     "runtime-main.js": "/cleanup98/static/js/runtime-main.14556c02.js",
     "runtime-main.js.map": "/cleanup98/static/js/runtime-main.14556c02.js.map",
     "static/css/2.857d7983.chunk.css": "/cleanup98/static/css/2.857d7983.chunk.css",
-    "static/js/2.fa022428.chunk.js": "/cleanup98/static/js/2.fa022428.chunk.js",
-    "static/js/2.fa022428.chunk.js.map": "/cleanup98/static/js/2.fa022428.chunk.js.map",
+    "static/js/2.b2b3f7f3.chunk.js": "/cleanup98/static/js/2.b2b3f7f3.chunk.js",
+    "static/js/2.b2b3f7f3.chunk.js.map": "/cleanup98/static/js/2.b2b3f7f3.chunk.js.map",
     "static/js/3.ccedf14b.chunk.js": "/cleanup98/static/js/3.ccedf14b.chunk.js",
     "static/js/3.ccedf14b.chunk.js.map": "/cleanup98/static/js/3.ccedf14b.chunk.js.map",
     "index.html": "/cleanup98/index.html",
-    "precache-manifest.1978cf2b3b361c3157b16ea323081939.js": "/cleanup98/precache-manifest.1978cf2b3b361c3157b16ea323081939.js",
+    "precache-manifest.5be2baa709e8a27fab5774bdcc7ba8ec.js": "/cleanup98/precache-manifest.5be2baa709e8a27fab5774bdcc7ba8ec.js",
     "service-worker.js": "/cleanup98/service-worker.js",
     "static/css/2.857d7983.chunk.css.map": "/cleanup98/static/css/2.857d7983.chunk.css.map",
-    "static/css/main.6b0a8030.chunk.css.map": "/cleanup98/static/css/main.6b0a8030.chunk.css.map",
-    "static/js/2.fa022428.chunk.js.LICENSE.txt": "/cleanup98/static/js/2.fa022428.chunk.js.LICENSE.txt",
+    "static/css/main.f351d7c1.chunk.css.map": "/cleanup98/static/css/main.f351d7c1.chunk.css.map",
+    "static/js/2.b2b3f7f3.chunk.js.LICENSE.txt": "/cleanup98/static/js/2.b2b3f7f3.chunk.js.LICENSE.txt",
     "static/js/3.ccedf14b.chunk.js.LICENSE.txt": "/cleanup98/static/js/3.ccedf14b.chunk.js.LICENSE.txt",
     "static/media/chord.mp3": "/cleanup98/static/media/chord.19d21185.mp3",
     "static/media/click.mp3": "/cleanup98/static/media/click.ae7aa376.mp3",
@@ -27,8 +27,8 @@
   "entrypoints": [
     "static/js/runtime-main.14556c02.js",
     "static/css/2.857d7983.chunk.css",
-    "static/js/2.fa022428.chunk.js",
-    "static/css/main.6b0a8030.chunk.css",
-    "static/js/main.87d8abae.chunk.js"
+    "static/js/2.b2b3f7f3.chunk.js",
+    "static/css/main.f351d7c1.chunk.css",
+    "static/js/main.1f2001f8.chunk.js"
   ]
 }
