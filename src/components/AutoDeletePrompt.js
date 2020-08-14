@@ -11,6 +11,7 @@ export const AutoDeletePrompt = ({ onClose }) => {
   const [windows] = useWindowState()
   const [upgrades, forceUpdate] = useUpgradeState()
   const [path, setPath] = useState()
+  const [isLocked, setIsLocked] = useState(false)
   const { files: _files, removePath } = useFileState()
   const files = _files[path] || []
 
@@ -24,11 +25,14 @@ export const AutoDeletePrompt = ({ onClose }) => {
   })
 
   useEffect(() => {
+    console.log('test')
+    if (isLocked) return
+
     const activeWindow = windows[windows.length - 1]
     if (activeWindow && activeWindow.path) {
       setPath(activeWindow.path)
     }
-  }, [windows])
+  }, [windows, isLocked])
 
   if (!upgrades.autodeleter) {
     return (
@@ -51,6 +55,7 @@ export const AutoDeletePrompt = ({ onClose }) => {
       windowData={{
         title: 'AutoDelete',
         image: deleteFilePng,
+        index: 0,
         label: file ? (
           <ProgressBarWithDuration
             label={`Deleting ${file.name}`}
@@ -67,8 +72,13 @@ export const AutoDeletePrompt = ({ onClose }) => {
         ) : (
           'No files to delete. Focus a window with available files to get started.'
         ),
-        buttons: [],
-        height: 150,
+        buttons: [
+          {
+            text: isLocked ? 'Unlock' : 'Lock to window',
+            onClick: () => setIsLocked((l) => !l),
+          },
+        ],
+        height: 170,
         width: 300,
       }}
       onClose={onClose}
@@ -130,7 +140,7 @@ const useAutoDeleter = ({ disabled, files, onDelete }) => {
   }, [counter, files, smallestFile, onDelete])
 
   useEffect(() => {
-    setCounter(0)
+    // setCounter(0)
   }, [files])
 
   return { counter, loadingSpeed, deleteSpeed, file: smallestFile }

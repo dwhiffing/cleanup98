@@ -3,6 +3,7 @@ import Draggable from 'react-draggable'
 import deleteFilePng from '../assets/delete-file.png'
 import { useUpgradeState } from '../utils/useUpgradeState'
 import { getDeleteSpeed } from '../utils/useDeletePrompt'
+import { useHotkeys } from 'react-hotkeys-hook'
 
 // TODO: enter hotkey to hit okay if present
 export const Prompt = ({ windowData, onClose }) => {
@@ -12,11 +13,23 @@ export const Prompt = ({ windowData, onClose }) => {
     allowClose = true,
     image,
     onClick,
-    width = 400,
-    height = 122,
+    index,
+    width = 360,
+    height = 125,
     buttons = [{ text: 'OK', onClick: () => true }],
   } = windowData
   const nodeRef = React.useRef(null)
+  useHotkeys(
+    'enter',
+    () => {
+      if (buttons[0]) {
+        buttons[0].onClick()
+        onClose()
+      }
+    },
+    {},
+    [buttons],
+  )
   return (
     <Draggable
       nodeRef={nodeRef}
@@ -28,7 +41,7 @@ export const Prompt = ({ windowData, onClose }) => {
       handle=".title-bar"
     >
       <div ref={nodeRef} onClick={onClick} className="prompt-wrap">
-        <div className="window" style={{ width, height }}>
+        <div className="window flex flex-col" style={{ width, height }}>
           <div className="title-bar">
             <div className="title-bar-text">{title}</div>
             <div className="title-bar-controls">
@@ -37,18 +50,26 @@ export const Prompt = ({ windowData, onClose }) => {
               )}
             </div>
           </div>
-          <div className="window-body">
-            <div className="flex text-center py-2" style={{ lineHeight: 1.4 }}>
+          <div className="window-body flex flex-1">
+            <div className="flex flex-1 w-full">
               <div>
-                <img src={image} alt="logo" className="ml-2 mr-4" />
+                <img
+                  src={image}
+                  alt="logo"
+                  className="mt-4 ml-2 mr-4"
+                  style={{ minWidth: 30 }}
+                />
               </div>
-              {label}
+              <div className="flex-1 flex flex-col justify-center mb-2">
+                {label}
+              </div>
             </div>
 
             <div className="flex">
               {buttons.map(({ onClick, text }) => (
                 <button
                   key={`button-${text}`}
+                  className="mr-2"
                   onClick={() => onClick() && onClose()}
                 >
                   {text}

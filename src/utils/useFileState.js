@@ -26,6 +26,7 @@ export const useFileState = () => {
       })
       return values
     })
+    updatePath('/')
   }
 
   return { files, updatePath, removePath }

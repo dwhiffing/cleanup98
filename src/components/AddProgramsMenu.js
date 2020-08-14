@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import Draggable from 'react-draggable'
+import installPng from '../assets/install.png'
 import { addFile, rmdir } from '../utils/fileSystem'
 import { useStorageDetails } from '../utils/useStorageDetails'
 import {
@@ -15,7 +16,7 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
   const [selected, setSelected] = useState(null)
   const nodeRef = React.useRef(null)
   const width = 400
-  const height = 400
+  const height = 300
   // TODO: improve design, add context on what upgrades do
   const [upgrades, forceUpdate] = useUpgradeState()
   const [, actions] = useWindowState()
@@ -47,7 +48,8 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
       actions.addWindow({
         type: 'prompt',
         title: 'Installed',
-        label: `${selected.name} Installed successfully.  Check the Start Menu to find your new programs`,
+        label: `${selected.name} Installed successfully.  Check the Start Menu or System files to use the new functionality.`,
+        image: installPng,
       })
     } catch (e) {
       console.log(e)
@@ -65,7 +67,7 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
       handle=".title-bar"
     >
       <div ref={nodeRef} onClick={windowData.onClick} className="prompt-wrap">
-        <div className="window" style={{ width, height }}>
+        <div className="window flex flex-col" style={{ width, height }}>
           <div className="title-bar">
             <div className="title-bar-text">Add Programs</div>
             <div className="title-bar-controls">
@@ -73,12 +75,14 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
             </div>
           </div>
 
-          <div className="window-body">
-            <p>Free space: {freeSpace.toFixed(2)}KB</p>
+          <div className="window-body flex flex-1">
+            <div className="">
+              <p>Free space: {freeSpace.toFixed(2)}KB</p>
+            </div>
 
             <ul
-              className="tree-view w-full"
-              style={{ height: 180, overflowY: 'scroll' }}
+              className="tree-view w-full flex-1"
+              style={{ height: 120, overflowY: 'scroll' }}
             >
               {UPGRADES.map((upgrade) => {
                 const currentLevel = getUpgradeLevel(upgrades, upgrade.key)
@@ -115,28 +119,26 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
               })}
             </ul>
 
-            {selected && (
-              <div>
-                <p>{selected.name}</p>
-                {!selectedDisabled && (
-                  <p>
-                    cost:{' '}
-                    {(getUpgradeCost(upgrades, selected) / 1024).toFixed(2)}
-                    KB
-                  </p>
-                )}
-                <p>{selected.description}</p>
-                {!selectedDisabled && (
-                  <button className="mt-4" onClick={buySelected}>
-                    Add
-                  </button>
-                )}
-              </div>
-            )}
-
-            <button className="mt-4" onClick={onClose}>
-              OK
-            </button>
+            <div className="flex-1 flex flex-col justify-center">
+              {selected && (
+                <>
+                  <p>{selected.name}</p>
+                  {!selectedDisabled && (
+                    <p>
+                      Size:{' '}
+                      {(getUpgradeCost(upgrades, selected) / 1024).toFixed(2)}
+                      KB
+                    </p>
+                  )}
+                  <p>{selected.description}</p>
+                  {!selectedDisabled && (
+                    <button className="mt-6 self-center" onClick={buySelected}>
+                      Add
+                    </button>
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>

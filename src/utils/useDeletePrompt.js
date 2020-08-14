@@ -71,7 +71,7 @@ export const deleteFiles = (files, onComplete = () => {}) => {
 }
 
 export const getDeleteSpeed = (upgrades, totalSize) => {
-  let rate = upgrades['delete-speed'] + 1
+  let rate = (upgrades['delete-speed'] + 1) * 0.25
 
   return (totalSize * 1024) / rate
 }

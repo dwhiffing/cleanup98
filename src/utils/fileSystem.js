@@ -1,19 +1,15 @@
 import * as BrowserFS from 'browserfs'
-import txtPng from '../assets/txt.png'
-import exePng from '../assets/exe.png'
-import notePng from '../assets/note.png'
-import bmpPng from '../assets/bmp.png'
-import batPng from '../assets/bat.png'
-import unknownPng from '../assets/unknown.png'
-import iniPng from '../assets/ini.png'
 import folderPng from '../assets/folder.png'
 import drivePng from '../assets/drive.png'
-import faker from 'faker'
 import Promise from 'bluebird'
 import { sample } from 'lodash'
-import imgGen from 'js-image-generator'
-import { Base64 } from 'js-base64'
-import { UPGRADES } from '../constants'
+import {
+  UPGRADES,
+  EXTENSION_CONTENT,
+  EXTENSION_IMAGES,
+  INITIAL_DIRECTORIES,
+  SPECIAL_FILE_NAMES,
+} from '../constants'
 
 export const fs = BrowserFS.BFSRequire('fs')
 export const promiseFs = Promise.promisifyAll(fs)
@@ -28,7 +24,11 @@ export const randomFs = function (config) {
     for (let i = 0; i < config.number; i++) {
       const extension = sample(config.extensions) || 'txt'
       const filepath =
-        path.resolve(process.cwd(), config.path, randomName(2)) +
+        path.resolve(
+          process.cwd(),
+          config.path,
+          SPECIAL_FILE_NAMES[extension](),
+        ) +
         '.' +
         extension
       EXTENSION_CONTENT[extension]((content) => {
@@ -76,14 +76,6 @@ export async function rmdir(filepath) {
       await promiseFs.unlinkAsync(filepath)
     }
   } catch (e) {}
-}
-
-function randomName(wordCount) {
-  let strings = []
-  while (wordCount-- > 0) {
-    strings.push(faker.system.fileExt())
-  }
-  return strings.join('-')
 }
 
 export async function getFileSizeForPath(directoryName, result = []) {
@@ -168,93 +160,12 @@ BrowserFS.configure(
     if (hasFs) return
 
     localStorage.setItem('has-fs', 'true')
-    await promiseFs.mkdirAsync('/C:')
-    await promiseFs.mkdirAsync('/C:/My Documents')
-    await promiseFs.mkdirAsync('/C:/Program Files')
-    await promiseFs.mkdirAsync('/C:/Windows')
 
-    randomFs({ path: './C:', number: 10, extensions: ['bat', 'dll', 'ini'] })
-    randomFs({
-      path: './C:/Windows',
-      number: 30,
-      extensions: ['bat', 'dll', 'ini'],
-    })
-    randomFs({
-      path: './C:/Windows/System32',
-      number: 30,
-      extensions: ['bat', 'dll', 'ini'],
-    })
-    randomFs({
-      path: './C:/downloads',
-      number: 30,
-      extensions: ['jpg', 'gif', 'bmp', 'exe'],
-    })
-    randomFs({
-      path: './C:/notes',
-      number: 20,
-      extensions: ['txt'],
-    })
-    randomFs({
-      path: './C:/My Documents',
-      number: 25,
-      extensions: ['bmp', 'txt'],
-    })
-    // randomFs({ path: './C:/Acrobat', number: 30 })
-    // randomFs({ path: './C:/Outlook', number: 30 })
-    // randomFs({ path: './C:/Compaq', number: 30 })
+    Object.entries(INITIAL_DIRECTORIES).forEach(([path, opts]) =>
+      randomFs({ path, ...opts }),
+    )
   },
 )
-
-const EXTENSION_IMAGES = {
-  exe: exePng,
-  txt: txtPng,
-  not: notePng,
-  dll: batPng,
-  bat: batPng,
-  bmp: bmpPng,
-  jpg: bmpPng,
-  gif: bmpPng,
-  ini: iniPng,
-  cfg: unknownPng,
-}
-
-const EXTENSION_CONTENT = {
-  exe: (cb) => cb(faker.lorem.paragraph(100)),
-  txt: (cb) => cb(faker.lorem.paragraph(1)),
-  not: (cb) => cb(faker.lorem.paragraph(10)),
-  dll: (cb) => cb(faker.lorem.paragraph(50)),
-  bat: (cb) => cb(faker.lorem.paragraph(50)),
-  ini: (cb) => cb(faker.lorem.paragraph(50)),
-  cfg: (cb) => cb(faker.lorem.paragraph(50)),
-  jpg: (cb) => {
-    imgGen.generateImage(10, 10, 80, function (err, content) {
-      cb(Base64.fromUint8Array(content.data))
-    })
-  },
-  gif: (cb) => {
-    imgGen.generateImage(50, 50, 80, function (err, content) {
-      cb(Base64.fromUint8Array(content.data))
-    })
-  },
-  bmp: (cb) => {
-    imgGen.generateImage(100, 100, 80, function (err, content) {
-      cb(Base64.fromUint8Array(content.data))
-    })
-  },
-}
-
-// TODO
-// first delete txt files in unprotected folders
-// get some delete speed upgrades to speed up this process
-// unlock basic permissions to access bigger files
-// get auto deleter and start clearing out folders full of text
-// unlock permissions level 2 and get enough space for auto deleter
-// use auto deleter to purge permissions level 2 folders
-// get upgrade that automatically focuses/opens a new window of no files are left
-// use that data to unlock windows permissions
-// delete all windows data
-// delete all program data
-// win the game
 
 export const getUpgrades = async () => {
   let upgrades = []
@@ -281,10 +192,9 @@ export const getUpgrades = async () => {
 }
 
 const getAccessLevel = (path) => {
-  if (path.match(/\/Windows/)) return 3
-  // if (path.match(/\/downloads/)) return 0
-  if (path === '/C:/notes') return 0
-  if (path.match(/\.txt/)) return 0
-  if (path === '/C:') return 0
-  return 1
+  const _path = path.replace(/\w+\.\w+/, '')
+  const directory = INITIAL_DIRECTORIES[_path]
+  if (directory && typeof directory.accessLevel === 'number')
+    return directory.accessLevel
+  return 0
 }

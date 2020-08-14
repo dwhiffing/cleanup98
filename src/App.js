@@ -14,11 +14,12 @@ import { uniq } from 'lodash'
 
 function App() {
   const [showDesktop, setShowDesktop] = useState(false)
+  const [hasWon, setHasWon] = useState(false)
   const [, windowActions] = useWindowState()
   const [selected, setSelected] = useState([])
   const { usedSpace } = useStorageDetails(windowActions)
 
-  useIntroPrompts({ skip: false, onComplete: () => setShowDesktop(true) })
+  useIntroPrompts({ skip: true, onComplete: () => setShowDesktop(true) })
 
   // TODO: bring this back with some variations and related upgrades?
   // useClockSettingsPrompt()
@@ -26,8 +27,11 @@ function App() {
   // TODO add sound
   useEffect(() => {
     // TODO fix win condition
-    if (usedSpace < 0.01) windowActions.addWindow(WIN_PROMPT)
-  }, [windowActions, usedSpace])
+    if (usedSpace < 0.01 && !hasWon) {
+      setHasWon(true)
+      windowActions.addWindow(WIN_PROMPT)
+    }
+  }, [windowActions, hasWon, usedSpace])
 
   const getOnClickIcon = (item) => () => {
     if (selected.length > 0) {

@@ -13,14 +13,19 @@ export const ContextMenu = ({ files, selected }) => {
   const [upgrades] = useUpgradeState()
   const showDeletePrompt = useDeletePrompt()
   const [, actions] = useWindowState()
+
   const closeMenu = useCallback(() => {
-    setTimeout(() => setState({ visible: false }), 100)
+    setTimeout(() => setState({ visible: false }), 10)
   }, [])
+
   const openMenu = useCallback(
     (e) => {
       e.preventDefault()
 
-      document.addEventListener('click', closeMenu)
+      document.addEventListener('click', () => {
+        closeMenu()
+      })
+
       const clickedIcon = e.target.closest('.icon-item')
       const clickedPath = clickedIcon ? clickedIcon.dataset.path : null
       const clickedFile =

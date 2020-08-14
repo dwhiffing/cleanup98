@@ -70,7 +70,7 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
             alt="random"
           />,
         )
-      } else if (extension === 'txt') {
+      } else if (extension.match(/txt|doc/)) {
         setChildren(<p>{files.toString()}</p>)
       } else {
         actions.addWindow(ERROR_PROMPT)
@@ -123,7 +123,10 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
         onDrag={(event, node) => {
           coordsRef.current = { x: node.x, y: node.y }
         }}
-        defaultPosition={{ x: zIndex * 20, y: zIndex * 20 }}
+        defaultPosition={{
+          x: window.innerWidth / 4 + (zIndex + 1) * 14,
+          y: window.innerWidth / 20 + (zIndex + 1) * 37,
+        }}
       >
         <div
           ref={nodeRef}
@@ -133,9 +136,12 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
         >
           <Resizable
             enable={RESIZEABLE_SIDES}
-            minWidth={640}
-            minHeight={400}
-            defaultSize={{ width: 640, height: 400 }}
+            minWidth={200}
+            minHeight={200}
+            defaultSize={{
+              width: window.innerWidth / 2,
+              height: window.innerWidth / 3,
+            }}
             size={
               windowData.maximized
                 ? {

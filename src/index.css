@@ -77,7 +77,7 @@ button.active {
 }
 
 .meter {
-  min-width: 155px;
+  width: 155px;
   height: 23px;
   position: relative;
   box-shadow: var(--border-field);
@@ -194,4 +194,7 @@ p.filename {
 img.crisp {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
+}
+.title-bar {
+  height: 22px;
 }

@@ -22,7 +22,10 @@ export const TaskBar = () => {
   const [windows, actions] = useWindowState()
   return (
     <div>
-      <div className="absolute flex window bottom-0 left-0 right-0">
+      <div
+        style={{ height: 28 }}
+        className="absolute flex window bottom-0 left-0 right-0"
+      >
         <StartButton />
 
         {windows
@@ -117,7 +120,8 @@ export const StartButton = () => {
           type: 'prompt',
           title: 'Log Off',
           image: logoutPng,
-          label: 'Do you want to reset your progress?',
+          label:
+            'This will reset your progress and you will have to start over. Do you want to continue?',
           buttons: [
             {
               text: 'OK',
@@ -138,7 +142,8 @@ export const StartButton = () => {
           type: 'prompt',
           image: shutdownPng,
           title: 'Shut down',
-          label: 'Do you want to reset your progress?',
+          label:
+            'This will reset your progress and you will have to start over. Do you want to continue?',
           buttons: [
             {
               text: 'OK',
