@@ -8,13 +8,16 @@ import faker from 'faker'
 import txtPng from './assets/txt.png'
 import exePng from './assets/exe.png'
 import notePng from './assets/note.png'
-import bmpPng from './assets/bmp.png'
+import jpgPng from './assets/bmp.png'
+import bmpPng from './assets/bmp2.png'
+import wavPng from './assets/wav.png'
 import batPng from './assets/bat.png'
 import unknownPng from './assets/unknown.png'
 import iniPng from './assets/ini.png'
 import imgGen from 'js-image-generator'
 import { Base64 } from 'js-base64'
 import { sample } from 'lodash'
+import rant from 'rantjs'
 
 export const WIN_PROMPT = {
   type: 'prompt',
@@ -87,8 +90,8 @@ export const UPGRADES = [
     key: 'delete-speed',
     name: 'Delete speed',
     cost: 512,
-    costFactor: 2,
-    maxLevel: 10,
+    costFactor: 2.5,
+    maxLevel: 50,
     description: 'Reduce the time it takes to delete a file',
   },
   {
@@ -175,7 +178,7 @@ export const INITIAL_DIRECTORIES = {
     accessLevel: 0,
   },
   '/C:/My Documents/Notes': {
-    number: 50,
+    number: 40,
     extensions: ['txt'],
     accessLevel: 0,
   },
@@ -183,12 +186,12 @@ export const INITIAL_DIRECTORIES = {
   // 1
 
   '/C:/My Documents/Journals': {
-    number: 50,
+    number: 30,
     extensions: ['doc'],
     accessLevel: 1,
   },
   '/C:/My Documents/Pictures': {
-    number: 50,
+    number: 45,
     extensions: ['gif'],
     accessLevel: 1,
   },
@@ -196,12 +199,12 @@ export const INITIAL_DIRECTORIES = {
   // 2
 
   '/C:/My Documents/Photos': {
-    number: 50,
+    number: 35,
     extensions: ['jpg'],
     accessLevel: 2,
   },
   '/C:/My Documents/Paintings': {
-    number: 30,
+    number: 15,
     extensions: ['bmp'],
     accessLevel: 2,
   },
@@ -210,58 +213,166 @@ export const INITIAL_DIRECTORIES = {
     extensions: ['jpg', 'gif', 'bmp', 'exe'],
     accessLevel: 2,
   },
+
+  // 3
+
+  '/C:/Downloads/Music': {
+    number: 25,
+    extensions: ['wav'],
+    accessLevel: 3,
+  },
+
+  // 4
   '/C:/Downloads/Games': {
     number: 2,
     extensions: ['exe'],
-    accessLevel: 2,
+    accessLevel: 4,
   },
   '/C:/Downloads/Games/Action': {
     number: 10,
     extensions: ['exe'],
-    accessLevel: 2,
+    accessLevel: 4,
   },
   '/C:/Downloads/Games/RPG': {
     number: 10,
     extensions: ['exe'],
-    accessLevel: 2,
-  },
-
-  // 3
-
-  '/C:/Downloads/Music': {
-    number: 25,
-    extensions: ['wav'],
-    accessLevel: 3,
-  },
-
-  '/C:/Downloads/Music': {
-    number: 25,
-    extensions: ['wav'],
-    accessLevel: 3,
-  },
-
-  '/C:/Downloads/Research': {
-    number: 50,
-    extensions: ['jpg', 'txt'],
-    accessLevel: 3,
-  },
-
-  '/C:/Acrobat': {
-    number: 50,
-    extensions: ['exe', 'ini'],
-    accessLevel: 2,
-  },
-
-  // 3
-  '/C:/Windows': {
-    number: 30,
-    extensions: ['dll', 'ini'],
     accessLevel: 4,
+  },
+
+  // 5
+  // TODO: should have more nested folders
+  '/C:/Research': {
+    number: 2,
+    extensions: ['jpg', 'bmp', 'doc', 'txt'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Subject1': {
+    number: 2,
+    extensions: ['jpg', 'bmp'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Subject2': {
+    number: 1,
+    extensions: ['jpg', 'bmp'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Results1': {
+    number: 1,
+    extensions: ['jpg', 'bmp', 'doc', 'txt'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Results2': {
+    number: 6,
+    extensions: ['jpg', 'bmp', 'doc', 'txt'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Results2/Secrets': {
+    number: 6,
+    extensions: ['jpg', 'bmp', 'doc', 'txt'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Results2/Secrets/Are': {
+    number: 6,
+    extensions: ['jpg', 'bmp', 'doc', 'txt'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Results2/Secrets/Are/Always': {
+    number: 6,
+    extensions: ['jpg', 'bmp', 'doc', 'txt'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Results2/Secrets/Are/Always/Best': {
+    number: 6,
+    extensions: ['jpg', 'bmp', 'doc', 'txt'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Results2/Secrets/Are/Always/Best/Hidden': {
+    number: 6,
+    extensions: ['jpg', 'bmp', 'doc', 'txt'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Results2/Secrets/Are/Always/Best/Hidden/In': {
+    number: 6,
+    extensions: ['jpg', 'bmp', 'doc', 'txt'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Results2/Secrets/Are/Always/Best/Hidden/In/Plain': {
+    number: 6,
+    extensions: ['jpg', 'bmp', 'doc', 'txt'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Results2/Secrets/Are/Always/Best/Hidden/In/Plain/Sight': {
+    number: 6,
+    extensions: ['jpg', 'bmp', 'doc', 'txt'],
+    accessLevel: 5,
+  },
+
+  '/C:/Research/Favorites': {
+    number: 5,
+    extensions: ['jpg', 'bmp'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Favorites/Other': {
+    number: 2,
+    extensions: ['doc', 'txt'],
+    accessLevel: 5,
+  },
+
+  // 6
+  '/C:/Windows': {
+    number: 20,
+    extensions: ['dll', 'ini', 'exe'],
+    accessLevel: 6,
   },
   '/C:/Windows/System32': {
-    number: 30,
+    number: 20,
     extensions: ['bat', 'dll', 'ini'],
-    accessLevel: 4,
+    accessLevel: 6,
+  },
+  '/C:/Windows/System32/abc': {
+    number: 10,
+    extensions: ['bat', 'dll', 'ini'],
+    accessLevel: 6,
+  },
+  '/C:/Windows/System32/def': {
+    number: 10,
+    extensions: ['bat', 'dll', 'ini'],
+    accessLevel: 6,
+  },
+  '/C:/Windows/System32/ghi': {
+    number: 10,
+    extensions: ['bat', 'dll', 'ini'],
+    accessLevel: 6,
+  },
+  '/C:/Windows/System32/jkl': {
+    number: 10,
+    extensions: ['bat', 'dll', 'ini'],
+    accessLevel: 6,
+  },
+  '/C:/Windows/System32/mno': {
+    number: 10,
+    extensions: ['bat', 'dll', 'ini'],
+    accessLevel: 6,
+  },
+  '/C:/Windows/System32/pqr': {
+    number: 10,
+    extensions: ['bat', 'dll', 'ini'],
+    accessLevel: 6,
+  },
+  '/C:/Windows/System32/stu': {
+    number: 10,
+    extensions: ['bat', 'dll', 'ini'],
+    accessLevel: 6,
+  },
+  '/C:/Windows/System32/vwx': {
+    number: 10,
+    extensions: ['bat', 'dll', 'ini'],
+    accessLevel: 6,
+  },
+  '/C:/Windows/System32/yz': {
+    number: 10,
+    extensions: ['bat', 'dll', 'ini'],
+    accessLevel: 6,
   },
 }
 
@@ -272,22 +383,22 @@ export const EXTENSION_IMAGES = {
   dll: batPng,
   bat: batPng,
   bmp: bmpPng,
-  jpg: bmpPng,
-  gif: bmpPng,
+  jpg: jpgPng,
+  gif: jpgPng,
   ini: iniPng,
   cfg: unknownPng,
-  wav: unknownPng,
+  wav: wavPng,
 }
 
 export const EXTENSION_CONTENT = {
-  exe: (cb) => cb(faker.lorem.paragraph(100)),
-  txt: (cb) => cb(faker.hacker.phrase(1)),
-  doc: (cb) => cb(faker.company.bs(5)),
-  dll: (cb) => cb(faker.lorem.paragraph(500)),
+  exe: (cb) => cb(faker.lorem.paragraph(1200)),
+  txt: (cb) => cb(rant(sample(RANTS))),
+  doc: (cb) => cb(rant(sample(BIG_RANTS))),
   bat: (cb) => cb(faker.lorem.paragraph(50)),
-  wav: (cb) => cb(faker.lorem.paragraph(500)),
   ini: (cb) => cb(faker.lorem.paragraph(5)),
   cfg: (cb) => cb(faker.lorem.paragraph(50)),
+  dll: (cb) => cb(faker.lorem.paragraph(300)),
+  wav: (cb) => cb(faker.lorem.paragraph(300)),
   gif: (cb) => {
     imgGen.generateImage(10, 10, 80, function (err, content) {
       cb(Base64.fromUint8Array(content.data))
@@ -327,28 +438,92 @@ function randomName(wordCount) {
   }
   return strings.join('-')
 }
+const get98Date = () =>
+  new Date(883630765256 + Math.floor(Math.random() * 31536000000))
+    .toISOString()
+    .split('T')[0]
 
 export const SPECIAL_FILE_NAMES = {
   txt: () => {
     const type = sample(['Book Report', 'Recipe', 'Work Notes'])
-    const date = new Date(
-      883630765256 + Math.floor(Math.random() * 31536000000),
-    )
-      .toISOString()
-      .split('T')[0]
-    return type + '_' + date
+    return type + '_' + get98Date()
   },
-  doc: () => randomName(2),
-  dll: () => randomName(2),
-  bat: () => randomName(2),
-  bmp: () => randomName(2),
-  jpg: () => randomName(2),
-  gif: () => randomName(2),
+  doc: () => {
+    const type = sample(['Journal', 'Lovers', 'Receipts'])
+    return type + '_' + get98Date()
+  },
+  jpg: () => {
+    const type = sample([
+      'Research Photo',
+      `${faker.name.lastName()} School Photo`,
+      `${faker.name.lastName()} Family Photo`,
+    ])
+    return type + '_' + get98Date()
+  },
+
+  bmp: () => {
+    const type = sample([
+      'drawing of Mom',
+      'family portrait',
+      'first day',
+      'big text',
+      'mspaint-is-fun',
+    ])
+    return type + faker.random.word()
+  },
+  gif: () => {
+    const type = sample([
+      'funny',
+      'animated cool',
+      'under-construction',
+      'spider-man',
+      'dancing-baby',
+      'all-your-base',
+      'godwins-law',
+    ])
+    return type + faker.random.word()
+  },
+  wav: () => sample(MUSIC),
   ini: () => randomName(2),
   cfg: () => randomName(2),
-  wav: () => sample(MUSIC),
-  exe: () => randomName(2),
+  dll: () => randomName(2),
+  bat: () => randomName(2),
+  exe: () => {
+    return sample(GAMES)
+  },
 }
+
+const GAMES = [
+  'Doom',
+  'Space Cadet 3D Pinball',
+  'Need for Speed',
+  'Descent',
+  'Death Rally',
+  'Monster Truck Madness',
+  'Solitaire',
+  'Minesweeper',
+  'HOVER!',
+  'Unreal',
+  'The Incredible Machine',
+  'Unreal Tournament',
+  'Hearts',
+  'Freecell',
+  'Golf',
+  'Starcraft',
+  'X-Com',
+  'Star Control',
+  'Star Control 2',
+  'Jazz Jackrabbit',
+  'Heart of Darkness',
+  'Duke Nukem',
+  'Wolfenstein 3D',
+  'Half Life',
+  'Command and Conquer',
+  'Thief',
+  'Tomb Raider',
+  'Buldars Gate',
+  'Chess',
+]
 
 const MUSIC = [
   'Too Close (Next)',
@@ -369,15 +544,15 @@ const MUSIC = [
   'My Way (Usher)',
   'My All (Mariah Carey)',
   'The First Night (Monica)',
-  'Been Around the World (Puff Daddy featuring The Notorious B.I.G. and Mase)',
+  'Been Around the World',
   'Adia (Sarah McLachlan)',
   'Crush (Jennifer Paige)',
-  "Everybody (Backstreet's Back) (Backstreet Boys)",
+  "Everybody (Backstreet's Back)",
   "I Don't Want to Miss a Thing (Aerosmith)",
-  "Body Bumpin' (Yippie-Yi-Yo) (Public Announcement)",
+  "Body Bumpin' (Yippie-Yi-Yo)",
   'This Kiss (Faith Hill)',
   "I Don't Ever Want to See You Again (Uncle Sam)",
-  "Let's Ride (Montell Jordan featuring Master P and Silkk the Shocker)",
+  "Let's Ride",
   'Sex and Candy (Marcy Playground)',
   'Show Me Love (Robyn)',
   'A Song for Mama (Boyz II Men)',
@@ -386,12 +561,12 @@ const MUSIC = [
   'Gone till November (Wyclef Jean)',
   'My Body (LSG)',
   'Tubthumping (Chumbawamba)',
-  'Deja Vu (Uptown Baby) (Lord Tariq and Peter Gunz)',
+  'Deja Vu (Uptown Baby)',
   "I Want You Back ('N Sync)",
   'When the Lights Go Out (Five)',
   "They Don't Know (Jon B.)",
-  "Make 'Em Say Uhh! (Master P featuring Fiend, Silkk the Shocker, Mia X and Mystikal)",
-  'Make It Hot (Nicole featuring Missy Elliott and Mocha)',
+  "Make 'Em Say Uhh!",
+  'Make It Hot (Nicole)',
   'Never Ever (All Saints)',
   'I Get Lonely (Janet Jackson featuring Blackstreet)',
   'Feel So Good (Mase featuring Kelly Price)',
@@ -404,7 +579,7 @@ const MUSIC = [
   'One Week (Barenaked Ladies)',
   'Swing My Way (K. P. & Envyi)',
   'The Arms of the One Who Loves You (Xscape)',
-  "My Love Is the Shhh! (Somethin' for the People featuring Trina & Tamara)",
+  'My Love Is the Shhh!',
   "Daydreamin' (Tatyana Ali)",
   "We're Not Making Love No More (Dru Hill)",
   'Semi-Charmed Life (Third Eye Blind)',
@@ -418,17 +593,17 @@ const MUSIC = [
   'Are You Jimmy Ray? (Jimmy Ray)',
   'Cruel Summer (Ace of Base)',
   'I Got the Hook Up (Master P featuring Sons of Funk)',
-  'Victory (Puff Daddy featuring The Notorious B.I.G. and Busta Rhymes)',
+  'Victory',
   'Too Much (Spice Girls)',
-  "Ghetto Supastar (That Is What You Are) (Pras Michel featuring Ol' Dirty Bastard and Mýa)",
+  'Ghetto Supastar (That Is What You Are) ',
   'How Deep Is Your Love (Dru Hill featuring Redman)',
-  'Friend of Mine (Kelly Price featuring R. Kelly and Ron Isley)',
+  'Friend of Mine (Kelly Price)',
   'Turn It Up (Remix)/Fire It Up (Busta Rhymes)',
   "I'll Be (Edwin McCain)",
   'Ray of Light (Madonna)',
   'All for You (Sister Hazel)',
   'Touch It (Monifah)',
-  "Money, Power & Respect (The LOX featuring DMX and Lil' Kim)",
+  'Money, Power & Respect',
   'Bitter Sweet Symphony (The Verve)',
   'Dangerous (Busta Rhymes)',
   'Spice Up Your Life (Spice Girls)',
@@ -440,9 +615,9 @@ const MUSIC = [
   'Foolish Games' / 'You Were Meant for Me (Jewel)',
   'Love You Down (INOJ)',
   'Do for Love (2Pac featuring Eric Williams)',
-  'Raise the Roof (Luke featuring No Good But So Good)',
+  'Raise the Roof (Luke)',
   'Heaven (Nu Flavor)',
-  'The Party Continues (Jermaine Dupri featuring Da Brat and Usher)',
+  'The Party Continues',
   'Sock It 2 Me (Missy Elliott featuring Da Brat)',
   'Butta Love (Next)',
   'A Rose Is Still a Rose (Aretha Franklin)',
@@ -451,4 +626,19 @@ const MUSIC = [
   "Thinkin' Bout It (Gerald Levert)",
   "Nobody's Supposed to Be Here (Deborah Cox)",
   'Westside (TQ)',
+]
+
+const RANTS = [
+  "The <noun tool> in the <place building> made a noisy <sound>. You sigh <adv emotion> and get up to check it out. As you peer into the dimly lit enclosure, you <adv emotion> wonder what made the noise. You don't see anything, and conclude that it was probably just a <noun animal> scurrying about. You find that a couple of <noun tool plural> has been upended, so you set them straight. You turn around and start <verb walk ing> out, but freeze as you hear something <sound> behind you. What can it be?",
+  'Let me <verb> you a bit of my <noun>. I used to (and still) <verb> a lot of <noun plural> ranging from <noun> to <noun>. I saw how those <noun plural> get <adj> <noun> from the audience. Sometimes I felt, “Hey, I already knew this” or “I can <verb> better than this guy” and I jumped in and made my first <noun>!',
+  'At that time I wanted a place to put up my <noun plural> and <noun plural>. I guess there are lots of <noun plural> like me, who became <noun plural> by chance. And if you are one of them, I suggest that you get your self a <adj> <noun> rather than a <adj> one. Let me list out some <noun plural>.',
+  'People don’t become <noun plural> overnight, its something you become with time. A <adj> <noun> needs an <noun> to write for it. For instance, you cannot <verb> about making <noun> without actually making it or you cannot write about <noun> without a <noun> in <verb>. A newbie <noun> is usually a jack of a couple of trades but not a master.',
+]
+
+const BIG_RANTS = [
+  `When you have a <noun> you can <verb> about anything under the sky. You do not have to limit its <noun> within a closed shell. With a niche <noun> you will be <verb>ing about the same thing over and over.
+
+Suppose you have a <noun> about <noun> and suddenly a striking idea that has nothing to do with <noun> comes up. Where do you put it? You cannot write a <noun> on <noun> on a <noun> that reads <noun>all, can you? <noun> give you that freedom.
+
+People don’t become <noun plural> overnight, its something you become with time. A <adj> <noun> needs an <noun> to write for it. For instance, you cannot <verb> about making <noun> without actually making it or you cannot write about <noun> without a <noun> in <verb>. A newbie <noun> is usually a jack of a couple of trades but not a master.`,
 ]

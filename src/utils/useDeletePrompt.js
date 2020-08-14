@@ -29,8 +29,10 @@ export const useDeletePrompt = () => {
       return actions.addWindow(prompt)
     }
     const totalSizeKb = files.reduce((sum, f) => sum + f.size, 0)
-    const fileName =
-      files.length === 1 ? files[0].name : `${files.length} files`
+    const fileName = (files.length === 1
+      ? files[0].name
+      : `${files.length} files`
+    ).slice(0, 12)
     const onDelete = () =>
       deleteFiles(
         files.map((f) => f.path),
@@ -71,7 +73,7 @@ export const deleteFiles = (files, onComplete = () => {}) => {
 }
 
 export const getDeleteSpeed = (upgrades, totalSize) => {
-  let rate = (upgrades['delete-speed'] + 1) * 0.25
+  let rate = (upgrades['delete-speed'] + 1) * 0.5
 
   return (totalSize * 1024) / rate
 }

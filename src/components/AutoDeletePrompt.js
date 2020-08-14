@@ -25,7 +25,6 @@ export const AutoDeletePrompt = ({ onClose }) => {
   })
 
   useEffect(() => {
-    console.log('test')
     if (isLocked) return
 
     const activeWindow = windows[windows.length - 1]
