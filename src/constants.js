@@ -62,7 +62,7 @@ export const PERMISSIONS_VIEW_ERROR = {
 }
 
 export const DELETE_PROMPT = {
-  type: 'progress-prompt',
+  type: 'delete-prompt',
   title: 'Deleting...',
   image: deleteFilePng,
   width: 300,
@@ -89,50 +89,46 @@ export const UPGRADES = [
   {
     key: 'delete-speed',
     name: 'Delete boost',
-    cost: 512,
-    costFactor: 2.5,
-    maxLevel: 50,
+    costs: [512, 2048, 8000, 20000, 50000, 100000],
     description: 'Reduce the time it takes to delete a file',
+  },
+  {
+    key: 'max-delete-prompt',
+    name: 'More deletes',
+    costs: [3200, 8000, 20000, 30000, 60000],
+    description: 'Allows simultaneous deletion of more files.',
   },
   {
     key: 'permissions',
     name: 'File Access Level',
-    cost: 4096,
-    costFactor: 4,
-    maxLevel: 5,
+    costs: [3200, 8000, 20000, 30000, 60000],
     description: 'Allows navigation and deletion of protected files',
   },
   {
     key: 'autodeleter',
     name: 'Auto deleter count',
-    cost: 5120,
-    costFactor: 8,
-    maxLevel: 5,
+    costs: [3200, 8000, 20000, 30000, 60000],
     description:
       'Auto deletes the smallest file in the active window every 8 seconds. Each upgrade increases the amount you can have open.',
   },
   {
     key: 'autodeleter-speed',
     name: 'Auto deleter speed',
-    cost: 5120,
-    costFactor: 4,
-    maxLevel: 5,
+    costs: [3200, 8000, 20000, 30000, 60000],
     description:
       'Auto deletes the smallest file in the active window every 8 seconds. Each upgrade subtracts 2 seconds from the duration.',
   },
   {
     key: 'delete-express',
     name: 'Delete express',
-    cost: 10240,
-    costFactor: 5,
-    maxLevel: 10,
+    costs: [3200, 8000, 20000, 30000, 60000],
     description: 'Extremely reduce the time it takes to delete a file',
   },
   {
     key: 'select-box',
     name: 'Select box',
+    costs: [102400],
     cost: 102400,
-    maxLevel: 1,
     description: 'Allow selection of multiple files via box',
   },
   // max number of simultaneous deletes?
@@ -432,21 +428,6 @@ export const EXTENSION_CONTENT = {
     })
   },
 }
-
-// PROGRESSION
-//
-// TODO
-// first delete txt files in unprotected folders
-// get some delete speed upgrades to speed up this process
-// unlock basic permissions to access bigger files
-// get auto deleter and start clearing out folders full of text
-// unlock permissions level 2 and get enough space for auto deleter
-// use auto deleter to purge permissions level 2 folders
-// get upgrade that automatically focuses/opens a new window of no files are left
-// use that data to unlock windows permissions
-// delete all windows data
-// delete all program data
-// win the game
 
 function randomName(wordCount) {
   let strings = []

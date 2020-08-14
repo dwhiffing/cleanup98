@@ -25,11 +25,11 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
     ? getUpgradeLevel(upgrades, selected.key)
     : 0
   const selectedDisabled = selected
-    ? selectedUpgradeLevel >= (selected.maxLevel || 1)
+    ? selectedUpgradeLevel >= (selected.costs.length || 1)
     : false
 
   const buySelected = () => {
-    if (selectedUpgradeLevel >= (selected.maxLevel || 1)) {
+    if (selectedUpgradeLevel >= (selected.costs.length || 1)) {
       actions.addWindow({ ...ALREADY_INSTALLED_ERROR, label: 'At max level' })
       return
     }
@@ -86,7 +86,7 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
             >
               {UPGRADES.map((upgrade) => {
                 const currentLevel = getUpgradeLevel(upgrades, upgrade.key)
-                const disabled = currentLevel >= (upgrade.maxLevel || 1)
+                const disabled = currentLevel >= (upgrade.costs.length || 1)
                 return (
                   <li
                     key={upgrade.key}
@@ -152,10 +152,7 @@ const getUpgradeLevel = (upgrades, key) => {
 
 const getUpgradeCost = (upgrades, upgrade) => {
   const level = getUpgradeLevel(upgrades, upgrade.key)
-  const previousLevelCost =
-    level === 0
-      ? 0
-      : upgrade.cost * Math.pow(upgrade.costFactor || 1.2, level - 1)
-  const levelCost = upgrade.cost * Math.pow(upgrade.costFactor || 1.2, level)
+  const previousLevelCost = upgrade.costs[level - 1] || 0
+  const levelCost = upgrade.costs[level]
   return levelCost - previousLevelCost
 }

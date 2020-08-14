@@ -5,7 +5,6 @@ import { useUpgradeState } from '../utils/useUpgradeState'
 import { getDeleteSpeed } from '../utils/useDeletePrompt'
 import { useHotkeys } from 'react-hotkeys-hook'
 
-// TODO: enter hotkey to hit okay if present
 export const Prompt = ({ windowData, onClose }) => {
   const {
     title = '',
@@ -33,8 +32,8 @@ export const Prompt = ({ windowData, onClose }) => {
       nodeRef={nodeRef}
       bounds={{ left: 0, top: 0 }}
       defaultPosition={{
-        x: window.innerWidth / 2 - width / 2,
-        y: window.innerHeight / 2 - height,
+        x: Math.ceil(Math.random() * 30) + window.innerWidth / 2 - width / 2,
+        y: Math.ceil(Math.random() * 30) + window.innerHeight / 2 - height,
       }}
       handle=".title-bar"
     >

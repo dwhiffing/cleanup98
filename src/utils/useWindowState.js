@@ -26,6 +26,16 @@ export const useWindowState = () => {
             { ...ERROR_PROMPT, label: 'Autodeleter already open', index },
           ]
         }
+        if (
+          windowData.type.match(/^delete-prompt/) &&
+          windows.filter((w) => w.type.match(/^delete-prompt/)).length >=
+            upgrades['max-delete-prompt'] + 1
+        ) {
+          return [
+            ...windows,
+            { ...ERROR_PROMPT, label: 'Max number of deletes open', index },
+          ]
+        }
 
         return [...windows, { ...windowData, index }]
       })

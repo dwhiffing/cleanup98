@@ -22,18 +22,20 @@ export const randomFs = function (config) {
     let promises = []
 
     for (let i = 0; i < config.number; i++) {
-      const extension = sample(config.extensions) || 'txt'
-      const filepath =
-        path.resolve(
-          process.cwd(),
-          config.path,
-          SPECIAL_FILE_NAMES[extension](),
-        ) +
-        '.' +
-        extension
-      EXTENSION_CONTENT[extension]((content) => {
-        promises.push(addFile(filepath, content, 'utf8'))
-      })
+      try {
+        const extension = sample(config.extensions) || 'txt'
+        const filepath =
+          path.resolve(
+            process.cwd(),
+            config.path,
+            SPECIAL_FILE_NAMES[extension](),
+          ) +
+          '.' +
+          extension
+        EXTENSION_CONTENT[extension]((content) => {
+          promises.push(addFile(filepath, content, 'utf8'))
+        })
+      } catch (e) {}
     }
 
     return Promise.all(promises)

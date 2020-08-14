@@ -7,7 +7,6 @@ import {
 import { useUpgradeState } from '../utils/useUpgradeState'
 import { useWindowState } from '../utils/useWindowState'
 
-//TODO should show delete confirmation?
 const checkCanDelete = (files, upgrades) => {
   const anyDirectory = files.some((f) => f.isFolder)
   if (anyDirectory) {
@@ -41,6 +40,7 @@ export const useDeletePrompt = () => {
     const startDelete = () => {
       actions.addWindow({
         ...DELETE_PROMPT,
+        type: 'delete-prompt',
         title: `Deleting ${fileName} (${totalSizeKb.toFixed(2)}KB)...`,
         size: totalSizeKb,
         onComplete: onDelete,
@@ -50,6 +50,7 @@ export const useDeletePrompt = () => {
     const startConfirm = () => {
       actions.addWindow({
         ...DELETE_CONFIRM_PROMPT,
+        type: 'confirm-delete-prompt',
         label: `Are you sure you want to send ${fileName} to the Recycle Bin?`,
         buttons: [
           { text: 'Yes', onClick: startDelete },
@@ -73,7 +74,7 @@ export const deleteFiles = (files, onComplete = () => {}) => {
 }
 
 export const getDeleteSpeed = (upgrades, totalSize) => {
-  let rate = (upgrades['delete-speed'] + 1) * 0.5
+  let rate = (upgrades['delete-speed'] + 1) * 0.25
   let double = upgrades['delete-express'] + 1
 
   return (totalSize * 1024) / rate / (double * 5)

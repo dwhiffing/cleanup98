@@ -19,14 +19,13 @@ function App() {
   const [selected, setSelected] = useState([])
   const { usedSpace } = useStorageDetails(windowActions)
 
-  useIntroPrompts({ skip: false, onComplete: () => setShowDesktop(true) })
+  useIntroPrompts({ skip: true, onComplete: () => setShowDesktop(true) })
 
   // TODO: bring this back with some variations and related upgrades?
   // useClockSettingsPrompt()
 
   // TODO add sound
   useEffect(() => {
-    // TODO fix win condition
     if (usedSpace < 0.01 && !hasWon) {
       setHasWon(true)
       windowActions.addWindow(WIN_PROMPT)
