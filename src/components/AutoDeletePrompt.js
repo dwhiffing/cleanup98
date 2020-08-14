@@ -6,7 +6,8 @@ import { useWindowState } from '../utils/useWindowState'
 import deleteFilePng from '../assets/delete-file.png'
 import { useFileState } from '../utils/useFileState'
 import { useUpgradeState } from '../utils/useUpgradeState'
-
+import useSound from 'use-sound'
+import boopSfx from '../assets/recycle.mp3'
 export const AutoDeletePrompt = ({ onClose }) => {
   const [windows] = useWindowState()
   const [upgrades, forceUpdate] = useUpgradeState()
@@ -97,6 +98,7 @@ const useAutoDeleter = ({ disabled, files, onDelete }) => {
   const [deleteSpeed, setDeleteSpeed] = useState(1000)
   const [loadingSpeed, setLoadingSpeed] = useState(1000)
   const [smallestFile, setSmallestFile] = useState(null)
+  const [play] = useSound(boopSfx)
 
   // update the delete speed based on the smallest file
   useEffect(() => {
@@ -134,10 +136,11 @@ const useAutoDeleter = ({ disabled, files, onDelete }) => {
     }
     deleteFiles([smallestFile.path], () => {
       onDelete(smallestFile)
+      play()
       setCounter(0)
       setSmallestFile(null)
     })
-  }, [counter, files, smallestFile, onDelete])
+  }, [play, counter, files, smallestFile, onDelete])
 
   useEffect(() => {
     // setCounter(0)
