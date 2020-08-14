@@ -24,5 +24,9 @@ export const useStorageDetails = () => {
 
   const freeSpace = capacity - usedSpace
 
-  return { usedSpace, freeSpace, capacity }
+  return {
+    usedSpace: usedSpace || 1,
+    freeSpace: freeSpace,
+    capacity: capacity,
+  }
 }

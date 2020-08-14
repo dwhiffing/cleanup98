@@ -11,7 +11,7 @@ import { useWindowState } from '../utils/useWindowState'
 import { useUpgradeState } from '../utils/useUpgradeState'
 import { useFileState } from '../utils/useFileState'
 import { ContextMenu } from './ContextMenu'
-// TODO: max starting pos
+
 export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
   const nodeRef = useRef(null)
   const [children, setChildren] = useState(null)
@@ -19,11 +19,12 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
   const [, actions] = useWindowState()
   const { files: _files, updatePath, removePath } = useFileState()
   const showDeletePrompt = useDeletePrompt()
+  const startPosX = Math.min(98, zIndex * 14)
+  const startPosY = Math.min(259, zIndex * 37)
   const [selected, setSelected, coordsRef, selectingRef] = useSelectBox({
-    start: { x: zIndex * 20, y: zIndex * 20 },
+    start: { x: startPosX, y: startPosY },
     disabled: !isActive || !upgrades['select-box'],
   })
-
   const onClickWindow = ({ target }) => {
     if (!selectingRef.current && !target.classList.contains('icon-button'))
       setSelected([])
@@ -124,8 +125,8 @@ export const PathWindow = ({ windowData, zIndex, isActive, onClose }) => {
           coordsRef.current = { x: node.x, y: node.y }
         }}
         defaultPosition={{
-          x: window.innerWidth / 4 + (zIndex + 1) * 14,
-          y: window.innerWidth / 20 + (zIndex + 1) * 37,
+          x: window.innerWidth / 4 + startPosX,
+          y: window.innerWidth / 20 + startPosY,
         }}
       >
         <div

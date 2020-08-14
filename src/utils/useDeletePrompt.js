@@ -6,6 +6,8 @@ import {
 } from '../constants.js'
 import { useUpgradeState } from '../utils/useUpgradeState'
 import { useWindowState } from '../utils/useWindowState'
+import useSound from 'use-sound'
+import boopSfx from '../assets/recycle.mp3'
 
 const checkCanDelete = (files, upgrades) => {
   const anyDirectory = files.some((f) => f.isFolder)
@@ -21,6 +23,7 @@ const checkCanDelete = (files, upgrades) => {
 export const useDeletePrompt = () => {
   const [upgrades] = useUpgradeState()
   const [, actions] = useWindowState()
+  const [play] = useSound(boopSfx)
 
   const showDeletePrompt = (files, opts = {}) => {
     const prompt = checkCanDelete(files, upgrades)
@@ -35,7 +38,10 @@ export const useDeletePrompt = () => {
     const onDelete = () =>
       deleteFiles(
         files.map((f) => f.path),
-        opts.onComplete,
+        () => {
+          opts.onComplete()
+          play()
+        },
       )
     const startDelete = () => {
       actions.addWindow({
@@ -77,5 +83,5 @@ export const getDeleteSpeed = (upgrades, totalSize) => {
   let rate = (upgrades['delete-speed'] + 1) * 0.25
   let double = upgrades['delete-express'] + 1
 
-  return (totalSize * 1024) / rate / (double * 5)
+  return (totalSize * 1024) / rate / (double * 7.5)
 }

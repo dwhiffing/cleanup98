@@ -4,6 +4,9 @@ import deleteFilePng from '../assets/delete-file.png'
 import { useUpgradeState } from '../utils/useUpgradeState'
 import { getDeleteSpeed } from '../utils/useDeletePrompt'
 import { useHotkeys } from 'react-hotkeys-hook'
+import useSound from 'use-sound'
+import boopSfx from '../assets/chord.mp3'
+import dingSfx from '../assets/ding.mp3'
 
 export const Prompt = ({ windowData, onClose }) => {
   const {
@@ -11,12 +14,27 @@ export const Prompt = ({ windowData, onClose }) => {
     label = '',
     allowClose = true,
     image,
+    type,
+    sound,
     onClick,
     width = 360,
     height = 125,
     buttons = [{ text: 'OK', onClick: () => true }],
   } = windowData
   const nodeRef = React.useRef(null)
+  const [playBoop, data] = useSound(boopSfx)
+  const [playDing, data2] = useSound(dingSfx)
+
+  useEffect(() => {
+    if (sound !== 'boop') return
+    data.duration && playBoop()
+  }, [playBoop, data.duration, sound])
+
+  useEffect(() => {
+    if (sound !== 'ding') return
+    data2.duration && playDing()
+  }, [playDing, data2.duration, sound])
+
   useHotkeys(
     'enter',
     () => {

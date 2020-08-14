@@ -22,6 +22,7 @@ import rant from 'rantjs'
 export const WIN_PROMPT = {
   type: 'prompt',
   image: trashFullPng,
+  sound: 'ding',
   title: 'Success',
   label: 'You win!',
 }
@@ -29,6 +30,7 @@ export const WIN_PROMPT = {
 export const ERROR_PROMPT = {
   type: 'prompt',
   image: errorPng,
+  sound: 'boop',
   title: 'Error',
   label: 'Windows has encountered an error.',
 }
@@ -36,12 +38,14 @@ export const ERROR_PROMPT = {
 export const ALREADY_INSTALLED_ERROR = {
   type: 'prompt',
   image: errorPng,
+  sound: 'boop',
   title: 'Error',
   label: 'Already have this upgrade',
 }
 
 export const NOT_ENOUGH_SPACE_ERROR = {
   type: 'prompt',
+  sound: 'boop',
   image: errorPng,
   title: 'Error',
   label: "You don't have enough free space",
@@ -49,6 +53,7 @@ export const NOT_ENOUGH_SPACE_ERROR = {
 
 export const PERMISSIONS_ERROR = {
   type: 'prompt',
+  sound: 'boop',
   image: errorPng,
   title: 'Administrator',
   label: 'Unauthorized. You do not currently have permission to delete this.',
@@ -56,6 +61,7 @@ export const PERMISSIONS_ERROR = {
 
 export const PERMISSIONS_VIEW_ERROR = {
   type: 'prompt',
+  sound: 'boop',
   image: errorPng,
   title: 'Administrator',
   label: 'Unauthorized. You do not currently have permission to open this.',
@@ -89,49 +95,67 @@ export const UPGRADES = [
   {
     key: 'delete-speed',
     name: 'Delete boost',
-    costs: [512, 2048, 8000, 20000, 50000, 100000],
+    costs: [
+      512,
+      2048,
+      8000,
+      20000,
+      50000,
+      100000,
+      200000,
+      400000,
+      850000,
+      1200000,
+    ],
     description: 'Reduce the time it takes to delete a file',
+    requires: [],
   },
   {
     key: 'max-delete-prompt',
     name: 'More deletes',
-    costs: [3200, 8000, 20000, 30000, 60000],
-    description: 'Allows simultaneous deletion of more files.',
+    costs: [3200, 25000, 88000, 400000, 1500000],
+    description:
+      'Allows simultaneous deletion of more files. Each upgrade allows 1 more delete',
+    requires: ['delete-speed'],
   },
   {
     key: 'permissions',
     name: 'File Access Level',
-    costs: [3200, 8000, 20000, 30000, 60000],
-    description: 'Allows navigation and deletion of protected files',
+    costs: [5600, 50000, 310000, 900000, 2100000],
+    description:
+      'Allows navigation and deletion of protected files.  Each level gives access to more files.',
+    requires: ['max-delete-prompt'],
   },
   {
     key: 'autodeleter',
     name: 'Auto deleter count',
-    costs: [3200, 8000, 20000, 30000, 60000],
+    costs: [8000, 60000, 1600000],
     description:
-      'Auto deletes the smallest file in the active window every 8 seconds. Each upgrade increases the amount you can have open.',
+      'Auto deletes the smallest file in the active window every 10 seconds. Each upgrade increases the amount you can have open.',
+    requires: ['permissions'],
   },
   {
     key: 'autodeleter-speed',
     name: 'Auto deleter speed',
-    costs: [3200, 8000, 20000, 30000, 60000],
+    costs: [11000, 70000, 250000, 2000000],
     description:
-      'Auto deletes the smallest file in the active window every 8 seconds. Each upgrade subtracts 2 seconds from the duration.',
+      'Auto deletes the smallest file in the active window every 10 seconds. Each upgrade subtracts 2 seconds from the duration.',
+    requires: ['autodeleter'],
   },
   {
     key: 'delete-express',
     name: 'Delete express',
-    costs: [3200, 8000, 20000, 30000, 60000],
+    costs: [20000, 150000, 800000, 2000000],
     description: 'Extremely reduce the time it takes to delete a file',
+    requires: ['autodeleter-speed'],
   },
   {
     key: 'select-box',
     name: 'Select box',
-    costs: [102400],
-    cost: 102400,
-    description: 'Allow selection of multiple files via box',
+    costs: [60000],
+    description: 'Allow selection of multiple files.',
+    requires: ['delete-express'],
   },
-  // max number of simultaneous deletes?
   // hotkeys?
   // show file size?
   // order by filesize?
@@ -217,7 +241,7 @@ export const INITIAL_DIRECTORIES = {
     accessLevel: 2,
   },
   '/C:/My Documents/Paintings': {
-    number: 15,
+    number: 10,
     extensions: ['bmp'],
     accessLevel: 2,
   },
@@ -253,69 +277,68 @@ export const INITIAL_DIRECTORIES = {
   },
 
   // 5
-  // TODO: should have more nested folders
   '/C:/Research': {
     number: 2,
     extensions: ['jpg', 'bmp', 'doc', 'txt'],
-    accessLevel: 5,
+    accessLevel: 4,
   },
   '/C:/Research/Subject1': {
     number: 2,
     extensions: ['jpg', 'bmp'],
-    accessLevel: 5,
+    accessLevel: 4,
   },
   '/C:/Research/Subject2': {
     number: 1,
     extensions: ['jpg', 'bmp'],
-    accessLevel: 5,
+    accessLevel: 4,
   },
   '/C:/Research/Results1': {
     number: 1,
     extensions: ['jpg', 'bmp', 'doc', 'txt'],
-    accessLevel: 5,
+    accessLevel: 4,
   },
   '/C:/Research/Results2': {
     number: 6,
     extensions: ['jpg', 'bmp', 'doc', 'txt'],
-    accessLevel: 5,
+    accessLevel: 4,
   },
   '/C:/Research/Results2/Secrets': {
     number: 4,
-    extensions: ['jpg', 'bmp', 'doc', 'txt'],
-    accessLevel: 5,
+    extensions: ['jpg', 'doc', 'txt'],
+    accessLevel: 4,
   },
   '/C:/Research/Results2/Secrets/Are': {
     number: 4,
-    extensions: ['jpg', 'bmp', 'doc', 'txt'],
+    extensions: ['jpg', 'doc', 'txt'],
     accessLevel: 5,
   },
   '/C:/Research/Results2/Secrets/Are/Always': {
     number: 4,
-    extensions: ['jpg', 'bmp', 'doc', 'txt'],
+    extensions: ['jpg', 'doc', 'txt'],
     accessLevel: 5,
   },
   '/C:/Research/Results2/Secrets/Are/Always/Best': {
     number: 4,
-    extensions: ['jpg', 'bmp', 'doc', 'txt'],
+    extensions: ['jpg', 'doc', 'txt'],
     accessLevel: 5,
   },
   '/C:/Research/Results2/Secrets/Are/Always/Best/Hidden': {
     number: 4,
-    extensions: ['jpg', 'bmp', 'doc', 'txt'],
+    extensions: ['jpg', 'doc', 'txt'],
     accessLevel: 5,
   },
   '/C:/Research/Results2/Secrets/Are/Always/Best/Hidden/In': {
     number: 4,
-    extensions: ['jpg', 'bmp', 'doc', 'txt'],
+    extensions: ['jpg', 'doc', 'txt'],
     accessLevel: 5,
   },
   '/C:/Research/Results2/Secrets/Are/Always/Best/Hidden/In/Plain': {
     number: 4,
-    extensions: ['jpg', 'bmp', 'doc', 'txt'],
+    extensions: ['jpg', 'doc', 'txt'],
     accessLevel: 5,
   },
   '/C:/Research/Results2/Secrets/Are/Always/Best/Hidden/In/Plain/Sight': {
-    number: 50,
+    number: 20,
     extensions: ['jpg', 'doc', 'txt'],
     accessLevel: 5,
   },
@@ -330,62 +353,107 @@ export const INITIAL_DIRECTORIES = {
     extensions: ['doc', 'txt'],
     accessLevel: 5,
   },
+  '/C:/Research/Favorites/Other/abc': {
+    number: 10,
+    extensions: ['txt', 'doc', 'gif'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Favorites/Other/def': {
+    number: 10,
+    extensions: ['txt', 'doc', 'gif'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Favorites/Other/ghi': {
+    number: 10,
+    extensions: ['txt', 'doc', 'gif'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Favorites/Other/jkl': {
+    number: 10,
+    extensions: ['txt', 'doc', 'gif'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Favorites/Other/mno': {
+    number: 10,
+    extensions: ['txt', 'doc', 'gif'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Favorites/Other/pqr': {
+    number: 10,
+    extensions: ['txt', 'doc', 'gif'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Favorites/Other/stu': {
+    number: 10,
+    extensions: ['txt', 'doc', 'gif'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Favorites/Other/vwx': {
+    number: 10,
+    extensions: ['txt', 'doc', 'gif'],
+    accessLevel: 5,
+  },
+  '/C:/Research/Favorites/Other/yz': {
+    number: 10,
+    extensions: ['txt', 'doc', 'gif'],
+    accessLevel: 5,
+  },
 
   // 6
   '/C:/Windows': {
     number: 20,
     extensions: ['dll', 'ini', 'exe'],
-    accessLevel: 6,
+    accessLevel: 5,
   },
   '/C:/Windows/System32': {
     number: 20,
     extensions: ['bat', 'dll', 'ini'],
-    accessLevel: 6,
+    accessLevel: 5,
   },
   '/C:/Windows/System32/abc': {
     number: 10,
     extensions: ['bat', 'dll', 'ini'],
-    accessLevel: 6,
+    accessLevel: 5,
   },
   '/C:/Windows/System32/def': {
     number: 10,
     extensions: ['bat', 'dll', 'ini'],
-    accessLevel: 6,
+    accessLevel: 5,
   },
   '/C:/Windows/System32/ghi': {
     number: 10,
     extensions: ['bat', 'dll', 'ini'],
-    accessLevel: 6,
+    accessLevel: 5,
   },
   '/C:/Windows/System32/jkl': {
     number: 10,
     extensions: ['bat', 'dll', 'ini'],
-    accessLevel: 6,
+    accessLevel: 5,
   },
   '/C:/Windows/System32/mno': {
     number: 10,
     extensions: ['bat', 'dll', 'ini'],
-    accessLevel: 6,
+    accessLevel: 5,
   },
   '/C:/Windows/System32/pqr': {
     number: 10,
     extensions: ['bat', 'dll', 'ini'],
-    accessLevel: 6,
+    accessLevel: 5,
   },
   '/C:/Windows/System32/stu': {
     number: 10,
     extensions: ['bat', 'dll', 'ini'],
-    accessLevel: 6,
+    accessLevel: 5,
   },
   '/C:/Windows/System32/vwx': {
     number: 10,
     extensions: ['bat', 'dll', 'ini'],
-    accessLevel: 6,
+    accessLevel: 5,
   },
   '/C:/Windows/System32/yz': {
     number: 10,
     extensions: ['bat', 'dll', 'ini'],
-    accessLevel: 6,
+    accessLevel: 5,
   },
 }
 
@@ -467,7 +535,7 @@ export const SPECIAL_FILE_NAMES = {
       'big text',
       'mspaint-is-fun',
     ])
-    return type + faker.random.word()
+    return type + '-' + faker.random.word()
   },
   gif: () => {
     const type = sample([
@@ -479,7 +547,7 @@ export const SPECIAL_FILE_NAMES = {
       'all-your-base',
       'godwins-law',
     ])
-    return type + faker.random.word()
+    return type + '-' + faker.random.word()
   },
   wav: () => sample(MUSIC),
   ini: () => randomName(2),

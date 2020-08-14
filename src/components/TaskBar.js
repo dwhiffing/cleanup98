@@ -17,6 +17,8 @@ import {
 } from '../constants'
 import { useWindowState } from '../utils/useWindowState'
 import { useUpgradeState } from '../utils/useUpgradeState'
+import useSound from 'use-sound'
+import boopSfx from '../assets/click.mp3'
 
 export const TaskBar = () => {
   const [windows, actions] = useWindowState()
@@ -56,6 +58,7 @@ export const StartButton = () => {
   const [startMenu, setStartMenu] = useState({})
   const [, actions] = useWindowState()
   const [upgrades, forceUpdate] = useUpgradeState()
+  const [play] = useSound(boopSfx)
 
   useEffect(() => {
     const listener = document.addEventListener('click', (e) => {
@@ -171,6 +174,7 @@ export const StartButton = () => {
       <button
         className="start-button"
         onClick={() => {
+          play()
           setStartMenu({
             visible: true,
             buttons: START_MENU_BUTTONS,
@@ -186,6 +190,7 @@ export const StartButton = () => {
 
 export const HoverMenu = ({ buttons, showBanner = false }) => {
   const [visibleMenu, setVisibleMenu] = useState(null)
+  const [play] = useSound(boopSfx)
   return (
     <div className="window flex flex-1 relative" style={{ zIndex: 9999 }}>
       {showBanner && (
@@ -198,7 +203,11 @@ export const HoverMenu = ({ buttons, showBanner = false }) => {
             <div
               key={`start-button-${b.text}`}
               className="start-menu-button relative"
-              onClick={b.onClick}
+              onClick={() => {
+                play()
+
+                b.onClick && b.onClick()
+              }}
               onMouseEnter={() => setVisibleMenu(b.text)}
             >
               {b.image && (

@@ -5,7 +5,7 @@ import { Icon } from './components/Icon'
 import { useWindowState } from './utils/useWindowState'
 import { useIntroPrompts } from './utils/useIntroPrompts'
 import { useStorageDetails } from './utils/useStorageDetails'
-import { WIN_PROMPT, DESKTOP_ICONS } from './constants'
+import { WIN_PROMPT, DESKTOP_ICONS, DRIVE_PROPERTIES_MENU } from './constants'
 // import { useClockSettingsPrompt } from './utils/useClockSettingsPrompt'
 
 import './tailwind.output.css'
@@ -19,7 +19,14 @@ function App() {
   const [selected, setSelected] = useState([])
   const { usedSpace } = useStorageDetails(windowActions)
 
-  useIntroPrompts({ skip: true, onComplete: () => setShowDesktop(true) })
+  useIntroPrompts({
+    skip: false,
+    onComplete: () => {
+      setShowDesktop(true)
+
+      windowActions.addWindow(DRIVE_PROPERTIES_MENU)
+    },
+  })
 
   // TODO: bring this back with some variations and related upgrades?
   // useClockSettingsPrompt()

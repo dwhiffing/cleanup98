@@ -17,7 +17,6 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
   const nodeRef = React.useRef(null)
   const width = 400
   const height = 400
-  // TODO: improve design, add context on what upgrades do
   const [upgrades, forceUpdate] = useUpgradeState()
   const [, actions] = useWindowState()
 
@@ -48,6 +47,7 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
       actions.addWindow({
         type: 'prompt',
         title: 'Installed',
+        sound: 'ding',
         label: `${selected.name} Installed successfully.  Check the Start Menu or System files to use the new functionality.`,
         image: installPng,
       })
@@ -84,7 +84,13 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
               className="tree-view w-full flex-1"
               style={{ height: 120, overflowY: 'scroll' }}
             >
-              {UPGRADES.map((upgrade) => {
+              {UPGRADES.filter((u) =>
+                u.requires.every((r) =>
+                  Object.entries(upgrades).some(
+                    ([upgrade, level]) => upgrade === r && level > 0,
+                  ),
+                ),
+              ).map((upgrade) => {
                 const currentLevel = getUpgradeLevel(upgrades, upgrade.key)
                 const disabled = currentLevel >= (upgrade.costs.length || 1)
                 return (

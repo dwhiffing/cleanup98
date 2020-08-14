@@ -1,6 +1,8 @@
 import React from 'react'
 import { useWindowState } from '../utils/useWindowState'
 import { PERMISSIONS_VIEW_ERROR } from '../constants'
+import useSound from 'use-sound'
+import boopSfx from '../assets/click.mp3'
 
 export const Icon = ({
   item,
@@ -13,6 +15,7 @@ export const Icon = ({
   const [, windowActions] = useWindowState()
   const { name, size } = item
   const disabled = upgrades.permissions < item.accessLevel
+  const [play] = useSound(boopSfx)
   return (
     <IconBase
       type="folder"
@@ -37,6 +40,7 @@ export const Icon = ({
             path: item.path,
             accessLevel: item.accessLevel,
           })
+        play()
         onDoubleClick && onDoubleClick()
       }}
     />

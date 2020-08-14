@@ -27,27 +27,29 @@ export const DrivePropertiesMenu = ({ onClose, windowData }) => {
             </div>
           </div>
           <div className="window-body">
-            <div className="px-6 w-full">
-              <div className="row">
+            <div className="px-6 w-full mb-3">
+              <div className="row my-2">
                 <p>Used Space:</p>
                 <p>{usedSpace * 1024} bytes</p>
                 <p>{`${usedSpace.toFixed(3)}KB`}</p>
               </div>
 
-              <div className="row">
+              <div className="row my-2">
                 <p>Free Space:</p>
                 <p>{freeSpace * 1024} bytes</p>
                 <p>{`${freeSpace.toFixed(3)}KB`}</p>
               </div>
 
-              <hr className="w-full" />
+              <hr className="w-full" style={{ borderTop: '1px solid #333' }} />
 
-              <div className="row">
+              <div className="row my-2">
                 <p>Capacity:</p>
                 <p>{capacity * 1024} bytes</p>
                 <p>{`${capacity.toFixed(3)}KB`}</p>
               </div>
             </div>
+
+            <p>Shrink used space to 0 to win!</p>
 
             <button className="mt-4" onClick={onClose}>
               OK
