@@ -4,6 +4,7 @@ import deleteFilePng from '../assets/delete-file.png'
 import { useUpgradeState } from '../utils/useUpgradeState'
 import { getDeleteSpeed } from '../utils/useDeletePrompt'
 
+// TODO: enter hotkey to hit okay if present
 export const Prompt = ({ windowData, onClose }) => {
   const {
     title = '',

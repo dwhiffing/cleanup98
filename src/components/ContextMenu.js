@@ -6,6 +6,7 @@ import { useWindowState } from '../utils/useWindowState'
 import { useUpgradeState } from '../utils/useUpgradeState'
 import { PERMISSIONS_VIEW_ERROR } from '../constants'
 
+// TODO: Fix issue where context menu doesnt appear if window wasn't focused
 export const ContextMenu = ({ files, selected }) => {
   const [state, setState] = useState(false)
   const { removePath } = useFileState()
@@ -64,6 +65,7 @@ export const ContextMenu = ({ files, selected }) => {
         ],
       })
     },
+    // eslint-disable-next-line
     [files, selected],
   )
 
@@ -73,6 +75,7 @@ export const ContextMenu = ({ files, selected }) => {
       document.removeEventListener('click', closeMenu)
       document.removeEventListener('contextmenu', openMenu)
     }
+    // eslint-disable-next-line
   }, [files, selected])
 
   return (

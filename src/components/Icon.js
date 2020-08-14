@@ -1,6 +1,6 @@
 import React from 'react'
 import { useWindowState } from '../utils/useWindowState'
-import { ERROR_PROMPT, PERMISSIONS_VIEW_ERROR } from '../constants'
+import { PERMISSIONS_VIEW_ERROR } from '../constants'
 
 export const Icon = ({
   item,

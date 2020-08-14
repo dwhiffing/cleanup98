@@ -2,6 +2,7 @@ import React from 'react'
 import Draggable from 'react-draggable'
 import { useStorageDetails } from '../utils/useStorageDetails'
 
+// TODO: update this to better communicate win condition
 export const DrivePropertiesMenu = ({ onClose, windowData }) => {
   const { capacity, freeSpace, usedSpace } = useStorageDetails()
   const nodeRef = React.useRef(null)

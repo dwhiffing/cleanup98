@@ -19,7 +19,6 @@ export const fs = BrowserFS.BFSRequire('fs')
 export const promiseFs = Promise.promisifyAll(fs)
 export const path = BrowserFS.BFSRequire('path')
 
-// TODO: expand on inital file system, add new directories with bigger files that require permissions
 export const randomFs = function (config) {
   let promise = config.wipe ? rmdir(config.path) : Promise.resolve()
 
@@ -173,12 +172,7 @@ BrowserFS.configure(
     await promiseFs.mkdirAsync('/C:/My Documents')
     await promiseFs.mkdirAsync('/C:/Program Files')
     await promiseFs.mkdirAsync('/C:/Windows')
-    //TODO
-    // should be able to specify likelyhood of each file
-    // should define a few folder archetypes:
-    // user files (mostly txt, bmp, nested 1 or 2 levels)
-    // program files (mostly dll, cfg, exe nested 3 or 4 levels)
-    // system files (mostly dll, cfg, exe, unknown nested 6 or 8 levels)
+
     randomFs({ path: './C:', number: 10, extensions: ['bat', 'dll', 'ini'] })
     randomFs({
       path: './C:/Windows',
@@ -249,17 +243,7 @@ const EXTENSION_CONTENT = {
   },
 }
 
-// tiny: 0.1kb
-// small: 1kb
-// medium: 50kb
-// large: 200kb
-// huge: 500kb
-
-// txt files are small and common and need no permissions
-// images files are medium sized and need no permissions but rare
-// exe files are huge but rare and need max permissions
-// cfg/bat/ini/dll files are medium sized but rare and need moderate permissions
-
+// TODO
 // first delete txt files in unprotected folders
 // get some delete speed upgrades to speed up this process
 // unlock basic permissions to access bigger files

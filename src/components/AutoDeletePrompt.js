@@ -7,7 +7,6 @@ import deleteFilePng from '../assets/delete-file.png'
 import { useFileState } from '../utils/useFileState'
 import { useUpgradeState } from '../utils/useUpgradeState'
 
-// TODO: add pause button?
 export const AutoDeletePrompt = ({ onClose }) => {
   const [windows] = useWindowState()
   const [upgrades, forceUpdate] = useUpgradeState()

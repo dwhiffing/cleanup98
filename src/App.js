@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react'
 import { TaskBar } from './components/TaskBar'
-import { ContextMenu } from './components/ContextMenu'
 import { Windows } from './components/Windows'
 import { Icon } from './components/Icon'
 import { useWindowState } from './utils/useWindowState'
@@ -21,9 +20,12 @@ function App() {
 
   useIntroPrompts({ skip: false, onComplete: () => setShowDesktop(true) })
 
+  // TODO: bring this back with some variations and related upgrades?
   // useClockSettingsPrompt()
 
+  // TODO add sound
   useEffect(() => {
+    // TODO fix win condition
     if (usedSpace < 0.01) windowActions.addWindow(WIN_PROMPT)
   }, [windowActions, usedSpace])
 

@@ -5,7 +5,6 @@ export const useStorageDetails = () => {
   const [capacity, setCapacity] = useState(100)
   const [usedSpace, setUsedSpace] = useState(100)
 
-  // TODO replace this with file state
   useEffect(() => {
     getFileSizeForPath('/').then((size) => {
       let _capacity = +localStorage.getItem('capacity')
