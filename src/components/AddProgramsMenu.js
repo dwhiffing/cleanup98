@@ -10,6 +10,7 @@ import {
 } from '../constants'
 import { useUpgradeState } from '../utils/useUpgradeState'
 import { useWindowState } from '../utils/useWindowState'
+import { useFileState } from '../utils/useFileState'
 
 export const AddProgramsMenu = ({ onClose, windowData }) => {
   const { freeSpace } = useStorageDetails()
@@ -17,9 +18,10 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
   const nodeRef = React.useRef(null)
   const width = 400
   const height = 400
+  const { updatePath } = useFileState()
   const [upgrades, forceUpdate] = useUpgradeState()
   const [, actions] = useWindowState()
-
+  const cost = selected ? Math.round(getUpgradeCost(upgrades, selected)) : null
   const selectedUpgradeLevel = selected
     ? getUpgradeLevel(upgrades, selected.key)
     : 0
@@ -33,16 +35,16 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
       return
     }
 
-    if (freeSpace * 1024 < getUpgradeCost(upgrades, selected)) {
+    if (freeSpace * 1024 < cost) {
       actions.addWindow(NOT_ENOUGH_SPACE_ERROR)
       return
     }
+    const previousLevelCost = getPreviousUpgradeCost(upgrades, selected)
     try {
       addFile(
         `/C:/Program Files/${selected.key}_${selectedUpgradeLevel + 1}.exe`,
-        new Array(Math.round(getUpgradeCost(upgrades, selected))).join('a'),
+        new Array(cost + previousLevelCost).join('a'),
       )
-      forceUpdate()
       rmdir(`/C:/Program Files/${selected.key}_${selectedUpgradeLevel}.exe`)
       actions.addWindow({
         type: 'prompt',
@@ -51,6 +53,8 @@ export const AddProgramsMenu = ({ onClose, windowData }) => {
         label: `${selected.name} Installed successfully.  Check the Start Menu or System files to use the new functionality.`,
         image: installPng,
       })
+      forceUpdate()
+      updatePath('/')
     } catch (e) {
       console.log(e)
     }
@@ -156,9 +160,14 @@ const getUpgradeLevel = (upgrades, key) => {
   return upgrades[key] || 0
 }
 
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
 const getUpgradeCost = (upgrades, upgrade) => {
   const level = getUpgradeLevel(upgrades, upgrade.key)
-  const previousLevelCost = upgrade.costs[level - 1] || 0
+  const previousLevelCost = getPreviousUpgradeCost(upgrades, upgrade)
   const levelCost = upgrade.costs[level]
-  return levelCost - previousLevelCost
+  return Math.round((levelCost - previousLevelCost) * (isSafari ? 0.65 : 0.85))
+}
+const getPreviousUpgradeCost = (upgrades, upgrade) => {
+  const level = getUpgradeLevel(upgrades, upgrade.key)
+  return Math.round(upgrade.costs[level - 1] || 0)
 }

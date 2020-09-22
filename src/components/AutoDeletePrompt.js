@@ -15,11 +15,13 @@ export const AutoDeletePrompt = ({ onClose }) => {
   const [isLocked, setIsLocked] = useState(false)
   const { files: _files, removePath } = useFileState()
   const files = _files[path] || []
+  const [play] = useSound(boopSfx)
 
   const { deleteSpeed, loadingSpeed, counter, file } = useAutoDeleter({
     disabled: false,
     files,
     onDelete: (file) => {
+      play()
       forceUpdate()
       removePath(file.path)
     },
@@ -98,7 +100,6 @@ const useAutoDeleter = ({ disabled, files, onDelete }) => {
   const [deleteSpeed, setDeleteSpeed] = useState(1000)
   const [loadingSpeed, setLoadingSpeed] = useState(1000)
   const [smallestFile, setSmallestFile] = useState(null)
-  const [play] = useSound(boopSfx)
 
   // update the delete speed based on the smallest file
   useEffect(() => {
@@ -136,11 +137,10 @@ const useAutoDeleter = ({ disabled, files, onDelete }) => {
     }
     deleteFiles([smallestFile.path], () => {
       onDelete(smallestFile)
-      play()
       setCounter(0)
       setSmallestFile(null)
     })
-  }, [play, counter, files, smallestFile, onDelete])
+  }, [counter, files, smallestFile, onDelete])
 
   useEffect(() => {
     // setCounter(0)

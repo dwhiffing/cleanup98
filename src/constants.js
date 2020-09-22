@@ -103,9 +103,9 @@ export const UPGRADES = [
       50000,
       100000,
       200000,
-      400000,
-      850000,
-      1200000,
+      350000,
+      500000,
+      800000,
     ],
     description: 'Reduce the time it takes to delete a file',
     requires: [],
@@ -113,7 +113,7 @@ export const UPGRADES = [
   {
     key: 'max-delete-prompt',
     name: 'More deletes',
-    costs: [3200, 25000, 88000, 400000, 1500000],
+    costs: [3200, 25000, 60000, 130000],
     description:
       'Allows simultaneous deletion of more files. Each upgrade allows 1 more delete',
     requires: ['delete-speed'],
@@ -121,15 +121,15 @@ export const UPGRADES = [
   {
     key: 'permissions',
     name: 'File Access Level',
-    costs: [5600, 50000, 310000, 900000, 2100000],
+    costs: [5600, 50000, 250000, 450000, 1000000],
     description:
       'Allows navigation and deletion of protected files.  Each level gives access to more files.',
-    requires: ['max-delete-prompt'],
+    requires: ['delete-speed'],
   },
   {
     key: 'autodeleter',
     name: 'Auto deleter count',
-    costs: [8000, 60000, 1600000],
+    costs: [8000, 60000, 150000],
     description:
       'Auto deletes the smallest file in the active window every 10 seconds. Each upgrade increases the amount you can have open.',
     requires: ['permissions'],
@@ -137,7 +137,7 @@ export const UPGRADES = [
   {
     key: 'autodeleter-speed',
     name: 'Auto deleter speed',
-    costs: [11000, 70000, 250000, 2000000],
+    costs: [9000, 30000, 65000, 130000],
     description:
       'Auto deletes the smallest file in the active window every 10 seconds. Each upgrade subtracts 2 seconds from the duration.',
     requires: ['autodeleter'],
@@ -145,14 +145,14 @@ export const UPGRADES = [
   {
     key: 'delete-express',
     name: 'Delete express',
-    costs: [20000, 150000, 800000, 2000000],
+    costs: [20000, 150000, 400000, 800000],
     description: 'Extremely reduce the time it takes to delete a file',
     requires: ['autodeleter-speed'],
   },
   {
     key: 'select-box',
     name: 'Select box',
-    costs: [60000],
+    costs: [90000],
     description: 'Allow selection of multiple files.',
     requires: ['delete-express'],
   },
@@ -471,15 +471,19 @@ export const EXTENSION_IMAGES = {
   wav: wavPng,
 }
 
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent)
+const EXE_SIZE = isSafari ? 200 : 800
+const WAV_SIZE = isSafari ? 50 : 200
+
 export const EXTENSION_CONTENT = {
-  exe: (cb) => cb(faker.lorem.paragraph(1200)),
+  exe: (cb) => cb(faker.lorem.paragraph(EXE_SIZE)),
   txt: (cb) => cb(rant(sample(RANTS))),
   doc: (cb) => cb(rant(sample(BIG_RANTS))),
   bat: (cb) => cb(faker.lorem.paragraph(50)),
   ini: (cb) => cb(faker.lorem.paragraph(5)),
   cfg: (cb) => cb(faker.lorem.paragraph(50)),
-  dll: (cb) => cb(faker.lorem.paragraph(300)),
-  wav: (cb) => cb(faker.lorem.paragraph(300)),
+  dll: (cb) => cb(faker.lorem.paragraph(WAV_SIZE)),
+  wav: (cb) => cb(faker.lorem.paragraph(WAV_SIZE)),
   gif: (cb) => {
     imgGen.generateImage(10, 10, 80, function (err, content) {
       cb(Base64.fromUint8Array(content.data))
